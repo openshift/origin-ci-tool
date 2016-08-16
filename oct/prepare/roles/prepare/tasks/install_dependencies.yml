@@ -1,0 +1,84 @@
+---
+- name: clean out the package manager cache
+  command: {{ ansible_package_manager }} clean all
+
+- name: install distribution-independent dependencies
+  package:
+    name: {{ item }}
+    state: latest
+  with_items:
+   - augeas
+   - bzr
+   - bridge-utils
+   - bzip2
+   - bind
+   - btrfs-progs-devel
+   - bind-utils
+   - ctags
+   - deltarpm
+   - device-mapper-devel
+   - ethtool
+   - e2fsprogs
+   - firefox
+   - fontconfig
+   - git
+   - gcc
+   - gcc-c++
+   - glibc-static
+   - gnuplot
+   - google-chrome-stable
+   - httpie
+   - hg
+   - iscsi-initiator-utils
+   - jq
+   - java-1.?.0-openjdk
+   - kernel-devel
+   - libselinux-devel
+   - libnetfilter_queue-devel
+   - make
+   - mlocate
+   - npm
+   - ntp
+   - openldap-clients
+   - openvswitch
+   - rubygems
+   - screen
+   - socat
+   - sqlite-devel
+   - sysstat
+   - tig
+   - tmux
+   - unzip
+   - vim
+   - wget
+   - xfsprogs
+   - Xvfb
+   - yum-utils
+
+- name: install distribution-dependent dependencies
+  package:
+    name: {{ item.package }}
+    state: latest
+  when: ansible_distribution in item.distros
+    - package: facter
+      distros: [
+        'CentOS',
+        'Red Hat Enterprise Linux'
+      ]
+
+- name: install ChromeDriver to enable headless UI testing
+  unarchive:
+    src: https://chromedriver.storage.googleapis.com/2.16/chromedriver_linux64.zip
+    dest: /usr/bin
+    mode: u=rwx,g=rx,o=rx
+    owner: root
+    creates: /usr/bin/chromedriver
+
+- name: update all non-kernel packages to latest state
+  command: {{ ansible_package_manager }} update all --exclude=kernel*
+
+- name: update npm to v3.7.3
+  command: /usr/bin/npm install npm@3.7.3 --global
+
+- name: document all the installed packages for the build logs
+  command: {{ ansible_package_manager }} list installed
