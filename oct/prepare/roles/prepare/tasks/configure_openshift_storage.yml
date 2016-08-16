@@ -1,0 +1,21 @@
+---
+- name: make the OpenShift XFS filesystem
+  filesystem:
+    dev: /dev/{{ origin_ci_docker_vg }}/openshift-xfs-vol-dir
+    fstype: xfs
+
+- name: create the OpenShift XFS directory
+  file:
+    path: /dev/{{ origin_ci_docker_vg }}/openshift-xfs-vol-dir
+    state: directory
+
+- name: mount the OpenShift XFS filesystem
+  mount:
+    src: /dev/{{ origin_ci_docker_vg }}/openshift-xfs-vol-dir
+    name: /mnt/openshift-xfs-vol-dir
+    state: mounted
+
+- name: make the Origin CI user own the OpenShift XFS mount
+  file:
+    path: /mnt/openshift-xfs-vol-dir
+    owner: '{{ origin_ci_user }}:{{ origin_ci_user }}'

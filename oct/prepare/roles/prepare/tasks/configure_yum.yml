@@ -1,0 +1,31 @@
+---
+- name: configure the package manager
+  lineinfile:
+    dest: /etc/yum.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    create: true
+  with_items:
+    - regexp: '^cachedir='
+      line: "cachedir=/var/cache/yum/$basearch/$releasever"
+    - regexp: '^keepcache='
+      line: "keepcache=0"
+    - regexp: '^debuglevel='
+      line: "debuglevel=2"
+    - regexp: '^logfile='
+      line: "logfile=/var/log/yum.log"
+    - regexp: '^exactarch='
+      line: "exactarch=1"
+    - regexp: '^obsoletes='
+      line: "obsoletes=1"
+    - regexp: '^gpgcheck='
+      line: "gpgcheck=0"
+    - regexp: '^plugins='
+      line: "plugins=1"
+    - regexp: '^installonly_limit='
+      line: "installonly_limit=3"
+    - regexp: '^retires='
+      line: "retires=20"
+    - regexp: '^timeout='
+      line: "timeout=120"

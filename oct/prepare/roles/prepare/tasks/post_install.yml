@@ -1,0 +1,19 @@
+---
+- name: configure the Docker daemon
+  include: configure_docker_daemon.yml
+
+- name: ensure ntpd service is running
+  systemctl:
+    name: ntpd
+    state: started
+
+- name: force socket reuse
+  sysctl:
+    name: net.ipv4.tcp_tw_reuse
+    value: 1
+    reload: yes
+
+- name: make the Origin CI user own the data dir
+  file:
+    path: /data
+    owner: '{{ origin_ci_user }}:{{ origin_ci_user }}'

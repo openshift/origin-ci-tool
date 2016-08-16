@@ -1,0 +1,14 @@
+{%- for repository in extra_repositories -%}
+    {%- if ansible_distribution in repository.distributions -%}
+[{{ repository.header }}]
+        {%- for key, value in repository.iteritems() -%}
+            {%- if key not 'header' and value is defined -%}
+                {%- if value is iterable -%}
+{{ key }}={{ value | join("\n") }}
+                {%- else -%}
+{{ key }}={{ value }}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endfor -%}
