@@ -1,7 +1,4 @@
 ---
-- name: configure the Docker daemon
-  include: configure_docker_daemon.yml
-
 - name: ensure ntpd service is running
   systemctl:
     name: ntpd

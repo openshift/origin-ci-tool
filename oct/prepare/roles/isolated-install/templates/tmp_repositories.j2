@@ -1,0 +1,16 @@
+{%- for repourl in origin_ci_isolated_tmp_repourls -%}
+    {%- if repourl is iterable -%}
+[{{ repourl[0] | regex_replace('[^a-zA-Z0-9]', '') }}]
+name={{ repourl[0] | regex_replace('[^a-zA-Z0-9]', '') }}
+baseurl={{ repourl | join("\n") }}
+    {%- else -%}
+[{{ repourl | regex_replace('[^a-zA-Z0-9]', '') }}]
+name={{ repourl | regex_replace('[^a-zA-Z0-9]', '') }}
+baseurl={{ repourl }}
+    {%- endif -%}
+enabled=1
+gpgcheck=0
+sslverify=0
+sslclientcert=/var/lib/yum/client-cert.pem
+sslclientkey=/var/lib/yum/client-key.pem
+{%- endfor -%}

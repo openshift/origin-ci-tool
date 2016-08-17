@@ -13,32 +13,32 @@
    
 ### `build-origin-base`
  - [CreateYumRepositories](https://github.com/openshift/vagrant-openshift/blob/master/lib/vagrant-openshift/action/yum_update.rb):
-   - `yum install deltarpm augeas`: [install_dependencies.yml](./oct/prepare/roles/prepare/tasks/install_dependencies.yml)
+   - `yum install deltarpm augeas`: [install_dependencies.yml](./oct/prepare/roles/dependencies/tasks/install_dependencies.yml)
    - update `openshift-deps.repo` with the pub mirror link: TODO, should be in Origin install step
-   - install EPEL if not Fedora: [register_repositories.yml](./oct/prepare/roles/prepare/tasks/register_repositories.yml)
+   - install EPEL if not Fedora: [register_repositories.yml](./oct/prepare/roles/dependencies/tasks/register_repositories.yml)
    - [BZ 707364](https://bugzilla.redhat.com/show_bug.cgi?id=707364) workaround: this was for RHEL 6, we can drop it
  - [YumUpdate](https://github.com/openshift/vagrant-openshift/blob/master/lib/vagrant-openshift/action/.rb):
    - remove previous Origin repository: TODO, should be in Origin install step
-   - `yum clean all`: [install_dependencies.yml](./oct/prepare/roles/prepare/tasks/install_dependencies.yml)
-   - `yum update --exclude=kernel*`: [install_dependencies.yml](./oct/prepare/roles/prepare/tasks/install_dependencies.yml)
-   - add configuation to `yum`: [configure_yum.yml](./oct/prepare/roles/prepare/tasks/configure_yum.yml)
+   - `yum clean all`: [install_dependencies.yml](./oct/prepare/roles/dependencies/tasks/install_dependencies.yml)
+   - `yum update --exclude=kernel*`: [install_dependencies.yml](./oct/prepare/roles/dependencies/tasks/install_dependencies.yml)
+   - add configuation to `yum`: [configure_yum.yml](./oct/prepare/roles/dependencies/tasks/configure_yum.yml)
    - update `metadata_expire` to `never`: won't implement unless convinced
  - [SetHostName](https://github.com/openshift/vagrant-openshift/blob/master/lib/vagrant-openshift/action/set_host_name.rb):
    - update `/etc/sysconfig/network` and `/etc/hostname`: @sdodson says this is not needed
  - [InstallOriginBaseDependencies](https://github.com/openshift/vagrant-openshift/blob/master/lib/vagrant-openshift/action/.rb):
    - `vagrant` and Fedora/`systemd` `eth*` naming workaround: even RHEL is on sytemd219, this fix was for systemd197, we can 
    drop it
-   - `yum install`: [install_dependencies.yml](./oct/prepare/roles/prepare/tasks/install_dependencies.yml)
-   - install of `facter` but not on Fedora: [install_dependencies.yml](./oct/prepare/roles/prepare/tasks/install_dependencies.yml)
-   - install Chrome and Chromedriver: [install_dependencies.yml](./oct/prepare/roles/prepare/tasks/install_dependencies.yml)
-   - install `openshift-rhel7-dependencies.repo`: [register_repositories.yml](./oct/prepare/roles/prepare/tasks/register_repositories.yml)
-   - install Go: TODO
-   - install Docker: TODO
-   - install `rhaos3{1,2}.repo`: [register_repositories.yml](./oct/prepare/roles/prepare/tasks/register_repositories.yml)
-   - configure system: [post_install.yml](./oct/prepare/roles/prepare/tasks/post_install.yml)
-   - configure Docker daemon: [configure_docker_daemon.yml](./oct/prepare/roles/prepare/tasks/configure_docker_daemon.yml),
-   [configure_docker_daemon_storage.yml](./oct/prepare/roles/prepare/tasks/configure_docker_daemon_storage.yml),
-   [configure_openshift_storage.yml](./oct/prepare/roles/prepare/tasks/configure_openshift_storage.yml)
+   - `yum install`: [install_dependencies.yml](./oct/prepare/roles/dependencies/tasks/install_dependencies.yml)
+   - install of `facter` but not on Fedora: [install_dependencies.yml](./oct/prepare/roles/dependencies/tasks/install_dependencies.yml)
+   - install Chrome and Chromedriver: [install_dependencies.yml](./oct/prepare/roles/dependencies/tasks/install_dependencies.yml)
+   - install `openshift-rhel7-dependencies.repo`: [register_repositories.yml](./oct/prepare/roles/dependencies/tasks/register_repositories.yml)
+   - install Go: [golang/tasks/main.yml](./oct/prepare/roles/golang/tasks/main.yml)
+   - install Docker: [docker/tasks/main.yml](./oct/prepare/roles/docker/tasks/main.yml)
+   - install `rhaos3{1,2}.repo`: [register_repositories.yml](./oct/prepare/roles/dependencies/tasks/register_repositories.yml)
+   - configure system: [post_install.yml](./oct/prepare/roles/dependencies/tasks/post_install.yml)
+   - configure Docker daemon: [configure_docker_daemon.yml](./oct/prepare/roles/docker/tasks/configure_docker_daemon.yml),
+   [configure_docker_daemon_storage.yml](./oct/prepare/roles/docker/tasks/configure_docker_daemon_storage.yml),
+   [configure_openshift_storage.yml](./oct/prepare/roles/docker/tasks/configure_openshift_storage.yml)
    
 ### `build-origin-base-images`
  - [BuildOriginBaseImages](https://github.com/openshift/vagrant-openshift/blob/master/lib/vagrant-openshift/action/build_origin_base_images.rb):

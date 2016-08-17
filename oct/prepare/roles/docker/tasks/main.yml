@@ -1,0 +1,11 @@
+---
+- name: install Docker
+  include: isolated-install/tasks/main.yml
+  vars:
+    origin_ci_isolated_package: docker-{{ origin_ci_docker_version[ansible_distribution] }}
+    origin_ci_isolated_disabledrepos: *
+    origin_ci_isolated_enabledrepos: {{ origin_ci_docker_repositories[ansible_distribution] | join(',') }}
+    origin_ci_isolated_tmp_repourls: origin_ci_docker_tmp_repourls
+
+- name: configure the Docker daemon
+  include: configure_docker_daemon.yml

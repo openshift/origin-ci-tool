@@ -1,0 +1,17 @@
+---
+origin_ci_golang_version: {
+  'Red Hat Enterprise Linux': '1.6.3'
+  'CentOS': '1.6.3'
+  'Fedora': '1.5.4'
+}
+origin_ci_golang_repositories: {
+  'Red Hat Enterprise Linux': [
+    'oso-rhui-rhel-server-releases-optional'
+  ],
+  'CentOS': [
+    'updates'
+  ],
+  'Fedora': [
+    'updates'
+  ]
+}

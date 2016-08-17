@@ -1,0 +1,9 @@
+---
+- name: run the pre-install steps
+  include: pre_install.yml
+
+- name: run the dependency install steps
+  include: install_dependencies.yml
+
+- name: run the post-install steps
+  include: post_install.yml

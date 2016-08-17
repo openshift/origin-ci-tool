@@ -1,6 +1,6 @@
 ---
 - name: clean out the package manager cache
-  command: {{ ansible_package_manager }} clean all
+  command: {{ ansible_pkg_mgr }} clean all
 
 - name: install distribution-independent dependencies
   package:
@@ -75,10 +75,10 @@
     creates: /usr/bin/chromedriver
 
 - name: update all non-kernel packages to latest state
-  command: {{ ansible_package_manager }} update all --exclude=kernel*
+  command: {{ ansible_pkg_mgr }} update all --exclude=kernel*
 
 - name: update npm to v3.7.3
   command: /usr/bin/npm install npm@3.7.3 --global
 
 - name: document all the installed packages for the build logs
-  command: {{ ansible_package_manager }} list installed
+  command: {{ ansible_pkg_mgr }} list installed

@@ -1,5 +1,5 @@
 ---
-extra_repositories: |
+origin_ci_extra_repositories: |
   [
     {
       'header': 'google-chrome-stable',

@@ -12,4 +12,4 @@ applied to `systemd` environment files or service definitions, those patches wil
 this role touches.
 
 This role is expected to be run as the first step on a new host, or as the first role after the `provision` role. It is expected
-that the `sync` role is run after this step in order to bring relevant source code to the host.
+that the `docker` role is run after this step in order to bring relevant source code to the host.

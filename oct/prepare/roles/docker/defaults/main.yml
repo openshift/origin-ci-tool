@@ -1,0 +1,19 @@
+---
+origin_ci_user: origin-ci
+origin_ci_docker_version: {
+  'Red Hat Enterprise Linux': '1.10.3'
+  'CentOS': '1.10.3'
+  'Fedora': '1.10.3'
+}
+origin_ci_docker_repositories: {
+  'Red Hat Enterprise Linux': [
+    'oso-rhui-rhel-server-extras',
+    'oso-rhui-rhel-server-releases'
+  ],
+  'CentOS': [
+    'extras'
+  ],
+  'Fedora': [
+    'updates'
+  ]
+}

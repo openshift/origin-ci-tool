@@ -1,4 +1,4 @@
-{%- for repository in extra_repositories -%}
+{%- for repository in origin_ci_extra_repositories -%}
     {%- if ansible_distribution in repository.distributions -%}
 [{{ repository.header }}]
         {%- for key, value in repository.iteritems() -%}

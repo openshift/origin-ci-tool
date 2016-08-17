@@ -20,8 +20,8 @@
     ]
 
 - name: determine installed Docker version
-  command: "repoquery --pkgnarrow=installed --qf '%{version}' docker"
-  register: origin_ci_docker_version
+  command: "repoquery --pkgnarrow=installed --queryformat '%{version}' docker"
+  register: origin_ci_installed_docker_version
 
 - name: add version-specific Docker daemon storage options
   set_fact:
@@ -29,7 +29,7 @@
       '--storage-opt dm.use_deferred_removal=true',
       '--storage-opt dm.use_deferred_deletion=true'
     ] }}
-  when: origin_ci_docker_version.stdout | version_compare('1.10', '>=')
+  when: origin_ci_installed_docker_version.stdout | version_compare('1.10', '>=')
 
 - name: update the Docker daemon storage configuration options
   lineinfile:

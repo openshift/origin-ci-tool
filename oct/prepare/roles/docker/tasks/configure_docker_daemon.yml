@@ -12,7 +12,7 @@
   lineinfile:
     dest: /etc/sysconfig/docker
     regexp: "^INSECURE_REGISTRY=[\'\"]?[^\'\"]*[\'\"]?"
-    line: "INSECURE_REGISTRY='--insecure-registry=172.30.0.0/16 --insecure-registry=ci.dev.openshift.redhat.com:5000'"
+    line: "INSECURE_REGISTRY='--insecure-registry={{ origin_ci_insecure_registries | join(" --insecure-registry=") }}'"
 
 - name: ensure no extra registries are added by the configuration
   lineinfile:

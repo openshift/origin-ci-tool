@@ -1,7 +1,7 @@
 ---
 - name: register non-default repositories for the package manager
   template:
-    src: repositories.j2
+    src: extra_repositories.j2
     dest: /etc/yum.repos.d/origin_ci_tool_extras.repo
 
 - name: register dependency repositories from the OpenShift public mirror
@@ -10,5 +10,5 @@
     dest: /etc/yum.repos.d/openshift-rhel7-dependencies.repo
 
 - name: register EPEL repositories for CentOS and RHEL
-  command: {{ ansible_package_manager }} install epel-release
+  command: {{ ansible_pkg_mgr }} install epel-release
   when: ansible_distribution in ['Red Hat Enterprise Linux', 'CentOS']

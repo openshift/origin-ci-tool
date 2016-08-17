@@ -1,0 +1,6 @@
+---
+origin_ci_insecure_registries: |
+  [
+    '172.30.0.0/16',
+    'ci.dev.openshift.redhat.com:5000'
+  ]
