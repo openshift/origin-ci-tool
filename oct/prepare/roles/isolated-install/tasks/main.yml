@@ -3,27 +3,27 @@
 # apply all upgrade and downgrade scenarios, so we instead
 # simply remove whatever selected packages are installed on
 # the host before trying to install the ones that we need
-- name: uninstall {{ origin_ci_isolated_package }} if it is installed
+- name: 'uninstall {{ origin_ci_isolated_package }} if it is installed'
   yum:
-    name: {{ origin_ci_isolated_package }}
+    name: '{{ origin_ci_isolated_package }}'
     state: absent
 
-- name: register temporary repositories that we need to install {{ origin_ci_isolated_package }}
+- name: 'register temporary repositories that we need to install {{ origin_ci_isolated_package }}'
   template:
     src: tmp_repositories.j2
-    dest: {{ origin_ci_tmp_repofile }}
+    dest: '{{ origin_ci_tmp_repofile }}'
 
-- name: install {{ origin_ci_isolated_package }}
+- name: 'install {{ origin_ci_isolated_package }}'
   yum:
-    name: {{ origin_ci_isolated_package }}
+    name: '{{ origin_ci_isolated_package }}'
     state: present
-    disablerepo: {{ origin_ci_isolated_disabledrepos }}
-    enablerepo: {{ origin_ci_isolated_enabledrepos }}
+    disablerepo: '{{ origin_ci_isolated_disabledrepos }}'
+    enablerepo: '{{ origin_ci_isolated_enabledrepos }}'
 
-- name: remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}
+- name: 'remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}'
   file:
-    path: {{ origin_ci_tmp_repofile }}
+    path: '{{ origin_ci_tmp_repofile }}'
     state: absent
 
 - name: clean out the package manager cache to ensure the temporary repositories are removed
-  command: {{ ansible_pkg_mgr }} clean all
+  command: '{{ ansible_pkg_mgr }} clean all'

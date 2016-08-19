@@ -1,10 +1,10 @@
 ---
 - name: clean out the package manager cache
-  command: {{ ansible_pkg_mgr }} clean all
+  command: '{{ ansible_pkg_mgr }} clean all'
 
 - name: install distribution-independent dependencies
   package:
-    name: {{ item }}
+    name: '{{ item }}'
     state: latest
   with_items:
    - augeas
@@ -57,7 +57,7 @@
 
 - name: install distribution-dependent dependencies
   package:
-    name: {{ item.package }}
+    name: '{{ item.package }}'
     state: latest
   when: ansible_distribution in item.distros
     - package: facter
@@ -75,10 +75,10 @@
     creates: /usr/bin/chromedriver
 
 - name: update all non-kernel packages to latest state
-  command: {{ ansible_pkg_mgr }} update all --exclude=kernel*
+  command: '{{ ansible_pkg_mgr }} update all --exclude=kernel*'
 
 - name: update npm to v3.7.3
-  command: /usr/bin/npm install npm@3.7.3 --global
+  command: '/usr/bin/npm install npm@3.7.3 --global'
 
 - name: document all the installed packages for the build logs
-  command: {{ ansible_pkg_mgr }} list installed
+  command: '{{ ansible_pkg_mgr }} list installed'

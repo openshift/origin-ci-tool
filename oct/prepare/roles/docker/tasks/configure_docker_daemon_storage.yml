@@ -1,13 +1,13 @@
 ---
 - name: create a logical volume for Docker data
   lvol:
-    vg: {{ origin_ci_docker_vg }}
+    vg: '{{ origin_ci_docker_vg }}'
     lv: docker-data
     opts: '-l 70%FREE'
 
 - name: create a logical volume for Docker metadata
   lvol:
-    vg: {{ origin_ci_docker_vg }}
+    vg: '{{ origin_ci_docker_vg }}'
     lv: docker-metadata
     opts: '-l 17%FREE'
 
@@ -25,10 +25,10 @@
 
 - name: add version-specific Docker daemon storage options
   set_fact:
-    origin_ci_docker_storage_opts: {{ origin_ci_docker_storage_opts + [
+    origin_ci_docker_storage_opts: "{{ origin_ci_docker_storage_opts + [
       '--storage-opt dm.use_deferred_removal=true',
       '--storage-opt dm.use_deferred_deletion=true'
-    ] }}
+    ] }}"
   when: origin_ci_installed_docker_version.stdout | version_compare('1.10', '>=')
 
 - name: update the Docker daemon storage configuration options

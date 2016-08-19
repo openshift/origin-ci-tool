@@ -5,7 +5,7 @@
 
 - name: add the user to the Docker daemon group
   user:
-    name: {{ origin_ci_user }}
+    name: '{{ origin_ci_user }}'
     group: docker
 
 - name: enable insecure registry connections to local and test registries
@@ -22,7 +22,7 @@
     line: '# ADD_REGISTRY=\1'
 
 - name: determine which logical volumes we have to work with
-  command: lvs {{ item }}
+  command: 'lvs {{ item }}'
   register: origin_ci_vg_probe
   with_items:
     - docker-vg
@@ -31,7 +31,7 @@
 
 - name: determine the name of the volume group to use for Docker storage
   set_fact:
-    origin_ci_docker_vg: {{ item.cmd | last }}
+    origin_ci_docker_vg: '{{ item.cmd | last }}'
   when: item | succeeded
   with_items:
     - origin_ci_vg_probe

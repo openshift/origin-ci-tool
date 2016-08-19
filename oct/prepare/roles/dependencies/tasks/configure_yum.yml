@@ -2,8 +2,8 @@
 - name: configure the package manager
   lineinfile:
     dest: /etc/yum.conf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
     state: present
     create: true
   with_items:
