@@ -17,6 +17,7 @@ class RoleRunner:
     def __init__(self,
                  variable_manager=VariableManager(), data_loader=DataLoader(), host_list=None, passwords=None,
                  connection='local', module_path='', forks=5, become=True, become_method='sudo', become_user='root', check=False
+                 # TODO: probably shouldn't be defaulting to root and sudo, as proper setup will give us correct user
                  ):
         """
         Initialize a RoleRunner.
@@ -84,6 +85,7 @@ class RoleRunner:
             for name in vars:
                 role_def[name] = vars[name]
 
+        # TODO: we should allow someone to give the same name to append a role to a play instead of making a new play
         self._plays.append(
             dict(
                 name=name,

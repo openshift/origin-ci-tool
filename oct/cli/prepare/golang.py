@@ -1,5 +1,7 @@
 import click
-from prepare.role_runner import RoleRunner
+import oct
+import os
+from util.role_runner import RoleRunner
 
 
 def install_golang_custom_callback(ctx, param, value):
@@ -115,7 +117,7 @@ def install_golang_custom(version, repos=None, repourls=None, hosts=None):
     runner = RoleRunner()
     runner.add_role(
         name='Install Golang',
-        role='oct/prepare/roles/isolated-install',
+        role=os.path.abspath(os.path.dirname(oct.__file__)) + '/ansible/oct/roles/isolated-install',
         vars=role_vars,
         hosts=hosts
     )

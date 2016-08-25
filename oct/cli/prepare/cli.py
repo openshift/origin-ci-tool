@@ -1,6 +1,6 @@
 import click
-from prepare.docker import docker
-from prepare.golang import golang
+from .docker import docker
+from .golang import golang
 
 
 @click.group()

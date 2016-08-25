@@ -11,6 +11,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        oct=oct.cli:oct
+        oct=oct.oct:oct
     ''',
 )

@@ -1,11 +1,11 @@
 import click
 
-from build.cli import build
-from install.cli import install
-from prepare.cli import prepare
-from provision.cli import provision
-from sync.cli import sync
-from test.cli import test
+from cli.build.cli import build
+from cli.install.cli import install
+from cli.prepare.cli import prepare
+from cli.provision.cli import provision
+from cli.sync.cli import sync
+from cli.test.cli import test
 
 
 @click.group()

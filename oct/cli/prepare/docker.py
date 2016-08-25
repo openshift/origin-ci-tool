@@ -1,5 +1,7 @@
 import click
-from prepare.role_runner import RoleRunner
+import oct
+import os
+from util.role_runner import RoleRunner
 
 
 def install_docker_custom_callback(ctx, param, value):
@@ -43,7 +45,7 @@ def install_docker_custom_callback(ctx, param, value):
 @click.option(
     '--hosts', '-h',
     help='Comma-delimited list of hosts on which to install Docker.',
-    default='localhost'  # TODO: this should probably not be here, since we should have an inventory
+    default='localhost' # TODO: this should probably not be here, since we should have an inventory
 )
 def docker(version, repos, repourls, preset, hosts):
     """
@@ -117,13 +119,13 @@ def install_docker_custom(version, repos=None, repourls=None, hosts=None):
     runner = RoleRunner()
     runner.add_role(
         name='Install Docker',
-        role='oct/prepare/roles/isolated-install',
+        role=os.path.abspath(os.path.dirname(oct.__file__)) + '/ansible/oct/roles/isolated-install',
         vars=role_vars,
         hosts=hosts
     )
     runner.add_role(
         name='Configure Docker',
-        role='oct/prepare/roles/docker',
+        role=os.path.abspath(os.path.dirname(oct.__file__)) + '/ansible/oct/roles/docker',
         hosts=hosts
     )
     runner.run()
