@@ -16,7 +16,7 @@ class RoleRunner:
 
     def __init__(self,
                  variable_manager=VariableManager(), data_loader=DataLoader(), host_list=None, passwords=None,
-                 connection='local', module_path='', forks=5, become=None, become_method=None, become_user=None, check=False
+                 connection='local', module_path='', forks=5, become=True, become_method='sudo', become_user='root', check=False
                  ):
         """
         Initialize a RoleRunner.
@@ -62,11 +62,13 @@ class RoleRunner:
         self._inventory = Inventory(loader=data_loader, variable_manager=variable_manager, host_list=host_list)
         self._variable_manager.set_inventory(self._inventory)
 
+        self._plays = list()
+
         pass
 
-    def run_role(self, name, role, vars=None, hosts='all', gather_facts='yes'):
+    def add_role(self, name, role, vars=None, hosts='all', gather_facts='yes'):
         """
-        Run a play that includes the role specified with the variables
+        Run a play that executes the role specified with the variables
         provided.
 
         :param name: name of the play
@@ -75,29 +77,38 @@ class RoleRunner:
         :param hosts: remote hosts or groups on which the role should be run
         :param gather_facts: whether or not to gather facts on the remote hosts
         """
-        play_raw = dict(
-            name=name,
-            hosts=hosts,
-            gather_facts=gather_facts,
-            roles=[
-                dict(
-                    role=role,
-                    vars=vars
-                )
-            ]
+        role_def = dict(
+            role=role
         )
-        play = Play().load(play_raw, variable_manager=self._variable_manager, loader=self._data_loader)
+        if vars:
+            for name in vars:
+                role_def[name] = vars[name]
 
-        tqm = None
-        try:
-            tqm = TaskQueueManager(
-                inventory=self._inventory,
-                variable_manager=self._variable_manager,
-                loader=self._data_loader,
-                options=self._ansible_play_options,
-                passwords=self._passwords,
+        self._plays.append(
+            dict(
+                name=name,
+                hosts=hosts,
+                gather_facts=gather_facts,
+                roles=[
+                    role_def
+                ]
             )
-            result = tqm.run(play)
-        finally:
-            if tqm is not None:
-                tqm.cleanup()
+        )
+
+    def run(self):
+        for raw_play in self._plays:
+            play = Play().load(raw_play, variable_manager=self._variable_manager, loader=self._data_loader)
+
+            tqm = None
+            try:
+                tqm = TaskQueueManager(
+                    inventory=self._inventory,
+                    variable_manager=self._variable_manager,
+                    loader=self._data_loader,
+                    options=self._ansible_play_options,
+                    passwords=self._passwords,
+                )
+                result = tqm.run(play)
+            finally:
+                if tqm is not None:
+                    tqm.cleanup()

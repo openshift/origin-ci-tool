@@ -12,13 +12,13 @@ def install_golang_custom_callback(ctx, param, value):
     install_golang_for_preset(value)
     ctx.exit()
 
+
 @click.command(
     short_help='Install Golang on remote hosts.'
 )
 @click.option(
     '--version', '-v',
-    help='Version of Golang to install.',
-    required=True
+    help='Version of Golang to install.'
 )
 @click.option(
     '--repo', '-r',
@@ -43,7 +43,7 @@ def install_golang_custom_callback(ctx, param, value):
 @click.option(
     '--hosts', '-h',
     help='Comma-delimited list of hosts on which to install Golang.',
-    default='localhost' # TODO: this should probably not be here, since we should have an inventory
+    default='localhost'  # TODO: this should probably not be here, since we should have an inventory
 )
 def golang(version, repos, repourls, preset, hosts):
     """
@@ -99,10 +99,24 @@ def install_golang_custom(version, repos=None, repourls=None, hosts=None):
     :param repourls: list of RPM repository URLs from which to install Golang
     """
     role_vars = dict(
-        origin_ci_golang_version=version,
-        origin_ci_golang_repositories=repos,
-        origin_ci_golang_tmp_repourls=repourls
+        origin_ci_isolated_package='golang'
     )
 
+    if version:
+        role_vars['origin_ci_isolated_package'] += '-' + version
+
+    if repos:
+        role_vars['origin_ci_isolated_disabledrepos'] = '*'
+        role_vars['origin_ci_isolated_enabledrepos'] = ','.join(repos)
+
+    if repourls:
+        role_vars['origin_ci_isolated_tmp_repourls'] = repourls
+
     runner = RoleRunner()
-    runner.run_role(name='Install Golang v' + version, role='oct/prepare/roles/golang', vars=role_vars, hosts=hosts)
+    runner.add_role(
+        name='Install Golang',
+        role='oct/prepare/roles/isolated-install',
+        vars=role_vars,
+        hosts=hosts
+    )
+    runner.run()

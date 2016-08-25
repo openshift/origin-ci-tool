@@ -1,18 +1,59 @@
 ---
-- name: install Docker
-  include: isolated-install/tasks/main.yml
-  vars:
-    origin_ci_isolated_package: 'docker-{{
-                                           origin_ci_docker_version |
-                                           default(origin_ci_docker_version_by_distribution[ansible_distribution])
-                                        }}'
-    origin_ci_isolated_disabledrepos: '*'
-    origin_ci_isolated_enabledrepos: '{{
-                                         origin_ci_docker_repositories |
-                                         default(origin_ci_docker_repositories_by_distribution[ansible_distribution]) |
-                                         join(',')
-                                      }}'
-    origin_ci_isolated_tmp_repourls: origin_ci_docker_tmp_repourls
+- name: create a group for users that can talk to the Docker daemon
+  group:
+    name: docker
 
-- name: configure the Docker daemon
-  include: configure_docker_daemon.yml
+- name: add the user to the Docker daemon group
+  user:
+    name: '{{ origin_ci_user }}'
+    group: docker
+
+- name: enable insecure registry connections to local and test registries
+  lineinfile:
+    dest: /etc/sysconfig/docker
+    regexp: "^INSECURE_REGISTRY=.*"
+    line: "INSECURE_REGISTRY='--insecure-registry={{ origin_ci_insecure_registries | join(' --insecure-registry=') }}'"
+
+- name: ensure no extra registries are added by the configuration
+  lineinfile:
+    backrefs: yes
+    dest: /etc/sysconfig/docker
+    regexp: '^ADD_REGISTRY=(.*)'
+    line: '# ADD_REGISTRY=\1'
+
+- name: determine which logical volumes we have to work with
+  command: 'lvs {{ item }}'
+  register: origin_ci_vg_probe
+  ignore_errors: yes
+  with_items:
+    - docker-vg
+    - vg_vagrant
+    - centos
+
+- name: determine the name of the volume group to use for Docker storage
+  set_fact:
+    origin_ci_docker_vg: '{{ item.cmd | last }}'
+  when: item | succeeded
+  with_items:
+    - '{{ origin_ci_vg_probe.results }}'
+
+- name: configure the Docker daemon storage
+  include: configure_docker_daemon_storage.yml
+  when: origin_ci_docker_vg is defined
+
+- name: configure the OpenShift storage
+  include: configure_openshift_storage.yml
+  when: origin_ci_docker_vg is defined
+
+- name: increase the default timeout for the Docker daemon service
+  lineinfile:
+    dest: /usr/lib/systemd/system/docker.service
+    regexp: '^TimeoutStartSec='
+    line: 'TimeoutStartSec=10min'
+
+- name: update systemd config and start the Docker service
+  systemd:
+    daemon_reload: yes
+    name: docker
+    enabled: yes
+    state: started

@@ -3,6 +3,15 @@
 # apply all upgrade and downgrade scenarios, so we instead
 # simply remove whatever selected packages are installed on
 # the host before trying to install the ones that we need
+
+# we need the --{en,dis}ablerepo functionality from yum so
+# we cannot use the agnostic package module from Ansible
+- name: install yum if the host does not have it
+  package:
+    name: yum
+    state: present
+  when: ansible_pkg_mgr != 'yum'
+
 - name: 'uninstall {{ origin_ci_isolated_package }} if it is installed'
   yum:
     name: '{{ origin_ci_isolated_package }}'
@@ -12,13 +21,21 @@
   template:
     src: tmp_repositories.j2
     dest: '{{ origin_ci_tmp_repofile }}'
+  when: origin_ci_isolated_tmp_repourls is defined
 
-- name: 'install {{ origin_ci_isolated_package }}'
+- name: 'install {{ origin_ci_isolated_package }} using default repos'
+  yum:
+    name: '{{ origin_ci_isolated_package }}'
+    state: present
+  when: origin_ci_isolated_enabledrepos is not defined
+
+- name: 'install {{ origin_ci_isolated_package }} using selected repos'
   yum:
     name: '{{ origin_ci_isolated_package }}'
     state: present
     disablerepo: '{{ origin_ci_isolated_disabledrepos }}'
     enablerepo: '{{ origin_ci_isolated_enabledrepos }}'
+  when: origin_ci_isolated_enabledrepos is defined
 
 - name: 'remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}'
   file:

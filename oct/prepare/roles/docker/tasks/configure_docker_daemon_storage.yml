@@ -2,13 +2,13 @@
 - name: create a logical volume for Docker data
   lvol:
     vg: '{{ origin_ci_docker_vg }}'
-    lv: docker-data
+    lv: 'docker-data'
     opts: '-l 70%FREE'
 
 - name: create a logical volume for Docker metadata
   lvol:
     vg: '{{ origin_ci_docker_vg }}'
-    lv: docker-metadata
+    lv: 'docker-metadata'
     opts: '-l 17%FREE'
 
 - name: enumerate the Docker daemon storage options we use
