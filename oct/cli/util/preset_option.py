@@ -15,11 +15,11 @@ class Preset:
     ose_33 = 'ose/enterprise-3.3'
 
 
-def raw_preset_option(help, callback):
+def raw_preset_option(help_action, callback):
     """
     Get an option for OpenShift version presets.
 
-    :param help: the helptext for the preset option
+    :param help_action: the helptext for the preset option
     :param callback: the callback for the preset option
     :return: the preset option
     """
@@ -33,22 +33,22 @@ def raw_preset_option(help, callback):
             Preset.ose_321,
             Preset.ose_33
         ]),
-        help=help,
+        help=help_action + ' using a pre-set configuration for a specific version of OpenShift.',
         callback=callback,
         is_eager=True
     )
 
 
-def preset_option(help, callback):
+def preset_option(help_action, callback):
     """
     Get a decorator for an OpenShift version preset option.
 
-    :param help: the helptext for the preset option
+    :param help_action: the helptext for the preset option
     :param callback: the callback for the preset option
     :return: the preset option decorator
     """
 
     def preset_option_decorator(func):
-        return raw_preset_option(help, callback)(func)
+        return raw_preset_option(help_action, callback)(func)
 
     return preset_option_decorator

@@ -31,7 +31,7 @@ def isolated_install_options(package_name, preset_callback):
                 help='URL of a repository to register temporarily when installing ' + package_name + '.'
             ),
             raw_preset_option(
-                help='Install ' + package_name + ' using a pre-set configuration for a specific version of OpenShift.',
+                help_action='Install ' + package_name,
                 callback=preset_callback
             )
         ]

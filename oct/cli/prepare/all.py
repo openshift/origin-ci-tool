@@ -38,7 +38,7 @@ Examples:
 '''
 )
 @preset_option(
-    help='Install dependencies using a pre-set configuration for a specific version of OpenShift.',
+    help_action='Install dependencies',
     callback=install_dependencies_for_preset
 )
 def all(preset):
