@@ -4,6 +4,13 @@
 # simply remove whatever selected packages are installed on
 # the host before trying to install the ones that we need
 
+- name: ensure the user provided the package to install
+  fail:
+    msg: 'This playbook requires {{ item }} to be set.'
+  when: item not in hostvars[inventory_hostname]
+  with_items:
+    - origin_ci_isolated_package
+
 # we need the --{en,dis}ablerepo functionality from yum so
 # we cannot use the agnostic package module from Ansible
 - name: install yum if the host does not have it
