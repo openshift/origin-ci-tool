@@ -1,0 +1,31 @@
+---
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: 'no'
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item is not defined or item == ''
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+        - origin_ci_docker_package
+
+- name: install Docker on a new host
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: '{{ origin_ci_become | default(omit) }}'
+  become_method: '{{ origin_ci_become_method | default(omit) }}'
+  become_user: '{{ origin_ci_become_user | default(omit) }}'
+  check: '{{ origin_ci_check | default(omit) }}'
+
+  roles:
+    - role: isolated-install
+      origin_ci_isolated_package: '{{ origin_ci_docker_package }}'
+      origin_ci_isolated_disabledrepos: '{{ origin_ci_docker_disabledrepos | default(omit) }}'
+      origin_ci_isolated_enabledrepos: '{{ origin_ci_docker_enabledrepos | default(omit) }}'
+      origin_ci_isolated_tmp_repourls: '{{ origin_ci_docker_tmp_repourls | default(omit) }}'
+    - role: docker

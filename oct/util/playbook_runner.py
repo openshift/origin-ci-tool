@@ -1,17 +1,16 @@
 from collections import namedtuple
 
-from ansible.executor.task_queue_manager import TaskQueueManager
+from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
-from ansible.playbook import Play
 from ansible.vars import VariableManager
 
 
-class RoleRunner:
+class PlaybookRunner:
     '''
     This class allows for a simple abstraction around the loading
-    and execution of an Ansible role or roles given an inventory
-    and variables to expose to the roles.
+    and execution of an Ansible playbook given an inventory and
+    variables to expose to the playbook.
     '''
 
     def __init__(self,
@@ -20,7 +19,7 @@ class RoleRunner:
                  # TODO: probably shouldn't be defaulting to root and sudo, as proper setup will give us correct user
                  ):
         """
-        Initialize a RoleRunner.
+        Initialize a PlaybookRunner.
 
         :param variable_manager: instance of an Ansible variable manager
         :param data_loader: instance of an Ansible data loader
@@ -37,7 +36,7 @@ class RoleRunner:
         self._variable_manager = variable_manager
         self._data_loader = data_loader
 
-        ansible_play_options = namedtuple(
+        ansible_playbook_options = namedtuple(
             'Options', [
                 'connection',
                 'module_path',
@@ -45,72 +44,65 @@ class RoleRunner:
                 'become',
                 'become_method',
                 'become_user',
-                'check'
+                'check',
+                # listing options, which we won't use here
+                'listhosts',
+                'listtasks',
+                'listtags',
+                'syntax'
             ]
         )
 
-        self._ansible_play_options = ansible_play_options(
+        self._ansible_playbook_options = ansible_playbook_options(
             connection=connection,
             module_path=module_path,
             forks=forks,
             become=become,
             become_method=become_method,
             become_user=become_user,
-            check=check
+            check=check,
+            listhosts=None,
+            listtasks=None,
+            listtags=None,
+            syntax=None
         )
 
         self._passwords = passwords
         self._inventory = Inventory(loader=data_loader, variable_manager=variable_manager, host_list=host_list)
         self._variable_manager.set_inventory(self._inventory)
 
-        self._plays = list()
-
-        pass
-
-    def add_role(self, name, role, vars=None, hosts='all', gather_facts='yes'):
+    def run(self, playbook_source, vars=None):
         """
-        Run a play that executes the role specified with the variables
-        provided.
+        Run a playbook defined in the file at playbook_source with the variables provided.
 
-        :param name: name of the play
-        :param role: name of the role to run
-        :param vars: variables to pass to the role
-        :param hosts: remote hosts or groups on which the role should be run
-        :param gather_facts: whether or not to gather facts on the remote hosts
+        :param playbook_source: the location of the playbook to run
+        :param vars: a dictionary of variables to pass to the playbook
         """
-        role_def = dict(
-            role=role
-        )
-        if vars:
-            for name in vars:
-                role_def[name] = vars[name]
 
-        # TODO: we should allow someone to give the same name to append a role to a play instead of making a new play
-        self._plays.append(
-            dict(
-                name=name,
-                hosts=hosts,
-                gather_facts=gather_facts,
-                roles=[
-                    role_def
-                ]
+        # TODO: remove this defaulting step once we have user config
+        if not vars:
+            vars = dict(
+                origin_ci_hosts='localhost',
+                origin_ci_connection='local'
             )
-        )
 
-    def run(self):
-        for raw_play in self._plays:
-            play = Play().load(raw_play, variable_manager=self._variable_manager, loader=self._data_loader)
+        # we don't really care which hosts the playbook will run for, so we just set the
+        # variables to exist for all of the hosts in the inventory we were given since
+        # the variables won't persist past the lifetime of this playbook anyway
+        if vars:
+            for varname in vars:
+                for host in self._inventory.list_hosts():
+                    self._variable_manager.set_host_variable(
+                        host=host,
+                        varname=varname,
+                        value=vars[varname]
+                    )
 
-            tqm = None
-            try:
-                tqm = TaskQueueManager(
-                    inventory=self._inventory,
-                    variable_manager=self._variable_manager,
-                    loader=self._data_loader,
-                    options=self._ansible_play_options,
-                    passwords=self._passwords,
-                )
-                result = tqm.run(play)
-            finally:
-                if tqm is not None:
-                    tqm.cleanup()
+        PlaybookExecutor(
+            playbooks=[playbook_source],
+            inventory=self._inventory,
+            variable_manager=self._variable_manager,
+            loader=self._data_loader,
+            options=self._ansible_playbook_options,
+            passwords=self._passwords
+        ).run()

@@ -1,16 +1,24 @@
 import click
 
-from cli.build.cli import build
-from cli.install.cli import install
-from cli.prepare.cli import prepare
-from cli.provision.cli import provision
-from cli.sync.cli import sync
-from cli.test.cli import test
+from cli.build.group import build
+from cli.install.group import install
+from cli.prepare.group import prepare
+from cli.provision.group import provision
+from cli.sync.group import sync
+from cli.test.group import test
 
 
-@click.group()
+@click.group(
+    help='''
+A CLI tool for building, testing and composing OpenShift repositories.
+'''
+)
 def oct():
-    click.echo("placeholder for root helptext functionality")
+    """
+    Do nothing -- this group should never be called without a sub-command.
+    """
+
+    pass
 
 
 oct.add_command(build)

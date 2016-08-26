@@ -1,9 +1,0 @@
----
-- name: configure base dependencies on the host
-  include: dependencies/tasks/main.yml
-
-- name: install Golang on the host
-  include: golang/tasks/main.yml
-
-- name: install Docker on the host
-  include: docker/tasks/main.yml
