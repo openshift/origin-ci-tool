@@ -20,7 +20,6 @@
   become: '{{ origin_ci_become | default(omit) }}'
   become_method: '{{ origin_ci_become_method | default(omit) }}'
   become_user: '{{ origin_ci_become_user | default(omit) }}'
-  check: '{{ origin_ci_check | default(omit) }}'
 
   roles:
     - role: prepare
