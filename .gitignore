@@ -90,3 +90,6 @@ ENV/
 
 # JetBrains stuff
 .idea/
+
+# Ansible bits
+*.retry
