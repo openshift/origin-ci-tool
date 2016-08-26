@@ -1,9 +1,9 @@
-from collections import namedtuple
-
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
+from config.options import default_options, default_inventory
+from config.vars import default_vars
 
 
 class PlaybookRunner:
@@ -14,13 +14,23 @@ class PlaybookRunner:
     '''
 
     def __init__(self,
-                 variable_manager=VariableManager(), data_loader=DataLoader(), host_list=None, passwords=None,
-                 connection='local', module_path='', forks=5, become=True, become_method='sudo', become_user='root', check=False
-                 # TODO: probably shouldn't be defaulting to root and sudo, as proper setup will give us correct user
+                 variable_manager=VariableManager(), data_loader=DataLoader(),
+                 # options that we can default from config
+                 become=None,
+                 become_method=None,
+                 become_user=None,
+                 check=None,
+                 connection=None,
+                 forks=None,
+                 host_list=None,
+                 module_path=None,
+                 passwords=None,
+                 verbosity=None
                  ):
         """
         Initialize a PlaybookRunner.
 
+        :param verbosity: verbosity level with which to run Ansible
         :param variable_manager: instance of an Ansible variable manager
         :param data_loader: instance of an Ansible data loader
         :param host_list: either a literal list of hosts or the path to an inventory file
@@ -36,39 +46,30 @@ class PlaybookRunner:
         self._variable_manager = variable_manager
         self._data_loader = data_loader
 
-        ansible_playbook_options = namedtuple(
-            'Options', [
-                'connection',
-                'module_path',
-                'forks',
-                'become',
-                'become_method',
-                'become_user',
-                'check',
+        self._ansible_options = default_options(
+            dict(
+                connection=connection,
+                module_path=module_path,
+                forks=forks,
+                become=become,
+                become_method=become_method,
+                become_user=become_user,
+                check=check,
+                verbosity=verbosity,
                 # listing options, which we won't use here
-                'listhosts',
-                'listtasks',
-                'listtags',
-                'syntax'
-            ]
-        )
-
-        self._ansible_playbook_options = ansible_playbook_options(
-            connection=connection,
-            module_path=module_path,
-            forks=forks,
-            become=become,
-            become_method=become_method,
-            become_user=become_user,
-            check=check,
-            listhosts=None,
-            listtasks=None,
-            listtags=None,
-            syntax=None
+                listhosts=None,
+                listtasks=None,
+                listtags=None,
+                syntax=None
+            )
         )
 
         self._passwords = passwords
-        self._inventory = Inventory(loader=data_loader, variable_manager=variable_manager, host_list=host_list)
+        self._inventory = Inventory(
+            loader=self._data_loader,
+            variable_manager=self._variable_manager,
+            host_list=default_inventory(host_list)
+        )
         self._variable_manager.set_inventory(self._inventory)
 
     def run(self, playbook_source, vars=None):
@@ -78,31 +79,18 @@ class PlaybookRunner:
         :param playbook_source: the location of the playbook to run
         :param vars: a dictionary of variables to pass to the playbook
         """
-
-        # TODO: remove this defaulting step once we have user config
-        if not vars:
-            vars = dict(
-                origin_ci_hosts='localhost',
-                origin_ci_connection='local'
-            )
+        vars = default_vars(vars)
 
         # we don't really care which hosts the playbook will run for, so we just set the
-        # variables to exist for all of the hosts in the inventory we were given since
-        # the variables won't persist past the lifetime of this playbook anyway
-        if vars:
-            for varname in vars:
-                for host in self._inventory.list_hosts():
-                    self._variable_manager.set_host_variable(
-                        host=host,
-                        varname=varname,
-                        value=vars[varname]
-                    )
+        # extra variables for all of the hosts in the inventory we were given since the
+        # variables won't persist past the lifetime of this playbook anyway
+        self._variable_manager.extra_vars = vars
 
         PlaybookExecutor(
             playbooks=[playbook_source],
             inventory=self._inventory,
             variable_manager=self._variable_manager,
             loader=self._data_loader,
-            options=self._ansible_playbook_options,
+            options=self._ansible_options,
             passwords=self._passwords
         ).run()
