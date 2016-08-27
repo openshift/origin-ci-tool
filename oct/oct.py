@@ -1,6 +1,7 @@
 import click
 
 from cli.build.group import build
+from cli.config.group import config
 from cli.install.group import install
 from cli.prepare.group import prepare
 from cli.provision.group import provision
@@ -22,6 +23,7 @@ def oct():
 
 
 oct.add_command(build)
+oct.add_command(config)
 oct.add_command(install)
 oct.add_command(prepare)
 oct.add_command(provision)

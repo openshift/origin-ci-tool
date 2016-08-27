@@ -48,8 +48,7 @@ def load_config():
 
 def update_config():
     """
-    Update the system configuration in our local cache and
-    also on disk.
+    Update the Ansible configuration on disk.
     """
     with open(config._config_path, 'w') as config_file:
         try:
