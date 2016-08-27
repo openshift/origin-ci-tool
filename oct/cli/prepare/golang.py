@@ -1,7 +1,7 @@
 import click
 from cli.prepare.isolated_install_options import isolated_install_options
 from cli.prepare.playbooks_util import playbook_path
-from cli.util.common_options import ansible_verbosity_option
+from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option
 from cli.util.preset_option import Preset
 from util.playbook_runner import PlaybookRunner
 
@@ -70,6 +70,7 @@ Examples:
     preset_callback=install_golang_custom_callback
 )
 @ansible_verbosity_option
+@ansible_dry_run_option
 def golang(version, repos, repourls, preset):
     """
     Installs the Go toolchain and source on the remote host.

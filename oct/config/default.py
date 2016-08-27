@@ -20,7 +20,7 @@ def default_config():
         become=True,
         become_method='sudo',
         become_user='root',
-        check=False  # TODO: allow users to pass this in (--dry-run)
+        check=False
     )
 
 

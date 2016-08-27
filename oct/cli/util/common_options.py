@@ -30,3 +30,32 @@ def ansible_verbosity_option(func):
         callback=update_ansible_verbosity,
         is_eager=True
     )(func)
+
+
+def update_ansible_dry_run(ctx, param, value):
+    """
+    Updated Ansible to do a dry run.
+
+    :param value: whether or not to do a dry run
+    """
+    if not value or ctx.resilient_parsing:
+        return
+
+    config._config['check'] = True
+
+
+def ansible_dry_run_option(func):
+    """
+    Add the Ansible dry run option to the decorated command func.
+
+    :param func: Click CLI command to decorate
+    :return: decorated CLI command
+    """
+    return click.option(
+        '--dry-run', '--check', '-C',
+        is_flag=True,
+        expose_value=False,
+        help='Ansible dry run, no changes will be made.',
+        callback=update_ansible_dry_run,
+        is_eager=True
+    )(func)
