@@ -1,6 +1,7 @@
 import click
 from cli.prepare.isolated_install_options import isolated_install_options
 from cli.prepare.playbooks_util import playbook_path
+from cli.util.common_options import ansible_verbosity_option
 from cli.util.preset_option import Preset
 from util.playbook_runner import PlaybookRunner
 
@@ -8,7 +9,7 @@ from util.playbook_runner import PlaybookRunner
 def install_docker_for_preset(ctx, param, value):
     """
     Install Docker on the remote host for a given OpenShift version.
-    Handles the eager `--for` option.
+    Handles the special `--for` option.
 
     :param value: version of OpenShift for which to install Docker
     """
@@ -70,6 +71,7 @@ Examples:
     package_name='Docker',
     preset_callback=install_docker_for_preset
 )
+@ansible_verbosity_option
 def docker(version, repos, repourls, preset):
     """
     Installs the Docker daemon and CLI on the remote host.

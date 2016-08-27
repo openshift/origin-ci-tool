@@ -2,6 +2,7 @@ import click
 from cli.prepare.docker import docker_version_for_preset
 from cli.prepare.golang import golang_version_for_preset
 from cli.prepare.playbooks_util import playbook_path
+from cli.util.common_options import ansible_verbosity_option
 from cli.util.preset_option import preset_option
 from util.playbook_runner import PlaybookRunner
 
@@ -10,7 +11,7 @@ def install_dependencies_for_preset(ctx, param, value='origin/master'):
     """
     Installs the full set of dependencies on the remote host.
 
-    Handles the eager `--for` option, defaults to `origin/master` if
+    Handles the special `--for` option, defaults to `origin/master` if
     a preset is not provided by the user.
     """
     if not value or ctx.resilient_parsing:
@@ -41,6 +42,7 @@ Examples:
     help_action='Install dependencies',
     callback=install_dependencies_for_preset
 )
+@ansible_verbosity_option
 def all(preset):
     """
     Installs the full set of dependencies on the remote host.

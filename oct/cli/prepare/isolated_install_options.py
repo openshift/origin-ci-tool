@@ -8,7 +8,7 @@ def isolated_install_options(package_name, preset_callback):
     Get a decorator for isolated package installation options.
 
     :param package_name: the name of the package being installed
-    :param preset_callback: the callback for the eager option
+    :param preset_callback: the callback for the preset option
     :return: the decorator for the CLI function
     """
 

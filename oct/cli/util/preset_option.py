@@ -34,8 +34,7 @@ def raw_preset_option(help_action, callback):
             Preset.ose_33
         ]),
         help=help_action + ' using a pre-set configuration for a specific version of OpenShift.',
-        callback=callback,
-        is_eager=True
+        callback=callback
     )
 
 
