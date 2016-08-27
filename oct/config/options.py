@@ -17,6 +17,7 @@ def default_options(options):
 
     return namedtuple('Options', options.keys())(**options)
 
+
 def default_inventory(host_list):
     """
     Default the inventory or host list using values loaded from

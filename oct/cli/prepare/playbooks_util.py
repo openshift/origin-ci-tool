@@ -1,5 +1,5 @@
-import os
 import oct
+import os
 
 _playbooks_root = os.path.abspath(os.path.dirname(oct.__file__)) + '/ansible/oct/playbooks/prepare/'
 

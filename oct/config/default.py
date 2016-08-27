@@ -11,16 +11,16 @@ def default_config():
         config_path=config._config_path,
         host_list=config._inventory_path,
         # hosts are the hosts we want to run plays on
-        hosts='localhost', # TODO: this default doesn't make sense for anything but testing
-        connection='local', # TODO: same as above
         verbosity='5', # TODO: allow users to pass this in (--loglevel)
+        hosts='localhost',  # TODO: this default doesn't make sense for anything but testing
+        connection='local',  # TODO: same as above
         module_path='',
         forks=5,
         # TODO: are these valid defaults? how do we determine what is useful for local testing versus the tool itself?
         become=True,
         become_method='sudo',
         become_user='root',
-        check=False # TODO: allow users to pass this in (--dry-run)
+        check=False  # TODO: allow users to pass this in (--dry-run)
     )
 
 def default_inventory():
