@@ -1,5 +1,13 @@
 import config
 
+_config_var_fields = [
+    'hosts',
+    'connection',
+    'become',
+    'become_method',
+    'become_user'
+]
+
 
 def default_vars(vars):
     """
@@ -12,19 +20,9 @@ def default_vars(vars):
     if not vars:
         vars = dict()
 
-    if 'origin_ci_hosts' not in vars:
-        vars['origin_ci_hosts'] = config._config['hosts']
-
-    if 'origin_ci_connection' not in vars:
-        vars['origin_ci_connection'] = config._config['connection']
-
-    if 'origin_ci_become' not in vars:
-        vars['origin_ci_become'] = config._config['become']
-
-    if 'origin_ci_become_method' not in vars:
-        vars['origin_ci_become_method'] = config._config['become_method']
-
-    if 'origin_ci_become_user' not in vars:
-        vars['origin_ci_become_user'] = config._config['become_user']
+    for field in _config_var_fields:
+        var = 'origin_ci_' + field
+        if var not in vars:
+            vars[var] = config._config[field]
 
     return vars

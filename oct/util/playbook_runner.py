@@ -80,10 +80,6 @@ class PlaybookRunner:
         :param vars: a dictionary of variables to pass to the playbook
         """
         vars = default_vars(vars)
-
-        # we don't really care which hosts the playbook will run for, so we just set the
-        # extra variables for all of the hosts in the inventory we were given since the
-        # variables won't persist past the lifetime of this playbook anyway
         self._variable_manager.extra_vars = vars
 
         PlaybookExecutor(
