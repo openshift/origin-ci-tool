@@ -1,3 +1,4 @@
+from __main__ import display
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
@@ -63,6 +64,8 @@ class PlaybookRunner:
                 syntax=None
             )
         )
+
+        display.verbosity = self._ansible_options.verbosity
 
         self._passwords = passwords
         self._inventory = Inventory(
