@@ -2,7 +2,7 @@ import click
 from cli.prepare.docker import docker_version_for_preset
 from cli.prepare.golang import golang_version_for_preset
 from cli.prepare.playbooks_util import playbook_path
-from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option
+from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
 from cli.util.preset_option import preset_option
 from util.playbook_runner import PlaybookRunner
 
@@ -44,6 +44,7 @@ Examples:
 )
 @ansible_verbosity_option
 @ansible_dry_run_option
+@ansible_debug_mode_option
 def all(preset):
     """
     Installs the full set of dependencies on the remote host.

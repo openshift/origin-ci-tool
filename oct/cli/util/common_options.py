@@ -1,3 +1,4 @@
+import ansible.constants as C
 import click
 import config
 
@@ -55,7 +56,36 @@ def ansible_dry_run_option(func):
         '--dry-run', '--check', '-C',
         is_flag=True,
         expose_value=False,
-        help='Ansible dry run, no changes will be made.',
+        help='Toggle Ansible dry run, no changes will be made.',
         callback=update_ansible_dry_run,
+        is_eager=True
+    )(func)
+
+
+def update_ansible_debug_mode(ctx, param, value):
+    """
+    Updated Ansible to run with debug mode on.
+
+    :param value: whether or not to turn on debug mode
+    """
+    if not value or ctx.resilient_parsing:
+        return
+
+    C.DEFAULT_DEBUG = True
+
+
+def ansible_debug_mode_option(func):
+    """
+    Add the Ansible debug mode option to the decorated command func.
+
+    :param func: Click CLI command to decorate
+    :return: decorated CLI command
+    """
+    return click.option(
+        '--debug', '-d',
+        is_flag=True,
+        expose_value=False,
+        help='Toggle Ansible debug mode.',
+        callback=update_ansible_debug_mode,
         is_eager=True
     )(func)
