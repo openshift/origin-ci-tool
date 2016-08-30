@@ -48,6 +48,3 @@
   file:
     path: '{{ origin_ci_tmp_repofile }}'
     state: absent
-
-- name: clean out the package manager cache to ensure the temporary repositories are removed
-  command: '{{ ansible_pkg_mgr }} clean all'
