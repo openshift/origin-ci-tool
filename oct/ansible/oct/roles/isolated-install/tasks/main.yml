@@ -25,10 +25,16 @@
     state: absent
 
 - name: 'register temporary repositories that we need to install {{ origin_ci_isolated_package }}'
-  template:
-    src: tmp_repositories.j2
-    dest: '{{ origin_ci_tmp_repofile }}'
-  when: origin_ci_isolated_tmp_repourls is defined
+  yum_repository:
+    name: "{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
+    state: present
+    baseurl: '{{ item }}'
+    gpgcheck: no
+    sslverify: no
+    sslclientcert: /var/lib/yum/client-cert.pem
+    sslclientkey: /var/lib/yum/client-key.pem
+    file: '{{ origin_ci_tmp_repofile }}'
+  with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
 
 - name: 'install {{ origin_ci_isolated_package }} using default repos'
   yum:
@@ -45,6 +51,12 @@
   when: origin_ci_isolated_enabledrepos is defined
 
 - name: 'remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}'
+  yum_repository:
+    name: "{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
+    state: absent
+  with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
+
+- name: 'remove temporary repofile that we needed to install {{ origin_ci_isolated_package }}'
   file:
     path: '{{ origin_ci_tmp_repofile }}'
     state: absent

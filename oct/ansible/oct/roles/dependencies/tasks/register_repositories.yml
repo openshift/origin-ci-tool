@@ -1,8 +1,33 @@
 ---
-- name: register non-default repositories for the package manager
-  template:
-    src: extra_repositories.j2
-    dest: /etc/yum.repos.d/origin_ci_tool_extras.repo
+- name: register Google Chrome repository
+  yum_repository:
+    name: google-chrome-stable
+    state: present
+    baseurl: 'http://dl.google.com/linux/chrome/rpm/stable/x86_64'
+
+- name: register RHEL 7 Atomic OpenShift repositories
+  yum_repository:
+    name: 'rhel-7-server-ose-{{ item }}-rpms'
+    state: present
+    baseurl: >
+      https://mirror.ops.rhcloud.com/enterprise/enterprise-{{ item }}/RH7-RHAOS-{{ item }}/x86_64/os/,
+      https://use-mirror1.ops.rhcloud.com/enterprise/enterprise-{{ item }}/RH7-RHAOS-{{ item }}/x86_64/os/,
+      https://use-mirror2.ops.rhcloud.com/enterprise/enterprise-{{ item }}/RH7-RHAOS-{{ item }}/x86_64/os/,
+      https://euw-mirror1.ops.rhcloud.com/enterprise/enterprise-{{ item }}/RH7-RHAOS-{{ item }}/x86_64/os/
+    gpgcheck: yes
+    gpgkey: >
+      file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,
+      file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,
+      https://mirror.ops.rhcloud.com/libra/keys/RPM-GPG-KEY-redhat-openshifthosted
+    failovermethod: priority
+    sslverify: no
+    sslclientcert: /var/lib/yum/client-cert.pem
+    sslclientkey: /var/lib/yum/client-key.pem
+  with_items:
+    - 3.1
+    - 3.2
+    - 3.3
+  when: ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: register dependency repositories from the OpenShift public mirror
   get_url:
@@ -10,5 +35,7 @@
     dest: /etc/yum.repos.d/openshift-rhel7-dependencies.repo
 
 - name: register EPEL repositories for CentOS and RHEL
-  command: '{{ ansible_pkg_mgr }} install epel-release'
+  package:
+    name: epel-release
+    state: present
   when: ansible_distribution in ['Red Hat Enterprise Linux', 'CentOS']
