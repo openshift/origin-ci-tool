@@ -14,7 +14,7 @@ def default_config():
         hosts='localhost',  # TODO: this default doesn't make sense for anything but testing
         connection='local',  # TODO: same as above
         verbosity=1,
-        module_path='',
+        module_path=None,
         forks=5,
         # TODO: are these valid defaults? how do we determine what is useful for local testing versus the tool itself?
         become=True,
