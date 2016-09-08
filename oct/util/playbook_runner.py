@@ -1,5 +1,7 @@
+import click
 from __main__ import display
 from ansible.executor.playbook_executor import PlaybookExecutor
+from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
@@ -85,7 +87,7 @@ class PlaybookRunner:
         vars = default_vars(vars)
         self._variable_manager.extra_vars = vars
 
-        PlaybookExecutor(
+        result = PlaybookExecutor(
             playbooks=[playbook_source],
             inventory=self._inventory,
             variable_manager=self._variable_manager,
@@ -93,3 +95,6 @@ class PlaybookRunner:
             options=self._ansible_options,
             passwords=self._passwords
         ).run()
+
+        if result != TaskQueueManager.RUN_OK:
+            click.UsageError('Playbook execution failed with code ' + str(result))
