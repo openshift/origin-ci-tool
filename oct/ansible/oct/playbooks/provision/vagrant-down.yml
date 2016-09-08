@@ -1,0 +1,24 @@
+---
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: 'no'
+  gather_facts: 'no'
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_vagrant_home_dir
+
+- name: tear down a local VM provisioned with Vagrant
+  hosts: 'localhost'
+  connection: 'local'
+  become: '{{ origin_ci_become | default(omit) }}'
+  become_method: '{{ origin_ci_become_method | default(omit) }}'
+  become_user: '{{ origin_ci_become_user | default(omit) }}'
+
+  roles:
+    - role: vagrant-down

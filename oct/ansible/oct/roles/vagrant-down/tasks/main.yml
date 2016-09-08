@@ -1,0 +1,10 @@
+---
+- name: update the SSH configuration to remove Vagrant specifics
+  blockinfile:
+    dest: /etc/ssh/ssh_config
+    state: absent
+
+- name: tear down the old VM
+  command: "/usr/bin/vagrant destroy -f"
+  args:
+    chdir: '{{ origin_ci_vagrant_home_dir }}'

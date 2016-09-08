@@ -56,7 +56,7 @@ def ansible_dry_run_option(func):
         '--dry-run', '--check', '-C',
         is_flag=True,
         expose_value=False,
-        help='Toggle Ansible dry run, no changes will be made.',
+        help='Toggle Ansible dry-run mode.',
         callback=update_ansible_dry_run,
         is_eager=True
     )(func)

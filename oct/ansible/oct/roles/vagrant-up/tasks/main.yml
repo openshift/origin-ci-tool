@@ -1,0 +1,34 @@
+---
+- name: initialize the local Vagrant directory
+  file:
+    path: '{{ origin_ci_vagrant_home_dir }}'
+    state: directory
+
+- name: add the packaged Vagrantfile to the local Vagrant directory
+  copy:
+    src: './../../../../../vagrant/Vagrantfile'
+    dest: '{{ origin_ci_vagrant_home_dir }}/Vagrantfile'
+
+- name: provision the VM with Vagrant
+  command: "/usr/bin/vagrant up --provider={{ origin_ci_vagrant_provider }}"
+  args:
+    chdir: '{{ origin_ci_vagrant_home_dir }}'
+  environment:
+    OPENSHIFT_VAGRANT_BOX_NAME: '{{ origin_ci_vagrant_hostname }}'
+    OPENSHIFT_VAGRANT_CPUS: '{{ origin_ci_vagrant_cpus }}'
+    OPENSHIFT_VAGRANT_MEMORY: '{{ origin_ci_vagrant_memory }}'
+    OPENSHIFT_VAGRANT_OPERATING_SYSTEM: '{{ origin_ci_vagrant_os }}'
+    OPENSHIFT_VAGRANT_STAGE: '{{ origin_ci_vagrant_stage }}'
+    OPENSHIFT_VAGRANT_MASTER_IP: '{{ origin_ci_vagrant_ip }}'
+
+- name: gather Vagrant SSH configuration for the host
+  command: "/usr/bin/vagrant ssh-config --host={{ origin_ci_vagrant_hostname }}"
+  args:
+    chdir: '{{ origin_ci_vagrant_home_dir }}'
+  register: origin_ci_vagrant_ssh_config
+
+- name: update the SSH configuration to reflect Vagrant specifics
+  blockinfile:
+    dest: /etc/ssh/ssh_config
+    block: '{{ origin_ci_vagrant_ssh_config.stdout }}'
+    state: present

@@ -1,0 +1,126 @@
+Vagrant.require_version ">= 1.7.1"
+VAGRANTFILE_API_VERSION = "2"
+
+# The following providers, operating systems and stages are
+# supported as choices for `vagrant up`, however not every
+# combination thereof will be a valid target
+
+PROVIDERS = [
+  :libvirt,
+  :virtualbox,
+  :vmware_fusion
+]
+
+OPERATING_SYSTEMS = [
+  :fedora,
+  :centos
+]
+
+def operating_system
+  case ENV["OPENSHIFT_VAGRANT_OPERATING_SYSTEM"]
+  when "fedora"
+    :fedora
+  when "centos"
+    :centos
+  else
+    :centos
+  end
+end
+
+STAGES = [
+  # :bare is a box provided by an upstream project, with
+  # nothing done to it. From this stage we can build the rest
+  # of the stages
+  :bare,
+  # :base is a box with all of the dependencies requried for
+  # OpenShift installed, all of the related Git repositories
+  # cloned but not recompiled or installed
+  :base,
+  # :install is a box with all of the binaries and fixtures
+  # built from related Git repositories, configured, and inst-
+  # alled, ready for `systemctl start openshift`
+  :install
+]
+
+def stage
+  case ENV["OPENSHIFT_VAGRANT_STAGE"]
+  when "bare"
+    :bare
+  when "base"
+    :base
+  when "install"
+    :install
+  else
+    :install
+  end
+end
+
+fedora_mirror    = "https://download.fedoraproject.org/pub/fedora/linux/releases/24/CloudImages/x86_64/images"
+centos_mirror    = "http://cloud.centos.org/centos/7/vagrant/x86_64/images"
+bento_mirror     = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware"
+openshift_mirror = "https://mirror.openshift.com/pub/vagrant/boxes/openshift3"
+
+# The following box URLs define valid combinations of the
+# above parameters for `vagrant up`
+BOXES = {
+  :fedora => {
+    :libvirt => {
+      :bare    => "#{fedora_mirror}/Fedora-Cloud-Base-Vagrant-24-1.2.x86_64.vagrant-libvirt.box",
+      :base    => "#{openshift_mirror}/fedora_libvirt_base.box",
+      :install => "#{openshift_mirror}/fedora_libvirt_install.box"
+    },
+    :virtualbox => {
+      :bare    => "#{fedora_mirror}/Fedora-Cloud-Base-Vagrant-24-1.2.x86_64.vagrant-virtualbox.box",
+      :base    => "#{openshift_mirror}/fedora_virtualbox_base.box",
+      :install => "#{openshift_mirror}/fedora_virtualbox_install.box"
+    },
+    :vmware_fusion => {
+      # without a license to publish and distribute VMWare images,
+      # we can't provide any images other than the bare OS
+      :bare    => "#{bento_mirror}/opscode_fedora-24_chef-provisionerless.box"
+    }
+  },
+  :centos => {
+    :libvirt => {
+      :bare    => "#{centos_mirror}/CentOS-7-x86_64-Vagrant-1607_01.LibVirt.box",
+      :base    => "#{openshift_mirror}/centos_libvirt_base.box",
+      :install => "#{openshift_mirror}/centos_libvirt_install.box"
+    },
+    :virtualbox => {
+      :bare    => "#{centos_mirror}/CentOS-7-x86_64-Vagrant-1607_01.VirtualBox.box",
+      :base    => "#{openshift_mirror}/centos_virtualbox_base.box",
+      :install => "#{openshift_mirror}/centos_virtualbox_install.box"
+    },
+    :vmware_fusion => {
+      # without a license to publish and distribute VMWare images,
+      # we can't provide any images other than the bare OS
+      :bare    => "#{bento_mirror}/opscode_centos-7.2_chef-provisionerless.box"
+    }
+  }
+}
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  name = ENV["OPENSHIFT_VAGRANT_BOX_NAME"] || "openshiftdevel"
+  config.vm.define name
+  config.vm.box  = name
+
+  PROVIDERS.each do |provider_symbol|
+    config.vm.provider provider_symbol do |provider_config, config_override|
+      config_override.vm.box_url = BOXES[operating_system()][provider_symbol][stage()]
+      provider_config.cpus       = (ENV["OPENSHIFT_VAGRANT_CPUS"]   || 2).to_i
+      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 4096).to_i
+    end
+  end
+
+  # disable folder syncing as we will sync using the origin-ci-tool CLI
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # use a private network with a static IP so Ansible can connect to it with SSH
+  config.vm.network "private_network", ip: ENV["OPENSHIFT_VAGRANT_MASTER_IP"] || "10.245.2.2"
+
+  # open up ports for OpenShift
+  config.vm.network "forwarded_port", guest: 80, host: 1080
+  config.vm.network "forwarded_port", guest: 443, host: 1443
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  config.vm.network "forwarded_port", guest: 8443, host: 8443
+end

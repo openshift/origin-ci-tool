@@ -1,8 +1,7 @@
-import sys
+import os
 
 import click
 import config
-import os
 import yaml
 from config.default import default_config, default_inventory
 
@@ -17,6 +16,7 @@ def initialize_paths():
     config._config_home = os.getenv('XDG_CONFIG_HOME', os.environ['HOME'] + '/.config/origin-ci-tool/')
     config._config_path = config._config_home + 'config.yml'
     config._inventory_path = config._config_home + 'inventory'
+    config._vagrant_home = config._config_home + 'vagrant'
 
 
 def load_config():
@@ -42,8 +42,7 @@ def load_config():
         try:
             config._config = yaml.load(config_file)
         except yaml.YAMLError as exception:
-            click.echo('Could not load origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
-            sys.exit(1)
+            click.UsageError('Could not load origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
 
 
 def update_config():
@@ -54,8 +53,32 @@ def update_config():
         try:
             yaml.dump(config._config, config_file)
         except yaml.YAMLError as exception:
-            click.echo('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
-            sys.exit(1)
+            click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
+
+
+def add_host_to_inventory(host):
+    """
+    Update the Ansible inventory to add a hostname.
+
+    :param host: name of host to add
+    """
+    with open(config._inventory_path, 'a') as inventory_file:
+        inventory_file.write(host + '\n')
+
+
+def remove_host_from_inventory(host):
+    """
+    Update the Ansible inventory to remove a hostname.
+
+    :param host: name of host to remove
+    """
+    with open(config._inventory_path, 'r+') as inventory_file:
+        entries = inventory_file.readlines()
+        inventory_file.seek(0)
+        for entry in entries:
+            if entry.rstrip('\n') != host:
+                inventory_file.write(entry)
+        inventory_file.truncate()
 
 
 def write_defaults():

@@ -11,11 +11,12 @@ def default_config():
         config_path=config._config_path,
         host_list=config._inventory_path,
         # hosts are the hosts we want to run plays on
-        hosts='localhost',  # TODO: this default doesn't make sense for anything but testing
-        connection='local',  # TODO: same as above
+        hosts='vms',
+        connection='ssh',
         verbosity=1,
         module_path=None,
         forks=5,
+        vm_hostname='openshiftdevel',
         # TODO: are these valid defaults? how do we determine what is useful for local testing versus the tool itself?
         become=True,
         become_method='sudo',
@@ -30,6 +31,8 @@ def default_inventory():
 
     :return: the default inventory
     """
-    return '\n'.join([
-        'localhost'
-    ])
+    return """
+localhost
+
+[vms]
+"""
