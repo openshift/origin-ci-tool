@@ -1,9 +1,9 @@
 import click
 from cli.prepare.isolated_install_options import isolated_install_options
-from cli.prepare.playbooks_util import playbook_path
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
 from cli.util.preset_option import Preset
 from util.playbook_runner import PlaybookRunner
+from util.playbooks_util import playbook_path
 
 
 def install_docker_for_preset(ctx, param, value):
@@ -109,6 +109,6 @@ def install_docker(version, repos=None, repourls=None):
         vars['origin_ci_docker_tmp_repourls'] = repourls
 
     PlaybookRunner().run(
-        playbook_source=playbook_path('docker'),
+        playbook_source=playbook_path('prepare/docker'),
         vars=vars
     )
