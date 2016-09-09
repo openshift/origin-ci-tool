@@ -7,6 +7,7 @@ from cli.prepare.group import prepare
 from cli.provision.group import provision
 from cli.sync.group import sync
 from cli.test.group import test
+from cli.version import version
 
 
 @click.group(
@@ -30,3 +31,4 @@ oct.add_command(prepare)
 oct.add_command(provision)
 oct.add_command(sync)
 oct.add_command(test)
+oct.add_command(version)
