@@ -51,7 +51,7 @@ def update_config():
     """
     with open(config._config_path, 'w') as config_file:
         try:
-            yaml.dump(config._config, config_file)
+            yaml.dump(config._config, config_file, default_flow_style=False)
         except yaml.YAMLError as exception:
             click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
 
