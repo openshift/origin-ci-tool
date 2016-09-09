@@ -17,7 +17,7 @@ def install_dependencies_for_preset(ctx, param, value='origin/master'):
     if not value or ctx.resilient_parsing:
         return
 
-    all(value)
+    prepare_all(value)
     ctx.exit()
 
 
@@ -46,6 +46,14 @@ Examples:
 @ansible_dry_run_option
 @ansible_debug_mode_option
 def all(preset):
+    """
+    Installs the full set of dependencies on the remote host.
+
+    :param preset: version of OpenShift for which to install dependencies
+    """
+    prepare_all(preset)
+
+def prepare_all(preset):
     """
     Installs the full set of dependencies on the remote host.
 
