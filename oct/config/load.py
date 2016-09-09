@@ -1,3 +1,4 @@
+import copy
 import os
 
 import click
@@ -52,6 +53,28 @@ def update_config():
     with open(config._config_path, 'w') as config_file:
         try:
             yaml.dump(config._config, config_file, default_flow_style=False)
+        except yaml.YAMLError as exception:
+            click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
+
+
+def safe_update_config():
+    """
+    Update the Ansible configuration on file, without
+    touching any of the options that can be set by run-
+    time flags and are expected not to persist past one
+    CLI interaction.
+
+    Use this to update configuration inside of CLI end-
+    points so that options like `-vvvvvv` don't stick
+    around.
+    """
+    with open(config._config_path, 'r+') as config_file:
+        current_config = yaml.load(config_file)
+        runtime_config_copy = copy.deepcopy(config._config)
+        runtime_config_copy['verbosity'] = current_config['verbosity']
+        runtime_config_copy['check'] = current_config['check']
+        try:
+            yaml.dump(runtime_config_copy, config_file, default_flow_style=False)
         except yaml.YAMLError as exception:
             click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
 

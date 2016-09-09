@@ -1,6 +1,7 @@
 import click
 import config
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
+from config.load import safe_update_config
 from util.playbook_runner import PlaybookRunner
 from util.playbook import playbook_path
 
@@ -192,6 +193,12 @@ def provision(operating_system, provider, stage, ip):
 
     # if we successfully executed the playbook, we have a new host
     config.add_host_to_inventory(config._config['vm_hostname'])
+    config._config['vm'] = dict(
+        operating_system=operating_system,
+        provider=provider,
+        stage=stage
+    )
+    safe_update_config()
 
 
 def destroy():
@@ -207,4 +214,6 @@ def destroy():
 
     # if we successfully executed the playbook, we have removed a host
     config.remove_host_from_inventory(config._config['vm_hostname'])
+    config._config.pop('vm')
+    safe_update_config()
 
