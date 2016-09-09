@@ -1,5 +1,7 @@
 import click
+import config
 from cli.prepare.isolated_install_options import isolated_install_options
+from cli.provision.vagrant import OperatingSystem
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
 from cli.util.preset_option import Preset
 from util.playbook import playbook_path
@@ -28,11 +30,31 @@ def docker_version_for_preset(preset):
     :return: the Docker version to install
     """
     if preset in [Preset.origin_master, Preset.ose_master, Preset.ose_33, Preset.ose_321]:
-        return '1.10.3'
+        return docker_version_with_epoch('1.10.3')
     if preset in [Preset.ose_32]:
-        return '1.9.1'
+        return docker_version_with_epoch('1.9.1')
     else:
         raise click.UsageError('No Docker preset found for OpenShift version: %s' % preset)
+
+
+def docker_version_with_epoch(version):
+    """
+    Prepend epoch to the Docker version as neccessary.
+
+    Fedora `dnf` requires the epoch incorrectly, so we must
+    provide it: https://bugzilla.redhat.com/show_bug.cgi?id=1286877
+
+    :param version: version of Docker to be installed
+    :return: version with epoch conditionally prepended
+    """
+    if 'vm' in config._config:
+        if config._config['vm']['operating_system'] == OperatingSystem.fedora:
+            return '2:' + version
+    else:
+        click.echo('WARNING: No privisoning metadata found for the target hosts!')
+        click.echo('WARNING: Version specification is distro-specific and may fail.')
+
+    return version
 
 
 @click.command(
@@ -83,7 +105,7 @@ def docker(version, repos, repourls, preset):
     :param repourls: list of RPM repository URLs from which to install Docker
     :param preset: version of OpenShift for which to install Docker
     """
-    install_docker(version, repos, repourls)
+    install_docker(docker_version_with_epoch(version), repos, repourls)
 
 
 def install_docker(version, repos=None, repourls=None):
