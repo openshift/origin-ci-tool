@@ -2,8 +2,8 @@ import click
 from cli.prepare.isolated_install_options import isolated_install_options
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
 from cli.util.preset_option import Preset
+from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
-from util.playbooks_util import playbook_path
 
 
 def install_docker_for_preset(ctx, param, value):

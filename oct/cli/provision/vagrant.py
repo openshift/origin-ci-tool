@@ -2,7 +2,7 @@ import click
 import config
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
 from util.playbook_runner import PlaybookRunner
-from util.playbooks_util import playbook_path
+from util.playbook import playbook_path
 
 
 class OperatingSystem:
