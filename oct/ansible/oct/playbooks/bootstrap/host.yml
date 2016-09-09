@@ -1,0 +1,36 @@
+---
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: 'no'
+  gather_facts: 'no'
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+
+- name: bootstrap a bare host so that Ansible can interact with it
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: '{{ origin_ci_become | default(omit) }}'
+  become_method: '{{ origin_ci_become_method | default(omit) }}'
+  become_user: '{{ origin_ci_become_user | default(omit) }}'
+  gather_facts: 'no'
+
+  tasks:
+  # Install dependencies necessary for Ansible to be
+  # able to interact with this target host. Fedora
+  # provides a nice grouping of RPMs for this purpose.
+    - name: install dependencies for Ansible target host
+      raw: >
+        if which dnf >/dev/null 2>&1; then
+            dnf group install -y ansible-node
+            dnf install -y libselinux-python
+        else
+            yum install -y python2 python2-dnf libselinux-python
+        fi

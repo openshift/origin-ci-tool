@@ -1,4 +1,5 @@
 import click
+from cli.boostrap.group import bootstrap
 from cli.build.group import build
 from cli.config.group import config
 from cli.install.group import install
@@ -21,6 +22,7 @@ def oct():
     pass
 
 
+oct.add_command(bootstrap)
 oct.add_command(build)
 oct.add_command(config)
 oct.add_command(install)
