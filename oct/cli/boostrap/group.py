@@ -1,5 +1,6 @@
 import click
 from cli.boostrap.host import host
+from cli.boostrap.node import node
 
 
 @click.group(
@@ -20,3 +21,4 @@ def bootstrap():
 
 
 bootstrap.add_command(host)
+bootstrap.add_command(node)

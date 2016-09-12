@@ -1,0 +1,48 @@
+---
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: 'no'
+  gather_facts: 'no'
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+
+- name: bootstrap a host so that it can function as an Ansible node
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: '{{ origin_ci_become | default(omit) }}'
+  become_method: '{{ origin_ci_become_method | default(omit) }}'
+  become_user: '{{ origin_ci_become_user | default(omit) }}'
+
+  tasks:
+    - name: install COPR to provide Ansible 2.2.0
+      yum_repository:
+        name: abutcher-ansible
+        state: present
+        description: 'Repository for Ansible owned by Andrew Butcher'
+        baseurl: 'https://copr-be.cloud.fedoraproject.org/results/abutcher/ansible/fedora-$releasever-$basearch/'
+        gpgcheck: yes
+        gpgkey: 'https://copr-be.cloud.fedoraproject.org/results/abutcher/ansible/pubkey.gpg'
+
+    - name: install Ansible 2.2.0
+      package:
+        name: ansible-2.2.0
+        state: present
+
+    - name: install pip to allow us to pull down OpenShift CI tooling
+      package:
+        name: python-pip
+        state: present
+
+    - name: install OpenShift CI tooling
+      raw: 'echo TODO'
+#      TODO: install oct from pip once it's published
+#      pip:
+#        name: origin-ci-tool
