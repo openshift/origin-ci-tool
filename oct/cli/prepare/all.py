@@ -2,12 +2,12 @@ import click
 from cli.prepare.docker import docker_version_for_preset
 from cli.prepare.golang import golang_version_for_preset
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
-from cli.util.preset_option import preset_option
 from util.playbook_runner import PlaybookRunner
+from cli.util.preset_option import preset_option, Preset
 from util.playbook import playbook_path
 
 
-def install_dependencies_for_preset(ctx, param, value='origin/master'):
+def install_dependencies_for_preset(ctx, param, value=Preset.origin_master):
     """
     Installs the full set of dependencies on the remote host.
 
