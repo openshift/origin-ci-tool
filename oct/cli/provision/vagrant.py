@@ -132,13 +132,12 @@ Examples:
     show_default=True,
     help='Desired IP of the VM.'
 )
-@click.option( #TODO: why doesn't this work with verbosity, debug? seems like ordering of eager callbacks is right
+@click.option(
     '--destroy', '-d',
     is_flag=True,
     expose_value=False,
     help='Tear down the current VM.',
-    callback=destroy_callback,
-    is_eager=True
+    callback=destroy_callback
 )
 @ansible_verbosity_option
 @ansible_dry_run_option
