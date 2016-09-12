@@ -7,6 +7,8 @@
     state: present
     create: true
   with_items:
+    - regexp: '^\[main\]'
+      line: '[main]'
     - regexp: '^cachedir='
       line: "cachedir=/var/cache/yum/$basearch/$releasever"
     - regexp: '^keepcache='

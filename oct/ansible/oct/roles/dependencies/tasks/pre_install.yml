@@ -5,7 +5,7 @@
     state: present
 
 - name: register the non-default repositories we need
-  include: register_extra_repositories.yml
+  include: register_repositories.yml
 
 - name: configure the package manager
   include: configure_yum.yml

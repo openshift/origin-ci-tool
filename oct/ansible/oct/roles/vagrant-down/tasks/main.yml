@@ -1,7 +1,7 @@
 ---
 - name: update the SSH configuration to remove Vagrant specifics
   blockinfile:
-    dest: /etc/ssh/ssh_config
+    dest: '{{ ansible_env.HOME }}/.ssh/config'
     state: absent
 
 - name: tear down the old VM

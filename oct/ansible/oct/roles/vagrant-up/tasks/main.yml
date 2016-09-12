@@ -29,6 +29,6 @@
 
 - name: update the SSH configuration to reflect Vagrant specifics
   blockinfile:
-    dest: /etc/ssh/ssh_config
+    dest: '{{ ansible_env.HOME }}/.ssh/config'
     block: '{{ origin_ci_vagrant_ssh_config.stdout }}'
     state: present

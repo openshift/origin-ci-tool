@@ -22,8 +22,7 @@
   become_user: '{{ origin_ci_become_user | default(omit) }}'
 
   roles:
-    - role: prepare
+    - role: dependencies
 
-  tasks:
-    - include: docker.yml
-    - include: golang.yml
+- include: docker.yml
+- include: golang.yml

@@ -60,6 +60,7 @@
     name: '{{ item.package }}'
     state: latest
   when: ansible_distribution in item.distros
+  with_items:
     - package: facter
       distros: [
         'CentOS',
@@ -69,6 +70,7 @@
 - name: install ChromeDriver to enable headless UI testing
   unarchive:
     src: https://chromedriver.storage.googleapis.com/2.16/chromedriver_linux64.zip
+    copy: no # TODO: change to `remote_src: yes` once https://github.com/ansible/ansible-modules-core/issues/4752 is fixed
     dest: /usr/bin
     mode: u=rwx,g=rx,o=rx
     owner: root
