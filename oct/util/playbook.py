@@ -1,7 +1,9 @@
-import oct
 import os
 
+import oct
+
 _playbooks_root = os.path.abspath(os.path.dirname(oct.__file__)) + '/ansible/oct/playbooks/'
+
 
 def playbook_path(playbook_name):
     """

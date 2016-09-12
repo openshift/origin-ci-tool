@@ -2,8 +2,8 @@ import click
 import config
 from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
 from config.load import safe_update_config
-from util.playbook_runner import PlaybookRunner
 from util.playbook import playbook_path
+from util.playbook_runner import PlaybookRunner
 
 
 class OperatingSystem:
@@ -215,4 +215,3 @@ def destroy():
     config.remove_host_from_inventory(config._config['vm_hostname'])
     config._config.pop('vm')
     safe_update_config()
-
