@@ -109,7 +109,7 @@ def docker(version, repos, repourls, preset):
     :param repourls: list of RPM repository URLs from which to install Docker
     :param preset: version of OpenShift for which to install Docker
     """
-    install_docker(docker_version_with_epoch(version), repos, repourls)
+    install_docker(version, repos, repourls)
 
 
 def install_docker(version, repos=None, repourls=None):
