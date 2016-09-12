@@ -104,6 +104,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define name
   config.vm.box  = name
 
+  if ARGV.first == "up"
+    puts "Starting a #{operating_system()} virtual machine at the #{stage()} stage with hostname #{name}."
+    puts "Configure this start-up using the following environment variables:"
+    puts "  OPENSHIFT_VAGRANT_OPERATING_SYSTEM to change the operating system"
+    puts "  OPENSHIFT_VAGRANT_STAGE            to change the image stage"
+    puts "  OPENSHIFT_VAGRANT_BOX_NAME         to change the hostname"
+    puts "  OPENSHIFT_VAGRANT_CPUS             to change the number of CPUs"
+    puts "  OPENSHIFT_VAGRANT_MEMORY           to change the MB of RAM"
+  end
+
   PROVIDERS.each do |provider_symbol|
     config.vm.provider provider_symbol do |provider_config, config_override|
       config_override.vm.box_url = BOXES[operating_system()][provider_symbol][stage()]
