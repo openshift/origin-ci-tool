@@ -44,14 +44,18 @@ def docker_version_with_epoch(version):
     Fedora `dnf` requires the epoch incorrectly, so we must
     provide it: https://bugzilla.redhat.com/show_bug.cgi?id=1286877
 
+    Furthermore, `yum` *requires* an arch when an epoch is present,
+    so we additionally accept any epoch, but must literally do so
+    with a glob.
+
     :param version: version of Docker to be installed
     :return: version with epoch conditionally prepended
     """
     if 'vm' in config._config:
         if config._config['vm']['operating_system'] == OperatingSystem.fedora:
-            return '2:' + version
+            return '2:' + version + '*'
     else:
-        click.echo('WARNING: No privisoning metadata found for the target hosts!')
+        click.echo('WARNING: No provisoning metadata found for the target hosts!')
         click.echo('WARNING: Version specification is distro-specific and may fail.')
 
     return version
