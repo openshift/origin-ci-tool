@@ -1,13 +1,13 @@
 ---
 - name: create a logical volume for Docker data
   lvol:
-    vg: '{{ origin_ci_docker_vg }}'
+    vg: '{{ origin_ci_docker_volume_group }}'
     lv: 'docker-data'
     opts: '-l 70%FREE'
 
 - name: create a logical volume for Docker metadata
   lvol:
-    vg: '{{ origin_ci_docker_vg }}'
+    vg: '{{ origin_ci_docker_volume_group }}'
     lv: 'docker-metadata'
     opts: '-l 17%FREE'
 
@@ -15,8 +15,8 @@
   set_fact:
     origin_ci_docker_storage_opts: [
       '--storage-driver devicemapper',
-      '--storage-opt dm.datadev=/dev/{{ origin_ci_docker_vg }}/docker-data',
-      '--storage-opt dm.metadatadev=/dev/{{ origin_ci_docker_vg }}/docker-metadata'
+      '--storage-opt dm.datadev=/dev/{{ origin_ci_docker_volume_group }}/docker-data',
+      '--storage-opt dm.metadatadev=/dev/{{ origin_ci_docker_volume_group }}/docker-metadata'
     ]
 
 - name: determine installed Docker version
