@@ -2,8 +2,8 @@
 - name: ensure the call to this playbook is well-formed
   hosts: 'localhost'
   connection: 'local'
-  become: 'no'
-  gather_facts: 'no'
+  become: no
+  gather_facts: no
 
   pre_tasks:
     - name: ensure all required variables are set

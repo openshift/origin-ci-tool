@@ -2,8 +2,8 @@
 - name: ensure the call to this playbook is well-formed
   hosts: 'localhost'
   connection: 'local'
-  become: 'no'
-  gather_facts: 'no'
+  become: no
+  gather_facts: no
 
   pre_tasks:
     - name: ensure all required variables are set
@@ -16,7 +16,7 @@
 - name: tear down a local VM provisioned with Vagrant
   hosts: 'localhost'
   connection: 'local'
-  become: 'no'
+  become: no
 
   roles:
     - role: vagrant-down
