@@ -1,0 +1,3 @@
+---
+- fail:
+    msg: Docker storage provisioning using VMWare Fusion is not yet implemented.

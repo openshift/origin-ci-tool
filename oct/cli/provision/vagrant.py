@@ -199,6 +199,20 @@ def provision(operating_system, provider, stage, ip):
     )
     safe_update_config()
 
+    if stage == Stage.bare:
+        # once we have the new host, we must partition the space on it
+        # that was set aside for Docker storage, then power cycle it to
+        # update the kernel partition tables, then set up the volume
+        # group backed by the LVM pool
+        PlaybookRunner().run(
+            playbook_source=playbook_path('provision/vagrant-docker-storage'),
+            vars=dict(
+                origin_ci_vagrant_provider=provider,
+                origin_ci_vagrant_home_dir=config._vagrant_home,
+                origin_ci_vagrant_hostname=config._config['vm_hostname']
+            )
+        )
+
 
 def destroy():
     """

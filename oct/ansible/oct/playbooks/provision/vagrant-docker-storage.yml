@@ -1,0 +1,74 @@
+---
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+        - origin_ci_vagrant_home_dir
+        - origin_ci_vagrant_provider
+        - origin_ci_vagrant_hostname
+        - origin_ci_docker_volume_group
+
+- name: extend the volume holding the guest's storage
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  tasks:
+    - name: pause the VM so we can add more disk capacity
+      command: '/usr/bin/vagrant halt --force'
+      args:
+        chdir: '{{ origin_ci_vagrant_home_dir }}'
+
+    - name: set up Docker storage using virsh and virt-resize
+      include: './tasks/docker-storage-{{ origin_ci_vagrant_provider }}.yml'
+      become: yes
+      become_user: root
+
+    - name: re-start the VM
+      command: '/usr/bin/vagrant up --no-provision'
+      args:
+        chdir: '{{ origin_ci_vagrant_home_dir }}'
+
+- name: ensure the host has been bootstrapped
+  include: './../bootstrap/host.yml'
+
+- name: partition the new space to be an LVM pool
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: partition the new space
+      script: './../files/partition.sh /dev/vda' # TODO: determine how to select the right device
+      register: origin_ci_fdisk
+      ignore_errors: yes
+
+    - name: fail if the previous command didn't exit like we expected
+      fail:
+        msg: Unexpected result from fdisk! Expected failure re-reading partition table.
+      when: "( origin_ci_fdisk | succeeded ) or
+             ( origin_ci_fdisk | failed and 'Re-reading the partition table failed.: Device or resource busy' not in origin_ci_fdisk.stdout )"
+
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  tasks:
+    - name: cycle the VM so we can update the kernel partition table
+      command: '/usr/bin/vagrant reload --no-provision'
+      args:
+        chdir: '{{ origin_ci_vagrant_home_dir }}'

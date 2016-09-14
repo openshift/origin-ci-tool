@@ -1,0 +1,3 @@
+---
+- fail:
+    msg: Docker storage provisioning using VirtualBox is not yet implemented.

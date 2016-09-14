@@ -1,0 +1,32 @@
+---
+- name: inspect the guest domain
+  command: '/usr/bin/virsh dumpxml vagrant_{{ origin_ci_vagrant_hostname }}'
+  register: origin_ci_vagrant_info
+
+- name: generate a location for domain information
+  command: 'mktemp'
+  register: origin_ci_vagrant_info_location
+
+- name: serialize guest domain information
+  copy:
+    content: '{{ origin_ci_vagrant_info.stdout }}'
+    dest: '{{ origin_ci_vagrant_info_location.stdout }}'
+
+- name: determine the location of the guest volume image
+  command: "/usr/bin/xmllint --xpath 'string(/domain/devices/disk/source/@file)' {{ origin_ci_vagrant_info_location.stdout }}"
+  register: origin_ci_vagrant_volume_location
+
+- name: determine the pool for the guest volume volume
+  command: '/usr/bin/virsh vol-pool {{ origin_ci_vagrant_volume_location.stdout }}'
+  register: origin_ci_vagrant_volume_pool
+
+- name: resize guest volume image
+  command: >
+    /usr/bin/virsh vol-resize --vol='{{ origin_ci_vagrant_volume_location.stdout }}' \
+                              --pool='{{ origin_ci_vagrant_volume_pool.stdout }}'    \
+                              --capacity=20GiB --delta
+
+- name: clean up guest domain XML file
+  file:
+    path: '{{ origin_ci_vagrant_info_location.stdout }}'
+    state: absent
