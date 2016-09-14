@@ -5,6 +5,6 @@
     state: absent
 
 - name: tear down the old VM
-  command: "/usr/bin/vagrant destroy -f"
+  command: "/usr/bin/vagrant destroy --force"
   args:
     chdir: '{{ origin_ci_vagrant_home_dir }}'

@@ -17,12 +17,12 @@ class OperatingSystem:
 
 class Provider:
     """
-    An enumeration of supported Vagrant providers for
-    provisioning of local VMs.
+    An enumeration of supported virtualization providers
+    for provisioning of local VMs.
     """
     libvirt = 'libvirt'
     virtualbox = 'virtualbox'
-    vmware = 'vmware'
+    vmware = 'vmware_fusion'
 
 
 class Stage:
@@ -54,10 +54,10 @@ def destroy_callback(ctx, param, value):
 Provisions a local VM using Vagrant.
 
 Local VM provisioning is supported for a range of operating systems,
-Vagrant providers, and image stages. The choice of operating system
-and Vagrant provider allows for flexibility, but it is the intention
-that all combinations have parity, so the choice should not impact
-your workload.
+virtualization providers, and image stages. The choice of operating
+system and virtualiztion provider allows for flexibility, but it is
+the intention that all combinations have parity, so the choice should
+not impact your workload.
 
 The choice of image stage determines how far long the sync, build
 and install process your VM begins. The following stages are supported:
@@ -81,6 +81,9 @@ Vagrant provider, you must build the other image stages yourself.
 Examples:
   Provision a VM with default parameters (fedora, libvirt, install)
   $ oct provision vagrant
+\b
+  Remove the current VM
+  $ oct provision vagrant --destroy
 \b
   Provision a VM with custom parameters
   $ oct provision vagrant --os=centos --provider=virtualbox --stage=base

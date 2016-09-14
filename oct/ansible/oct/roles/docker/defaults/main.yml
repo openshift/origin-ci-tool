@@ -1,2 +1,3 @@
 ---
 origin_ci_user: origin-ci
+origin_ci_docker_volume_group: docker
