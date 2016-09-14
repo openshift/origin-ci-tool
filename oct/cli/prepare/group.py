@@ -2,6 +2,7 @@ import click
 from cli.prepare.all import all
 from cli.prepare.docker import docker
 from cli.prepare.golang import golang
+from cli.prepare.repositories import repositories
 
 
 @click.group(
@@ -29,3 +30,4 @@ def prepare():
 prepare.add_command(all)
 prepare.add_command(docker)
 prepare.add_command(golang)
+prepare.add_command(repositories)

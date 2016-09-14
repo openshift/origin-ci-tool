@@ -14,7 +14,7 @@
         - origin_ci_hosts
         - origin_ci_connection
 
-- name: prepare a new host for Origin CI actions
+- name: initialize source code repositories on a new host
   hosts: '{{ origin_ci_hosts }}'
   connection: '{{ origin_ci_connection }}'
   become: '{{ origin_ci_become | default(omit) }}'
@@ -22,8 +22,4 @@
   become_user: '{{ origin_ci_become_user | default(omit) }}'
 
   roles:
-    - role: dependencies
-
-- include: docker.yml
-- include: golang.yml
-- include: repositories.yml
+    - role: repositories

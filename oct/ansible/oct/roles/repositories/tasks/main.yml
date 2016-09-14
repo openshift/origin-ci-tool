@@ -1,0 +1,25 @@
+---
+- name: ensure directories exist to house the repositories we need
+  file:
+    path: '{{ origin_ci_gopath }}/{{ item }}'
+    state: directory
+    owner: '{{ origin_ci_user }}'
+  become: yes
+  become_user: root
+  with_items:
+    - src/github.com/openshift
+    - pkg
+    - bin
+
+- name: 'clone the source repositories'
+  git:
+    repo: "https://github.com/{{ item.org | default('openshift') }}/{{ item.repo }}.git"
+    clone: yes
+    dest: "{{ origin_ci_gopath }}/src/github.com/{{ item.org | default('openshift') }}/{{ item.repo }}"
+    accept_hostkey: yes
+  with_items:
+    - repo: origin
+    - repo: origin-web-console
+    - repo: source-to-image
+    - repo: origin-metrics
+    - repo: origin-aggregated-logging
