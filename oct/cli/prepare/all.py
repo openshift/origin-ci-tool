@@ -59,6 +59,7 @@ def prepare_all(preset):
     :param preset: version of OpenShift for which to install dependencies
     """
     vars = dict(
+        origin_ci_become_user='root',
         origin_ci_docker_package='docker-' + docker_version_for_preset(preset),
         origin_ci_golang_package='golang-' + golang_version_for_preset(preset)
     )

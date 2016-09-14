@@ -25,5 +25,8 @@ def host():
     Bootstrap a machine to be an Ansible target host.
     """
     PlaybookRunner().run(
-        playbook_source=playbook_path('bootstrap/host')
+        playbook_source=playbook_path('bootstrap/host'),
+        vars=dict(
+            origin_ci_become_user='root'
+        )
     )
