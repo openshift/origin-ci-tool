@@ -17,6 +17,7 @@ def default_config():
         module_path=None,
         forks=5,
         vm_hostname='openshiftdevel',
+        docker_volume_group='docker',
         # TODO: are these valid defaults? how do we determine what is useful for local testing versus the tool itself?
         become=True,
         become_method='sudo',

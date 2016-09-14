@@ -5,7 +5,8 @@ _config_var_fields = [
     'connection',
     'become',
     'become_method',
-    'become_user'
+    'become_user',
+    'docker_volume_group'
 ]
 
 

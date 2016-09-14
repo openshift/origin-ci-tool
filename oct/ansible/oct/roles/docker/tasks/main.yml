@@ -21,29 +21,11 @@
     regexp: '^ADD_REGISTRY=(.*)'
     line: '# ADD_REGISTRY=\1'
 
-- name: determine which logical volumes we have to work with
-  command: 'lvs {{ item }}'
-  register: origin_ci_vg_probe
-  ignore_errors: yes
-  with_items:
-    - docker-vg
-    - vg_vagrant
-    - centos
-
-- name: determine the name of the volume group to use for Docker storage
-  set_fact:
-    origin_ci_docker_vg: '{{ item.cmd | last }}'
-  when: item | succeeded
-  with_items:
-    - '{{ origin_ci_vg_probe.results }}'
-
 - name: configure the Docker daemon storage
   include: configure_docker_daemon_storage.yml
-  when: origin_ci_docker_vg is defined
 
 - name: configure the OpenShift storage
   include: configure_openshift_storage.yml
-  when: origin_ci_docker_vg is defined
 
 - name: increase the default timeout for the Docker daemon service
   lineinfile:

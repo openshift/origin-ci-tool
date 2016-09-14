@@ -72,3 +72,21 @@
       command: '/usr/bin/vagrant reload --no-provision'
       args:
         chdir: '{{ origin_ci_vagrant_home_dir }}'
+
+- name: set up a volume group backed by the LVM pool
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: ensure we have the tools to create volume groups
+      package:
+        name: lvm2
+        state: present
+
+    - name: set up the volume group
+      lvg:
+        vg: '{{ origin_ci_docker_volume_group }}'
+        pvs: '/dev/vda2' # TODO: determine how to select the right partition
+        state: present
