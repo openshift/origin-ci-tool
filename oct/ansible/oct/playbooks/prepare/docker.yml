@@ -45,4 +45,5 @@
 
   roles:
     - role: isolated-install
+      origin_ci_isolated_base_package: 'docker'
     - role: docker

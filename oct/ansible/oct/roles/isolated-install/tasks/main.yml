@@ -10,6 +10,7 @@
   when: item not in hostvars[inventory_hostname]
   with_items:
     - origin_ci_isolated_package
+    - origin_ci_isolated_base_package
 
 # we need the --{en,dis}ablerepo functionality from yum so
 # we cannot use the agnostic package module from Ansible
@@ -19,9 +20,9 @@
     state: present
   when: ansible_pkg_mgr != 'yum'
 
-- name: 'uninstall {{ origin_ci_isolated_package }} if it is installed'
-  yum:
-    name: '{{ origin_ci_isolated_package }}'
+- name: 'uninstall {{ origin_ci_isolated_base_package }} if it is installed'
+  package:
+    name: '{{ origin_ci_isolated_base_package }}'
     state: absent
 
 - name: 'register temporary repositories that we need to install {{ origin_ci_isolated_package }}'
@@ -37,7 +38,7 @@
   with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
 
 - name: 'install {{ origin_ci_isolated_package }} using default repos'
-  yum:
+  package:
     name: '{{ origin_ci_isolated_package }}'
     state: present
   when: origin_ci_isolated_enabledrepos is not defined
