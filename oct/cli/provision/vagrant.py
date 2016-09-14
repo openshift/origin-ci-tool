@@ -61,19 +61,6 @@ system and virtualiztion provider allows for flexibility, but it is
 the intention that all combinations have parity, so the choice should
 not impact your workload.
 
-The choice of image stage determines how far long the sync, build
-and install process your VM begins. The following stages are supported:
-
-\b
- - bare: bare operating system
- - base: RPM dependencies installed and configured, repositories cloned
- - install: artifacts and binaries built and installed from repositories
-
-Your choice of stage is not final: it is always possible to use
-this tool to 'upgrade' your stage by running sync and install jobs
-yourself. Furthermore, an 'install' stage can be re-synced and then
-have all of the repositories re-installed to update it.
-
 Note: without a license to publish and distribute VMWare Fusion box
 files, we cannot provide any image stage other than the most basic
 bare operating system stage. If you are using VMWare Fusion as your
