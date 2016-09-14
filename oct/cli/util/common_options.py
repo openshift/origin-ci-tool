@@ -3,6 +3,25 @@ import click
 import config
 
 
+def ansible_output_options(func):
+    """
+    Add all of the Ansible output options to the decorated command func.
+
+    :param func: Click CLI command to decorate
+    :return: decorated CLI command
+    """
+    options = [
+        ansible_verbosity_option,
+        ansible_dry_run_option,
+        ansible_debug_mode_option
+    ]
+
+    for option in reversed(options):
+        func = option(func)
+
+    return func
+
+
 def update_ansible_verbosity(ctx, param, value):
     """
     Update the desired Ansible verbosity level.

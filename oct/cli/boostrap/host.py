@@ -1,5 +1,5 @@
 import click
-from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
+from cli.util.common_options import ansible_output_options
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
 
@@ -19,9 +19,7 @@ Examples:
   $ oct boostrap host
 '''
 )
-@ansible_verbosity_option
-@ansible_dry_run_option
-@ansible_debug_mode_option
+@ansible_output_options
 def host():
     """
     Bootstrap a machine to be an Ansible target host.

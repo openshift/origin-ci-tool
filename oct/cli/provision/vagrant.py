@@ -1,6 +1,6 @@
 import click
 import config
-from cli.util.common_options import ansible_verbosity_option, ansible_dry_run_option, ansible_debug_mode_option
+from cli.util.common_options import ansible_output_options
 from config.load import safe_update_config
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
@@ -142,9 +142,7 @@ Examples:
     help='Tear down the current VM.',
     callback=destroy_callback
 )
-@ansible_verbosity_option
-@ansible_dry_run_option
-@ansible_debug_mode_option
+@ansible_output_options
 def vagrant(operating_system, provider, stage, ip):
     """
     Provision a local VM using Vagrant.
