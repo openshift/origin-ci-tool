@@ -61,10 +61,12 @@ def docker_version_with_epoch(version):
     return version
 
 
+_short_help = 'Install Docker on remote hosts.'
+
+
 @click.command(
-    short_help='Install Docker on remote hosts.',
-    help='''
-Installs the Docker daemon and CLI on the remote host.
+    short_help=_short_help,
+    help=_short_help + '''
 
 The Docker install can be parameterized with the Docker package
 version that is required, as well as the existing RPM repositories

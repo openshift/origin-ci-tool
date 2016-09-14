@@ -48,10 +48,12 @@ def destroy_callback(ctx, param, value):
     ctx.exit()
 
 
+_short_help = 'Provision a local VM using Vagrant.'
+
+
 @click.command(
-    short_help='Bring up a local VM using Vagrant.',
-    help='''
-Provisions a local VM using Vagrant.
+    short_help=_short_help,
+    help=_short_help + '''
 
 Local VM provisioning is supported for a range of operating systems,
 virtualization providers, and image stages. The choice of operating

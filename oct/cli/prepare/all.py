@@ -21,10 +21,12 @@ def install_dependencies_for_preset(ctx, param, value=Preset.origin_master):
     ctx.exit()
 
 
+_short_help = 'Install dependencies on remote hosts.'
+
+
 @click.command(
-    short_help='Install dependencies on remote hosts.',
-    help='''
-Installs the full set of dependencies on the remote host.
+    short_help=_short_help,
+    help=_short_help + '''
 
 If a preset is chosen, default values for the other options are used
 and user-provided options are ignored.

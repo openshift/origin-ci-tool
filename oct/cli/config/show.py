@@ -1,11 +1,12 @@
 import click
 import config
 
+_short_help = 'View all or some serialized configuration options.'
+
 
 @click.command(
-    short_help='View all or some serialized configuration options.',
-    help='''
-Shows all or some of the serialized configuration options.
+    short_help=_short_help,
+    help=_short_help + '''
 
 View the entirety of the serialized configuration options
 used by default for Ansible interactions by not passing any

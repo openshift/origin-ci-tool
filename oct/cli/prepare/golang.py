@@ -32,11 +32,10 @@ def golang_version_for_preset(preset):
     else:
         raise click.UsageError('No Golang preset found for OpenShift version: %s' % preset)
 
-
+_short_help = 'Install Golang on remote hosts.'
 @click.command(
-    short_help='Install Golang on remote hosts.',
-    help='''
-Installs the Go toolchain and source on the remote host.
+    short_help=_short_help,
+    help=_short_help + '''
 
 The Go install can be parameterized with the Go package version that
 is required, as well as the existing RPM repositories and new RPM

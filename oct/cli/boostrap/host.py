@@ -3,11 +3,12 @@ from cli.util.common_options import ansible_output_options
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
 
+_short_help = 'Bootstrap a machine to be an Ansible target host.'
+
 
 @click.command(
-    short_help='Bootstrap a machine to be an Ansible target host.',
-    help='''
-Bootstraps a machine to be an Ansible target host.
+    short_help=_short_help,
+    help=_short_help + '''
 
 In order for Ansible to interact with a target host, a set of requisite
 dependencies need to be installed first. This command will install them

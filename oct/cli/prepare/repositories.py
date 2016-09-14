@@ -3,11 +3,12 @@ from cli.util.common_options import ansible_output_options
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
 
+_short_help = 'Initialize source code repositories.'
+
 
 @click.command(
-    short_help='Initialize source code repositories.',
-    help='''
-Initialize source code repositories.
+    short_help=_short_help,
+    help=_short_help + '''
 
 In order to sync or build from source code on the virtual
 machine, or install from the artifacts created from the build,

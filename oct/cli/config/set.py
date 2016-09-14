@@ -2,11 +2,12 @@ import click
 import config
 from config.load import update_config
 
+_short_help = 'Update or append to the serialized configuration.'
+
 
 @click.command(
-    short_help='Update or append to the serialized configuration.',
-    help='''
-Updates or appends to the serialized configuration.
+    short_help=_short_help,
+    help=_short_help + '''
 
 Existing configuration options can be edited, or new
 configuration options can be added to the set of all

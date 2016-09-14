@@ -2,11 +2,12 @@ import click
 import config
 from config.load import update_config
 
+_short_help = 'Remove an option from the serialized configuration.'
+
 
 @click.command(
-    short_help='Remove an option from the serialized configuration.',
-    help='''
-Removed an option from the serialized configuration.
+    short_help=_short_help,
+    help=_short_help + '''
 
 Existing configuration options can be removed from
 the set of all configurations that are used by default
