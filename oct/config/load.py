@@ -74,6 +74,8 @@ def safe_update_config():
         runtime_config_copy['verbosity'] = current_config['verbosity']
         runtime_config_copy['check'] = current_config['check']
         try:
+            config_file.seek(0)
+            config_file.truncate(0)
             yaml.dump(runtime_config_copy, config_file, default_flow_style=False)
         except yaml.YAMLError as exception:
             click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
@@ -98,6 +100,7 @@ def remove_host_from_inventory(host):
     with open(config._inventory_path, 'r+') as inventory_file:
         entries = inventory_file.readlines()
         inventory_file.seek(0)
+        inventory_file.truncate(0)
         for entry in entries:
             if entry.rstrip('\n') != host:
                 inventory_file.write(entry)
