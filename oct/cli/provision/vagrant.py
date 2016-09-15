@@ -93,6 +93,7 @@ Examples:
     ]),
     default=OperatingSystem.fedora,
     show_default=True,
+    metavar='NAME',
     help='VM operating system.'
 )
 @click.option(
@@ -104,6 +105,7 @@ Examples:
     ]),
     default=Provider.libvirt,
     show_default=True,
+    metavar='NAME',
     help='Virtualization provider.'
 )
 @click.option(
@@ -115,6 +117,7 @@ Examples:
     ]),
     default=Stage.install,
     show_default=True,
+    metavar='NAME',
     help='VM image stage.'
 )
 @click.option(
@@ -122,6 +125,7 @@ Examples:
     'ip',
     default='10.245.2.2',
     show_default=True,
+    metavar='ADDRESS',
     help='Desired IP of the VM.'
 )
 @click.option(

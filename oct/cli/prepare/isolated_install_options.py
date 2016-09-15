@@ -16,18 +16,21 @@ def isolated_install_options(package_name, preset_callback):
         options = [
             click.option(
                 '--version', '-v',
+                metavar='VERSION',
                 help='Version of ' + package_name + ' to install.'
             ),
             click.option(
                 '--repo', '-r',
                 'repos',
                 multiple=True,
+                metavar='NAME',
                 help='Name of a repository to enable when installing ' + package_name + '.'
             ),
             click.option(
                 '--repourl', '-u',
                 'repourls',
                 multiple=True,
+                metavar='URL',
                 help='URL of a repository to register temporarily when installing ' + package_name + '.'
             ),
             raw_preset_option(
