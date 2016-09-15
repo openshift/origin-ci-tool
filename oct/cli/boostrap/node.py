@@ -27,8 +27,5 @@ def node():
     Bootstrap a machine to be an Ansible controller node.
     """
     PlaybookRunner().run(
-        playbook_source=playbook_path('bootstrap/node'),
-        vars=dict(
-            origin_ci_become_user='root'
-        )
+        playbook_source=playbook_path('bootstrap/node')
     )

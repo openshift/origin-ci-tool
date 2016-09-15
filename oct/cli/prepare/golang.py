@@ -90,7 +90,6 @@ def install_golang(version, repos=None, repourls=None):
     :param repourls: list of RPM repository URLs from which to install Golang
     """
     vars = dict(
-        origin_ci_become_user='root',
         origin_ci_golang_package='golang'
     )
 

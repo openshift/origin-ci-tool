@@ -121,7 +121,6 @@ def install_docker(version, repos=None, repourls=None):
     :param repourls: list of RPM repository URLs from which to install Docker
     """
     vars = dict(
-        origin_ci_become_user='root',
         origin_ci_docker_package='docker'
     )
 
