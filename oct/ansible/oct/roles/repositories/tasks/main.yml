@@ -11,9 +11,9 @@
 
 - name: 'clone the source repositories'
   git:
-    repo: "https://github.com/{{ item.org | default('openshift') }}/{{ item.repo }}.git"
+    repo: "https://github.com/openshift/{{ item.repo }}.git"
     clone: yes
-    dest: "{{ origin_ci_gopath }}/src/github.com/{{ item.org | default('openshift') }}/{{ item.repo }}"
+    dest: "{{ origin_ci_gopath }}/src/github.com/openshift/{{ item.repo }}"
     accept_hostkey: yes
   with_items:
     - repo: origin
