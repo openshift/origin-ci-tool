@@ -96,5 +96,5 @@ class PlaybookRunner:
             passwords=self._passwords
         ).run()
 
-        if result != TaskQueueManager.RUN_OK:
-            click.UsageError('Playbook execution failed with code ' + str(result))
+        if result is not TaskQueueManager.RUN_OK:
+            raise click.UsageError('Playbook execution failed with code ' + str(result))
