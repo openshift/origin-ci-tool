@@ -26,4 +26,6 @@ def default_vars(vars):
         if var not in vars:
             vars[var] = config._config[field]
 
+    vars['origin_ci_user'] = config._config['become_user']
+
     return vars

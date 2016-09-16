@@ -4,8 +4,6 @@
     path: '{{ origin_ci_gopath }}/{{ item }}'
     state: directory
     owner: '{{ origin_ci_user }}'
-  become: yes
-  become_user: root
   with_items:
     - src/github.com/openshift
     - pkg
@@ -23,3 +21,10 @@
     - repo: source-to-image
     - repo: origin-metrics
     - repo: origin-aggregated-logging
+
+- name: ensure that the correct user owns the repositories
+  file:
+    path: '{{ origin_ci_gopath }}'
+    state: directory
+    recurse: yes
+    owner: '{{ origin_ci_user }}'
