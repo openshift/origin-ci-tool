@@ -97,4 +97,4 @@ class PlaybookRunner:
         ).run()
 
         if result is not TaskQueueManager.RUN_OK:
-            raise click.UsageError('Playbook execution failed with code ' + str(result))
+            raise click.ClickException('Playbook execution failed with code ' + str(result))
