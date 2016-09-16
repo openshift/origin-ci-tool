@@ -50,6 +50,11 @@
   become_user: root
 
   tasks:
+    - name: ensure we have the tools to work with logical volumes
+      package:
+        name: lvm2
+        state: present
+
     - name: partition the new space
       script: './../files/partition.sh /dev/vda' # TODO: determine how to select the right device
       register: origin_ci_fdisk
@@ -61,29 +66,8 @@
       when: "( origin_ci_fdisk | succeeded ) or
              ( origin_ci_fdisk | failed and 'Re-reading the partition table failed.: Device or resource busy' not in origin_ci_fdisk.stdout )"
 
-- name: ensure the call to this playbook is well-formed
-  hosts: 'localhost'
-  connection: 'local'
-  become: no
-  gather_facts: no
-
-  tasks:
-    - name: cycle the VM so we can update the kernel partition table
-      command: '/usr/bin/vagrant reload --no-provision'
-      args:
-        chdir: '{{ origin_ci_vagrant_home_dir }}'
-
-- name: set up a volume group backed by the LVM pool
-  hosts: '{{ origin_ci_hosts }}'
-  connection: '{{ origin_ci_connection }}'
-  become: yes
-  become_user: root
-
-  tasks:
-    - name: ensure we have the tools to create volume groups
-      package:
-        name: lvm2
-        state: present
+    - name: commit the new partition table
+      command: partprobe
 
     - name: set up the volume group
       lvg:
