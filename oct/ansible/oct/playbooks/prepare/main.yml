@@ -13,12 +13,20 @@
       with_items:
         - origin_ci_hosts
         - origin_ci_connection
+        - origin_ci_user
 
 - name: prepare a new host for Origin CI actions
   hosts: '{{ origin_ci_hosts }}'
   connection: '{{ origin_ci_connection }}'
   become: yes
   become_user: root
+
+  pre_tasks:
+    - name: create the OpenShift CI user
+      user:
+        name: '{{ origin_ci_user }}'
+        comment: 'OpenShift CI User'
+        state: present
 
   roles:
     - role: dependencies
