@@ -28,6 +28,13 @@
         comment: 'OpenShift CI User'
         state: present
 
+    - name: ensure the OpenShift CI user can elevate privileges
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: '^{{ origin_ci_user }}'
+        line: '{{ origin_ci_user }}  ALL=(ALL)  NOPASSWD: ALL'
+        state: present
+
   roles:
     - role: dependencies
 
