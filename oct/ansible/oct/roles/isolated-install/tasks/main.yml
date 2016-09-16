@@ -7,7 +7,7 @@
 - name: ensure the user provided the package to install
   fail:
     msg: 'This playbook requires {{ item }} to be set.'
-  when: item not in hostvars[inventory_hostname]
+  when: item not in vars and item not in hostvars[inventory_hostname]
   with_items:
     - origin_ci_isolated_package
     - origin_ci_isolated_base_package

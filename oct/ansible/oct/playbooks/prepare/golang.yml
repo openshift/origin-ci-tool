@@ -9,7 +9,7 @@
     - name: ensure all required variables are set
       fail:
         msg: 'This playbook requires {{ item }} to be set.'
-      when: item not in hostvars[inventory_hostname]
+      when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
         - origin_ci_hosts
         - origin_ci_connection
