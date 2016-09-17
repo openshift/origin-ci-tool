@@ -1,0 +1,28 @@
+---
+- name: ensure the call to this playbook is well-formed
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+        - origin_ci_sync_repository
+        - origin_ci_sync_remote
+        - origin_ci_sync_version
+
+- name: push local changes to the remote host
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: '{{ origin_ci_become | default(omit) }}'
+  become_method: '{{ origin_ci_become_method | default(omit) }}'
+  become_user: '{{ origin_ci_become_user | default(omit) }}'
+
+  roles:
+    - role: remote-sync

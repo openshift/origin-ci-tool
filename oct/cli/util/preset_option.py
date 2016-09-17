@@ -1,4 +1,5 @@
 import click
+from cli.util.repository_options import Repository
 
 
 class Preset:
@@ -8,11 +9,11 @@ class Preset:
     built-in for python-2.7 compatibility.
 
     """
-    origin_master = 'origin/master'
-    ose_master = 'ose/master'
-    ose_32 = 'ose/enterprise-3.2'
-    ose_321 = 'ose/enterprise-3.2.1'
-    ose_33 = 'ose/enterprise-3.3'
+    origin_master = Repository.origin + '/master'
+    ose_master = Repository.enterprise + '/master'
+    ose_32 = Repository.enterprise + '/enterprise-3.2'
+    ose_321 = Repository.enterprise + '/enterprise-3.2.1'
+    ose_33 = Repository.enterprise + '/enterprise-3.3'
 
 
 def raw_preset_option(help_action, callback):

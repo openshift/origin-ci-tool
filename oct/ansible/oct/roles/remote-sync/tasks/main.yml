@@ -1,0 +1,42 @@
+---
+- name: ensure that we are given a destination or we can determine one
+  fail:
+    msg: 'The repository location could not be determined as $GOPATH was unset.'
+  when: origin_ci_sync_destination is not defined and ansible_env.GOPATH is not defined
+
+- name: determine the directory to sync if no override is provided
+  set_fact:
+    origin_ci_sync_destination: "{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_sync_repository }}"
+  when: origin_ci_sync_destination is not defined
+
+- name: determine which remotes already exist
+  command: 'git remote'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  register: origin_ci_sync_remotes_probe
+
+- name: fail if the remote we want doesn't exist and we can't add it
+  fail:
+    msg: 'Remote {{ origin_ci_sync_remote }} not found and could not be added as remote address not specified.'
+  when: origin_ci_sync_remote not in origin_ci_sync_remotes_probe.stdout and origin_ci_sync_address is not defined
+
+- name: add the new remote if it doesn't exist and we have an address to point to
+  command: 'git remote add {{ origin_ci_sync_remote }} {{ origin_ci_sync_address }}'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  when: origin_ci_sync_remote not in origin_ci_sync_remotes_probe.stdout and origin_ci_sync_address is defined
+
+- name: inspect the remote for the address if we do not have an address
+  shell: 'git remote show {{ origin_ci_sync_remote }} | grep "Fetch URL" | cut -c 14- '
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  register: origin_ci_sync_remote_url
+  when: origin_ci_sync_address is not defined
+
+- name: synchronize the repository with the remote server
+  git:
+    repo: '{{ origin_ci_sync_address | default(origin_ci_sync_remote_url.stdout) }}'
+    remote: '{{ origin_ci_sync_remote }}'
+    version: '{{ origin_ci_sync_version }}'
+    refspec: '{{ origin_ci_sync_refspec | default(omit) }}'
+    dest: '{{ origin_ci_sync_destination }}'

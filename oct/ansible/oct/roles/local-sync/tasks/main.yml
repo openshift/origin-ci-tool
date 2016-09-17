@@ -1,0 +1,45 @@
+---
+- name: ensure that we are given a source or we can determine one
+  fail:
+    msg: 'The repository location could not be determined as $GOPATH was unset.'
+  when: origin_ci_sync_source is not defined and ansible_env.GOPATH is not defined
+
+- name: determine the directory to sync if no override is provided
+  set_fact:
+    origin_ci_sync_source: "{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_sync_repository }}"
+  when: origin_ci_sync_source is not defined
+
+- name: attempt to commit staged changes
+  command: 'git commit --message="<AUTOMATED COMMIT OF STAGED CHANGES>"'
+  args:
+    chdir: '{{ origin_ci_sync_source }}'
+  register: origin_ci_sync_staged_commit
+  ignore_errors: yes
+
+- name: attempt to commit unstaged changes
+  command: 'git commit --all --message="<AUTOMATED COMMIT OF UNSTAGED CHANGES>"'
+  args:
+    chdir: '{{ origin_ci_sync_source }}'
+  register: origin_ci_sync_unstaged_commit
+  ignore_errors: yes
+
+- name: push local changes to the remotes
+  command: >
+    git push ssh://{{ item }}{{ hostvars[item]['origin_ci_sync_destination'] }} \
+             {{ origin_ci_sync_version }}:{{ origin_ci_sync_version }}          \
+             --force --tags
+  args:
+    chdir: '{{ origin_ci_sync_source }}'
+  with_items: '{{ groups[origin_ci_hosts] }}' # TODO: this is fragile if literal hosts are passed in. do we care?
+
+- name: reset commit of unstaged changes if one was made
+  command: 'git reset --soft HEAD^1'
+  args:
+    chdir: '{{ origin_ci_sync_source }}'
+  when: origin_ci_sync_unstaged_commit | succeeded
+
+- name: reset commit of staged changes if one was made
+  command: 'git reset --mixed HEAD^1'
+  args:
+    chdir: '{{ origin_ci_sync_source }}'
+  when: origin_ci_sync_staged_commit | succeeded
