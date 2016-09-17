@@ -39,3 +39,11 @@
     state: directory
     recurse: yes
     owner: '{{ origin_ci_user }}'
+
+- name: persist the GOPATH
+  lineinfile:
+    dest: /etc/environment
+    regexp: '^GOPATH='
+    line: 'GOPATH={{ origin_ci_gopath }}'
+    state: present
+    create: true
