@@ -9,18 +9,29 @@
     - pkg
     - bin
 
-- name: 'clone the source repositories'
+- name: register the list of repositories we are concerned with
+  set_fact:
+    origin_ci_repositories: [
+      'origin',
+      'origin-web-console',
+      'source-to-image',
+      'origin-metrics',
+      'origin-aggregated-logging'
+    ]
+
+- name: clone the source repositories
   git:
-    repo: "https://github.com/openshift/{{ item.repo }}.git"
+    repo: 'https://github.com/openshift/{{ item }}.git'
     clone: yes
-    dest: "{{ origin_ci_gopath }}/src/github.com/openshift/{{ item.repo }}"
+    dest:
     accept_hostkey: yes
-  with_items:
-    - repo: origin
-    - repo: origin-web-console
-    - repo: source-to-image
-    - repo: origin-metrics
-    - repo: origin-aggregated-logging
+  with_items: '{{ origin_ci_repositories }}'
+
+- name: ensure all repositories allow pushes to happen to the current branch
+  command: 'git config --add receive.denyCurrentBranch ignore'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
+  with_items: '{{ origin_ci_repositories }}'
 
 - name: ensure that the correct user owns the repositories
   file:
