@@ -18,6 +18,25 @@
         - origin_ci_vagrant_hostname
         - origin_ci_docker_volume_group
 
+- name: ensure the host has been bootstrapped
+  include: './../bootstrap/host.yml'
+
+- name: detect progress on guest to add idempotency to this playbook
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: probe for the Docker volume group
+      command: '/usr/sbin/lvs {{ origin_ci_docker_volume_group }}'
+      ignore_errors: yes
+      register: origin_ci_docker_volume_group_probe
+
+    - name: determine if we should be skipping the rest of the plays or not
+      set_fact:
+        origin_ci_skip_rest: '{{ origin_ci_docker_volume_group_probe | succeeded }}'
+
 - name: extend the volume holding the guest's storage
   hosts: 'localhost'
   connection: 'local'
@@ -25,6 +44,10 @@
   gather_facts: no
 
   tasks:
+    - name: skip this play if we have detected a volume group
+      meta: end_play
+      when: "hostvars[origin_ci_vagrant_hostname]['origin_ci_skip_rest']"
+
     - name: pause the VM so we can add more disk capacity
       command: '/usr/bin/vagrant halt --force'
       args:
@@ -40,9 +63,6 @@
       args:
         chdir: '{{ origin_ci_vagrant_home_dir }}'
 
-- name: ensure the host has been bootstrapped
-  include: './../bootstrap/host.yml'
-
 - name: partition the new space to be an LVM pool
   hosts: '{{ origin_ci_hosts }}'
   connection: '{{ origin_ci_connection }}'
@@ -50,6 +70,10 @@
   become_user: root
 
   tasks:
+    - name: skip this play if we have detected a volume group
+      meta: end_play
+      when: "hostvars[origin_ci_vagrant_hostname]['origin_ci_skip_rest']"
+
     - name: ensure we have the tools to work with logical volumes
       package:
         name: lvm2
@@ -67,7 +91,7 @@
              ( origin_ci_fdisk | failed and 'Re-reading the partition table failed.: Device or resource busy' not in origin_ci_fdisk.stdout )"
 
     - name: commit the new partition table
-      command: '/usr/bin/partprobe'
+      command: '/usr/sbin/partprobe'
 
     - name: set up the volume group
       lvg:

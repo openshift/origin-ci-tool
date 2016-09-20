@@ -9,6 +9,13 @@
     src: './../../../../../vagrant/Vagrantfile'
     dest: '{{ origin_ci_vagrant_home_dir }}/Vagrantfile'
 
+- name: determine if we already have a VM running
+  command: '/usr/bin/vagrant status {{ origin_ci_vagrant_hostname }}'
+  args:
+    chdir: '{{ origin_ci_vagrant_home_dir }}'
+  ignore_errors: yes
+  register: origin_ci_vagrant_status
+
 - name: provision the VM with Vagrant
   command: "/usr/bin/vagrant up --provider={{ origin_ci_vagrant_provider }}"
   args:
@@ -20,6 +27,7 @@
     OPENSHIFT_VAGRANT_OPERATING_SYSTEM: '{{ origin_ci_vagrant_os }}'
     OPENSHIFT_VAGRANT_STAGE: '{{ origin_ci_vagrant_stage }}'
     OPENSHIFT_VAGRANT_MASTER_IP: '{{ origin_ci_vagrant_ip }}'
+  when: "'running' not in origin_ci_vagrant_status.stdout"
 
 - name: gather Vagrant SSH configuration for the host
   command: "/usr/bin/vagrant ssh-config --host={{ origin_ci_vagrant_hostname }}"
