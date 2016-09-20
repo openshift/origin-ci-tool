@@ -133,4 +133,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 443, host: 1443
   config.vm.network "forwarded_port", guest: 8080, host: 8080
   config.vm.network "forwarded_port", guest: 8443, host: 8443
+
+  # the default Vagrant user configuration does not allow for the user to
+  # switch to any user other than root -- this is problematic for Ansible
+  # as we want to use other users during provisioning steps
+  config.vm.provision "shell", inline: "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
+  config.vm.provision "shell", inline: "rm /etc/sudoers.d/vagrant-nopasswd"
 end
