@@ -67,21 +67,21 @@ def local(repository, sync_source, sync_destination, tag, refspec, branch, commi
     if not (refspec or branch or commit or tag):
         branch = 'master'
 
-    vars = dict(
+    playbook_variables = dict(
         origin_ci_sync_repository=repository
     )
 
     if sync_source:
-        vars['origin_ci_sync_source'] = sync_source
+        playbook_variables['origin_ci_sync_source'] = sync_source
 
     if sync_destination:
-        vars['origin_ci_sync_destination'] = sync_destination
+        playbook_variables['origin_ci_sync_destination'] = sync_destination
 
     version_specifier = git_version_specifier(refspec, branch, commit, tag)
     for key in version_specifier:
-        vars[key] = version_specifier[key]
+        playbook_variables[key] = version_specifier[key]
 
     PlaybookRunner().run(
         playbook_source=playbook_path('sync/local'),
-        vars=vars
+        playbook_variables=playbook_variables
     )

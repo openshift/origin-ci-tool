@@ -34,7 +34,7 @@ def make(repository, target, parameters, make_destination):
     :param repository: name of the repository in which to work
     :param target: make target or targets
     """
-    vars = dict(
+    playbook_variables = dict(
         origin_ci_make_repository=repository,
         origin_ci_make_targets=list(target)
     )
@@ -47,12 +47,12 @@ def make(repository, target, parameters, make_destination):
             (key, val) = param.split('=', 1)
             make_parameters[key] = val
 
-        vars['origin_ci_make_parameters'] = make_parameters
+        playbook_variables['origin_ci_make_parameters'] = make_parameters
 
     if make_destination:
-        vars['origin_ci_make_destination'] = make_destination
+        playbook_variables['origin_ci_make_destination'] = make_destination
 
     PlaybookRunner().run(
         playbook_source=playbook_path('make/main'),
-        vars=vars
+        playbook_variables=playbook_variables
     )

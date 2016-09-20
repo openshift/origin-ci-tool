@@ -65,12 +65,12 @@ def prepare_all(preset):
     if not preset:
         preset = Preset.origin_master
 
-    vars = dict(
+    playbook_variables = dict(
         origin_ci_docker_package='docker-' + docker_version_for_preset(preset),
         origin_ci_golang_package='golang-' + golang_version_for_preset(preset)
     )
 
     PlaybookRunner().run(
         playbook_source=playbook_path('prepare/main'),
-        vars=vars
+        playbook_variables=playbook_variables
     )

@@ -120,21 +120,21 @@ def install_docker(version, repos=None, repourls=None):
     :param repos: list of RPM repositories from which to install Docker
     :param repourls: list of RPM repository URLs from which to install Docker
     """
-    vars = dict(
+    playbook_variables = dict(
         origin_ci_docker_package='docker'
     )
 
     if version:
-        vars['origin_ci_docker_package'] += '-' + version
+        playbook_variables['origin_ci_docker_package'] += '-' + version
 
     if repos:
-        vars['origin_ci_docker_disabledrepos'] = '*'
-        vars['origin_ci_docker_enabledrepos'] = ','.join(repos)
+        playbook_variables['origin_ci_docker_disabledrepos'] = '*'
+        playbook_variables['origin_ci_docker_enabledrepos'] = ','.join(repos)
 
     if repourls:
-        vars['origin_ci_docker_tmp_repourls'] = repourls
+        playbook_variables['origin_ci_docker_tmp_repourls'] = repourls
 
     PlaybookRunner().run(
         playbook_source=playbook_path('prepare/docker'),
-        vars=vars
+        playbook_variables=playbook_variables
     )

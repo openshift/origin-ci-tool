@@ -6,7 +6,7 @@ from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from config.options import default_options, default_inventory
-from config.vars import default_vars
+from config.variables import default_variables
 
 
 class PlaybookRunner:
@@ -77,15 +77,15 @@ class PlaybookRunner:
         )
         self._variable_manager.set_inventory(self._inventory)
 
-    def run(self, playbook_source, vars=None):
+    def run(self, playbook_source, playbook_variables=None):
         """
         Run a playbook defined in the file at playbook_source with the variables provided.
 
         :param playbook_source: the location of the playbook to run
-        :param vars: a dictionary of variables to pass to the playbook
+        :param playbook_variables: a dictionary of variables to pass to the playbook
         """
-        vars = default_vars(vars)
-        self._variable_manager.extra_vars = vars
+        playbook_variables = default_variables(playbook_variables)
+        self._variable_manager.extra_vars = playbook_variables
 
         result = PlaybookExecutor(
             playbooks=[playbook_source],

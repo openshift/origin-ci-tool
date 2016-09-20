@@ -123,7 +123,7 @@ def validate_git_specifier(refspec, branch, commit, tag):
 def git_version_specifier(refspec, branch, commit, tag):
     """
     Return the minimal set of specifiers that the user
-    input reduces to, in a dict of vars for Ansible.
+    input reduces to, in a dict of variables for Ansible.
 
     :param refspec: provided refspec like 'pull/1/head'
     :param branch: provided branch like 'master'

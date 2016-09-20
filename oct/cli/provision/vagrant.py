@@ -174,7 +174,7 @@ def provision(operating_system, provider, stage, ip):
     """
     PlaybookRunner().run(
         playbook_source=playbook_path('provision/vagrant-up'),
-        vars=dict(
+        playbook_variables=dict(
             origin_ci_vagrant_home_dir=config._vagrant_home,
             origin_ci_vagrant_os=operating_system,
             origin_ci_vagrant_provider=provider,
@@ -200,7 +200,7 @@ def provision(operating_system, provider, stage, ip):
         # group backed by the LVM pool
         PlaybookRunner().run(
             playbook_source=playbook_path('provision/vagrant-docker-storage'),
-            vars=dict(
+            playbook_variables=dict(
                 origin_ci_vagrant_provider=provider,
                 origin_ci_vagrant_home_dir=config._vagrant_home,
                 origin_ci_vagrant_hostname=config._config['vm_hostname']
@@ -214,7 +214,7 @@ def destroy():
     """
     PlaybookRunner().run(
         playbook_source=playbook_path('provision/vagrant-down'),
-        vars=dict(
+        playbook_variables=dict(
             origin_ci_vagrant_home_dir=config._vagrant_home
         )
     )

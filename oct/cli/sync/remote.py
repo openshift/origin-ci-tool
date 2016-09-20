@@ -88,26 +88,26 @@ def remote(repository, sync_destination, remote, new_remote, tag, refspec, branc
     if not (remote or new_remote):
         remote = 'origin'
 
-    vars = dict(
+    playbook_variables = dict(
         origin_ci_sync_repository=repository
     )
 
     if sync_destination:
-        vars['origin_ci_sync_destination'] = sync_destination
+        playbook_variables['origin_ci_sync_destination'] = sync_destination
 
     version_specifier = git_version_specifier(refspec, branch, commit, tag)
     for key in version_specifier:
-        vars[key] = version_specifier[key]
+        playbook_variables[key] = version_specifier[key]
 
     if new_remote:
-        vars['origin_ci_sync_remote'] = new_remote[0]
-        vars['origin_ci_sync_address'] = new_remote[1]
+        playbook_variables['origin_ci_sync_remote'] = new_remote[0]
+        playbook_variables['origin_ci_sync_address'] = new_remote[1]
     else:
-        vars['origin_ci_sync_remote'] = remote
+        playbook_variables['origin_ci_sync_remote'] = remote
 
     PlaybookRunner().run(
         playbook_source=playbook_path('sync/remote'),
-        vars=vars
+        playbook_variables=playbook_variables
     )
 
 
