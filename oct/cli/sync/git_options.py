@@ -1,6 +1,6 @@
 import click
 
-git_options_helptext='''
+git_options_helptext = '''
 \b
 A git state is specified in one of the following ways:
  - a commit SHA in the current tree

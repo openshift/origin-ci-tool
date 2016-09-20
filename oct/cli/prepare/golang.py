@@ -32,7 +32,10 @@ def golang_version_for_preset(preset):
     else:
         raise click.UsageError('No Golang preset found for OpenShift version: %s' % preset)
 
+
 _short_help = 'Install Golang on remote hosts.'
+
+
 @click.command(
     short_help=_short_help,
     help=_short_help + '''
