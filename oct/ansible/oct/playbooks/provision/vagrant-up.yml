@@ -24,3 +24,18 @@
 
   roles:
     - role: vagrant-up
+
+- name: ensure that the vagrant user has necessary privileges
+  hosts: '{{ origin_ci_vagrant_hostname }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: ensure the vagrant user that we connect as can change to other users
+      lineinfile:
+        dest: /etc/sudoers.d/vagrant-nopasswd
+        regexp: '^{{ ansible_env.SUDO_USER }}'
+        line: '{{ ansible_env.SUDO_USER }}  ALL=(ALL)  NOPASSWD: ALL'
+        state: present
+        create: true

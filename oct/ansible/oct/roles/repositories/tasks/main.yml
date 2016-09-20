@@ -23,7 +23,7 @@
   git:
     repo: 'https://github.com/openshift/{{ item }}.git'
     clone: yes
-    dest:
+    dest: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
     accept_hostkey: yes
   with_items: '{{ origin_ci_repositories }}'
 
@@ -33,12 +33,42 @@
     chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
   with_items: '{{ origin_ci_repositories }}'
 
+- name: ensure all repositories allow pushes to happen from the correct group
+  command: 'git config --add core.sharedRepository group'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
+  with_items: '{{ origin_ci_repositories }}'
+
+- name: allow unsafe fast-forward pushes to the repository
+  command: 'git config --add receive.denyNonFastForwards false'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
+  with_items: '{{ origin_ci_repositories }}'
+
+- name: ensure the repository management group exists
+  group:
+    name: '{{ origin_ci_user }}-git'
+    state: present
+
 - name: ensure that the correct user owns the repositories
   file:
     path: '{{ origin_ci_gopath }}'
     state: directory
     recurse: yes
     owner: '{{ origin_ci_user }}'
+    group: '{{ origin_ci_user }}-git'
+    mode: 'g+rwXs'
+
+- name: ensure all necessary users have group-level privileges for the repos
+  user:
+    name: '{{ item }}'
+    groups: '{{ origin_ci_user }}-git'
+    append: yes
+  with_items:
+    - '{{ origin_ci_user }}'
+    - '{{ ansible_user_id }}'
+    - '{{ ansible_env.SUDO_USER }}'
+
 
 - name: persist the GOPATH
   lineinfile:

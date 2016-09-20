@@ -19,7 +19,6 @@
   connection: '{{ origin_ci_connection }}'
   become: yes
   become_user: root
-  gather_facts: no
 
   roles:
     - role: repositories

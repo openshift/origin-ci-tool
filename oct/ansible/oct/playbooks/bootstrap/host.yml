@@ -25,7 +25,7 @@
   # Install dependencies necessary for Ansible to be
   # able to interact with this target host. Fedora
   # provides a nice grouping of RPMs for this purpose.
-    - name: install dependencies for Ansible target host
+    - name: install bootstrap dependencies for Ansible target host
       raw: >
         if which dnf >/dev/null 2>&1; then
             dnf group install -y ansible-node
