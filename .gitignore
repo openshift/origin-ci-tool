@@ -91,5 +91,8 @@ ENV/
 # JetBrains stuff
 .idea/
 
+# Hackish scripts
+hack.sh
+
 # Ansible bits
 *.retry
