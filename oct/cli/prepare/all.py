@@ -7,7 +7,7 @@ from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
 
 
-def install_dependencies_for_preset(ctx, param, value=Preset.origin_master):
+def install_dependencies_for_preset(ctx, param, value):
     """
     Installs the full set of dependencies on the remote host.
 
@@ -60,6 +60,11 @@ def prepare_all(preset):
 
     :param preset: version of OpenShift for which to install dependencies
     """
+    # we can't default on a eager option or it would always trigger,
+    # so we default here instead
+    if not preset:
+        preset = Preset.origin_master
+
     vars = dict(
         origin_ci_docker_package='docker-' + docker_version_for_preset(preset),
         origin_ci_golang_package='golang-' + golang_version_for_preset(preset)
