@@ -1,14 +1,15 @@
 import click
-from cli.boostrap.group import bootstrap
-from cli.build.group import build
-from cli.config.group import config
-from cli.install.group import install
-from cli.prepare.group import prepare
-from cli.provision.group import provision
-from cli.sync.group import sync
-from cli.test.group import test
-from cli.version import version
+from .cli.boostrap.group import bootstrap
+from .cli.build.group import build
+from .cli.config.group import config
+from .cli.install.group import install
+from .cli.prepare.group import prepare
+from .cli.provision.group import provision
+from .cli.sync.group import sync
+from .cli.test.group import test
+from .cli.version import version
 
+# Use double quotes to be consistent
 
 @click.group(
     help='''
@@ -20,7 +21,7 @@ def oct():
     Do nothing -- this group should never be called without a sub-command.
     """
 
-    pass
+    pass  # Don't think you need this
 
 
 oct.add_command(bootstrap)

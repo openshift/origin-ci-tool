@@ -2,9 +2,9 @@ import copy
 import os
 
 import click
-import config
+from .. import config
 import yaml
-from config.default import default_config, default_inventory
+from .default import default_config, default_inventory
 
 
 def initialize_paths():
@@ -14,6 +14,9 @@ def initialize_paths():
     specification:
     https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
     """
+    # There has to be a better way to do this
+    # if HOME is not set, this will die
+    # use os.path.join
     config._config_home = os.getenv('XDG_CONFIG_HOME', os.environ['HOME'] + '/.config/origin-ci-tool/')
     config._config_path = config._config_home + 'config.yml'
     config._inventory_path = config._config_home + 'inventory'

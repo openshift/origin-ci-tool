@@ -1,4 +1,4 @@
-from config.load import initialize_paths, load_config, add_host_to_inventory, remove_host_from_inventory
+from .load import initialize_paths, load_config, add_host_to_inventory, remove_host_from_inventory
 
 # these module-level "private" variables will hold our
 # in-memory cache of information regarding configuration

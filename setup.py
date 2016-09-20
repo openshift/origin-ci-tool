@@ -1,5 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Add the above declaration on all python files
+
 from setuptools import setup, find_packages
 
+# Flush this out a bit more
 setup(
     name='oct',
     version='0.1',

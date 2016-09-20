@@ -1,5 +1,7 @@
-import config
+from . import _config
 
+
+# use a tuple, not a list
 _config_var_fields = [
     'hosts',
     'connection',
@@ -18,14 +20,14 @@ def default_vars(vars):
     :param vars: partially-filled Ansible variables
     :return: defaulted Ansible variables
     """
-    if not vars:
+    if not vars:  # if vars is None
         vars = dict()
 
     for field in _config_var_fields:
         var = 'origin_ci_' + field
         if var not in vars:
-            vars[var] = config._config[field]
+            vars[var] = _config[field]
 
-    vars['origin_ci_user'] = config._config['become_user']
+    vars['origin_ci_user'] = _config['become_user']
 
     return vars
