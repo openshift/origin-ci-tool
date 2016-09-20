@@ -10,7 +10,7 @@
   when: origin_ci_sync_destination is not defined
 
 - name: determine which remotes already exist
-  command: 'git remote'
+  command: '/usr/bin/git remote'
   args:
     chdir: '{{ origin_ci_sync_destination }}'
   register: origin_ci_sync_remotes_probe
@@ -21,13 +21,13 @@
   when: origin_ci_sync_remote not in origin_ci_sync_remotes_probe.stdout and origin_ci_sync_address is not defined
 
 - name: add the new remote if it doesn't exist and we have an address to point to
-  command: 'git remote add {{ origin_ci_sync_remote }} {{ origin_ci_sync_address }}'
+  command: '/usr/bin/git remote add {{ origin_ci_sync_remote }} {{ origin_ci_sync_address }}'
   args:
     chdir: '{{ origin_ci_sync_destination }}'
   when: origin_ci_sync_remote not in origin_ci_sync_remotes_probe.stdout and origin_ci_sync_address is defined
 
 - name: inspect the remote for the address if we do not have an address
-  shell: 'git remote show {{ origin_ci_sync_remote }} | grep "Fetch URL" | cut -c 14- '
+  shell: '/usr/bin/git remote show {{ origin_ci_sync_remote }} | grep "Fetch URL" | cut -c 14- '
   args:
     chdir: '{{ origin_ci_sync_destination }}'
   register: origin_ci_sync_remote_url

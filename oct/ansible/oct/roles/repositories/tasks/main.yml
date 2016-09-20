@@ -28,19 +28,19 @@
   with_items: '{{ origin_ci_repositories }}'
 
 - name: ensure all repositories allow pushes to happen to the current branch
-  command: 'git config --add receive.denyCurrentBranch ignore'
+  command: '/usr/bin/git config --add receive.denyCurrentBranch ignore'
   args:
     chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
   with_items: '{{ origin_ci_repositories }}'
 
 - name: ensure all repositories allow pushes to happen from the correct group
-  command: 'git config --add core.sharedRepository group'
+  command: '/usr/bin/git config --add core.sharedRepository group'
   args:
     chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
   with_items: '{{ origin_ci_repositories }}'
 
 - name: allow unsafe fast-forward pushes to the repository
-  command: 'git config --add receive.denyNonFastForwards false'
+  command: '/usr/bin/git config --add receive.denyNonFastForwards false'
   args:
     chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
   with_items: '{{ origin_ci_repositories }}'

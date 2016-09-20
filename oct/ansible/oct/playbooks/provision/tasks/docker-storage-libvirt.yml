@@ -4,7 +4,7 @@
   register: origin_ci_vagrant_info
 
 - name: generate a location for domain information
-  command: 'mktemp'
+  command: '/usr/bin/mktemp'
   register: origin_ci_vagrant_info_location
 
 - name: serialize guest domain information

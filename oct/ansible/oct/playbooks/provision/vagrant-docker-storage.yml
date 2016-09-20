@@ -67,7 +67,7 @@
              ( origin_ci_fdisk | failed and 'Re-reading the partition table failed.: Device or resource busy' not in origin_ci_fdisk.stdout )"
 
     - name: commit the new partition table
-      command: partprobe
+      command: '/usr/bin/partprobe'
 
     - name: set up the volume group
       lvg:
