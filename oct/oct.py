@@ -3,6 +3,7 @@ from cli.boostrap.group import bootstrap
 from cli.build.group import build
 from cli.config.group import config
 from cli.install.group import install
+from cli.make.make import make
 from cli.prepare.group import prepare
 from cli.provision.group import provision
 from cli.sync.group import sync
@@ -27,6 +28,7 @@ oct.add_command(bootstrap)
 oct.add_command(build)
 oct.add_command(config)
 oct.add_command(install)
+oct.add_command(make)
 oct.add_command(prepare)
 oct.add_command(provision)
 oct.add_command(sync)

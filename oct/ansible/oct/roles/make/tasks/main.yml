@@ -1,0 +1,17 @@
+---
+- name: ensure that we are given a destination or we can determine one
+  fail:
+    msg: 'The repository location could not be determined as $GOPATH was unset.'
+  when: origin_ci_make_destination is not defined and ansible_env.GOPATH is not defined
+
+- name: determine the directory to work in if no override is provided
+  set_fact:
+    origin_ci_make_destination: "{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_make_repository }}"
+  when: origin_ci_make_destination is not defined
+
+- name: execute the make target specified
+  make:
+    target: '{{ item }}'
+    params: '{{ origin_ci_make_parameters | default(omit) }}'
+    chdir: '{{ origin_ci_make_destination }}'
+  with_items: '{{ origin_ci_make_targets }}'
