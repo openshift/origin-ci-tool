@@ -6,7 +6,7 @@ _config_home = ''
 _config_path = ''
 _vagrant_home = ''
 _inventory_path = ''
-_config = dict()
+_config = {}
 
 initialize_paths()
 load_config()

@@ -42,7 +42,7 @@ def show(options, all):
 
     :param options: which options to show the value for
     """
-    to_print = dict()
+    to_print = {}
 
     if options and not all:
         for option in options:

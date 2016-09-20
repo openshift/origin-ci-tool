@@ -120,9 +120,9 @@ def install_docker(version, repos=None, repourls=None):
     :param repos: list of RPM repositories from which to install Docker
     :param repourls: list of RPM repository URLs from which to install Docker
     """
-    playbook_variables = dict(
-        origin_ci_docker_package='docker'
-    )
+    playbook_variables = {
+        'origin_ci_docker_package': 'docker'
+    }
 
     if version:
         playbook_variables['origin_ci_docker_package'] += '-' + version

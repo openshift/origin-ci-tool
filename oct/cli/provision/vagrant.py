@@ -174,23 +174,23 @@ def provision(operating_system, provider, stage, ip):
     """
     PlaybookRunner().run(
         playbook_source=playbook_path('provision/vagrant-up'),
-        playbook_variables=dict(
-            origin_ci_vagrant_home_dir=config._vagrant_home,
-            origin_ci_vagrant_os=operating_system,
-            origin_ci_vagrant_provider=provider,
-            origin_ci_vagrant_stage=stage,
-            origin_ci_vagrant_ip=ip,
-            origin_ci_vagrant_hostname=config._config['vm_hostname']
-        )
+        playbook_variables={
+            'origin_ci_vagrant_home_dir': config._vagrant_home,
+            'origin_ci_vagrant_os': operating_system,
+            'origin_ci_vagrant_provider': provider,
+            'origin_ci_vagrant_stage': stage,
+            'origin_ci_vagrant_ip': ip,
+            'origin_ci_vagrant_hostname': config._config['vm_hostname']
+        }
     )
 
     # if we successfully executed the playbook, we have a new host
     config.add_host_to_inventory(config._config['vm_hostname'])
-    config._config['vm'] = dict(
-        operating_system=operating_system,
-        provider=provider,
-        stage=stage
-    )
+    config._config['vm'] = {
+        'operating_system': operating_system,
+        'provider': provider,
+        'stage': stage
+    }
     safe_update_config()
 
     if stage == Stage.bare:
@@ -200,11 +200,11 @@ def provision(operating_system, provider, stage, ip):
         # group backed by the LVM pool
         PlaybookRunner().run(
             playbook_source=playbook_path('provision/vagrant-docker-storage'),
-            playbook_variables=dict(
-                origin_ci_vagrant_provider=provider,
-                origin_ci_vagrant_home_dir=config._vagrant_home,
-                origin_ci_vagrant_hostname=config._config['vm_hostname']
-            )
+            playbook_variables={
+                'origin_ci_vagrant_provider': provider,
+                'origin_ci_vagrant_home_dir': config._vagrant_home,
+                'origin_ci_vagrant_hostname': config._config['vm_hostname']
+            }
         )
 
 
@@ -214,9 +214,9 @@ def destroy():
     """
     PlaybookRunner().run(
         playbook_source=playbook_path('provision/vagrant-down'),
-        playbook_variables=dict(
-            origin_ci_vagrant_home_dir=config._vagrant_home
-        )
+        playbook_variables={
+            'origin_ci_vagrant_home_dir': config._vagrant_home
+        }
     )
 
     # if we successfully executed the playbook, we have removed a host

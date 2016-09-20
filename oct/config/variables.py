@@ -19,7 +19,7 @@ def default_variables(playbook_variables):
     :return: defaulted Ansible variables
     """
     if not playbook_variables:
-        playbook_variables = dict()
+        playbook_variables = {}
 
     for field in _config_var_fields:
         var = 'origin_ci_' + field

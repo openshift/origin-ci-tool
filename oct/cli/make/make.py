@@ -34,13 +34,13 @@ def make(repository, target, parameters, make_destination):
     :param repository: name of the repository in which to work
     :param target: make target or targets
     """
-    playbook_variables = dict(
-        origin_ci_make_repository=repository,
-        origin_ci_make_targets=list(target)
-    )
+    playbook_variables = {
+        'origin_ci_make_repository': repository,
+        'origin_ci_make_targets': list(target)
+    }
 
     if parameters:
-        make_parameters = dict()
+        make_parameters = {}
         for param in parameters:
             if '=' not in param:
                 raise click.UsageError('Parameter values must be a key-value pair. Parameter %s is invalid.' % param)

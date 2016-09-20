@@ -49,23 +49,20 @@ class PlaybookRunner:
         self._variable_manager = variable_manager
         self._data_loader = data_loader
 
-        self._ansible_options = default_options(
-            dict(
-                connection=connection,
-                module_path=module_path,
-                forks=forks,
-                become=become,
-                become_method=become_method,
-                become_user=become_user,
-                check=check,
-                verbosity=verbosity,
-                # listing options, which we won't use here
-                listhosts=None,
-                listtasks=None,
-                listtags=None,
-                syntax=None
-            )
-        )
+        self._ansible_options = default_options({
+            'connection': connection,
+            'module_path': module_path,
+            'forks': forks,
+            'become': become,
+            'become_method': become_method,
+            'become_user': become_user,
+            'check': check,
+            'verbosity': verbosity,
+            'listhosts': None,
+            'listtasks': None,
+            'listtags': None,
+            'syntax': None
+        })
 
         display.verbosity = self._ansible_options.verbosity
 

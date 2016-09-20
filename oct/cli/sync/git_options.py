@@ -132,16 +132,16 @@ def git_version_specifier(refspec, branch, commit, tag):
     :return: minimal set of specifiers in a dict using Ansible keys
     """
     if commit:
-        return dict(origin_ci_sync_version=commit)
+        return {'origin_ci_sync_version': commit}
 
     if tag:
-        return dict(origin_ci_sync_version=tag)
+        return {'origin_ci_sync_version': tag}
 
     if branch and not refspec:
-        return dict(origin_ci_sync_version=branch)
+        return {'origin_ci_sync_version': branch}
 
     if branch and refspec:
-        return dict(
-            origin_ci_sync_version=branch,
-            origin_ci_sync_refspec=refspec + ':' + branch
-        )
+        return {
+            'origin_ci_sync_version': branch,
+            'origin_ci_sync_refspec': refspec + ':' + branch
+        }

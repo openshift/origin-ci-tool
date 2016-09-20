@@ -88,9 +88,9 @@ def remote(repository, sync_destination, remote, new_remote, tag, refspec, branc
     if not (remote or new_remote):
         remote = 'origin'
 
-    playbook_variables = dict(
-        origin_ci_sync_repository=repository
-    )
+    playbook_variables = {
+        'origin_ci_sync_repository': repository
+    }
 
     if sync_destination:
         playbook_variables['origin_ci_sync_destination'] = sync_destination

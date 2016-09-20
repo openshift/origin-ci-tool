@@ -67,9 +67,9 @@ def local(repository, sync_source, sync_destination, tag, refspec, branch, commi
     if not (refspec or branch or commit or tag):
         branch = 'master'
 
-    playbook_variables = dict(
-        origin_ci_sync_repository=repository
-    )
+    playbook_variables = {
+        'origin_ci_sync_repository': repository
+    }
 
     if sync_source:
         playbook_variables['origin_ci_sync_source'] = sync_source
