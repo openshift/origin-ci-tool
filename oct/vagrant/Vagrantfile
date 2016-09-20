@@ -118,7 +118,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provider provider_symbol do |provider_config, config_override|
       config_override.vm.box_url = BOXES[operating_system()][provider_symbol][stage()]
       provider_config.cpus       = (ENV["OPENSHIFT_VAGRANT_CPUS"]   || 2).to_i
-      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 4096).to_i
+      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 6 * 1024).to_i
     end
   end
 
