@@ -54,7 +54,7 @@ Examples:
     callback=install_dependencies_for_preset
 )
 @ansible_output_options
-def all_command(preset):
+def all_command(preset=None):
     """
     Installs the full set of dependencies on the remote host.
 
