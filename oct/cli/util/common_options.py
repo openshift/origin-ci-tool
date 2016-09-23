@@ -30,6 +30,8 @@ def update_ansible_verbosity(ctx, _, value):
     """
     Update the desired Ansible verbosity level.
 
+    :param ctx: Click context
+    :param _: command-line parameter
     :param value: desired Ansible verbosity level
     """
     if not value or ctx.resilient_parsing:
@@ -60,6 +62,8 @@ def update_ansible_dry_run(ctx, _, value):
     """
     Updated Ansible to do a dry run.
 
+    :param ctx: Click context
+    :param _: command-line parameter
     :param value: whether or not to do a dry run
     """
     if not value or ctx.resilient_parsing:
@@ -89,6 +93,8 @@ def update_ansible_debug_mode(ctx, _, value):
     """
     Updated Ansible to run with debug mode on.
 
+    :param ctx: Click context
+    :param _: command-line parameter
     :param value: whether or not to turn on debug mode
     """
     if not value or ctx.resilient_parsing:

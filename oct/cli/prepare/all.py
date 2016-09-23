@@ -17,6 +17,10 @@ def install_dependencies_for_preset(ctx, _, value):
 
     Handles the special `--for` option, defaults to `origin/master` if
     a preset is not provided by the user.
+
+    :param ctx: Click context
+    :param _: command-line parameter
+    :param value: version of OpenShift for which to install dependencies
     """
     if not value or ctx.resilient_parsing:
         return

@@ -99,7 +99,6 @@ class PlaybookRunnerTestCase(TestCase):
         care about.
 
         :param expected_calls: expected call metadata
-        :param test_name: name of the test being run
         """
         if expected_calls is None:
             expected_calls = []

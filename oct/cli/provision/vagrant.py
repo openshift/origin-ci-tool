@@ -43,6 +43,8 @@ def destroy_callback(ctx, _, value):
     """
     Tear down the currently running VM using `vagrant destroy`
 
+    :param ctx: Click context
+    :param _: command-line parameter
     :param value: whether or not to tear down the VM
     """
     if not value or ctx.resilient_parsing:

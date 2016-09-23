@@ -9,7 +9,6 @@ def format_assertion_failure(message, expectation=None, extra=None):
     Format an assertion failure message nicely.
 
     :param message: base failure message
-    :param name: test name
     :param expectation: expectation statement
     :param extra: extra details
     :return:
@@ -29,6 +28,7 @@ def format_expectation(actual, expected, diff=False):
 
     :param expected: object
     :param actual: object
+    :param diff: whether or not to also display the diff
     :return: formatted text
     """
     actual_data = dump(data=actual, default_flow_style=False, explicit_start=True)

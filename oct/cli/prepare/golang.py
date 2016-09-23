@@ -15,6 +15,8 @@ def install_golang_custom_callback(ctx, _, value):
     Install Go on the remote host for a given OpenShift version.
     Handles the special `--for` option.
 
+    :param ctx: Click context
+    :param _: command-line parameter
     :param value: version of OpenShift for which to install Golang
     """
     if not value or ctx.resilient_parsing:
@@ -83,7 +85,6 @@ def golang(version, repos, repourls):
     :param version: version of Golang to install
     :param repos: list of RPM repositories from which to install Golang
     :param repourls: list of RPM repository URLs from which to install Golang
-    :param preset: version of OpenShift for which to install Golang
     """
     install_golang(version, repos, repourls)
 

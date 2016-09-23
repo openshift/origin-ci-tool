@@ -17,6 +17,8 @@ def install_docker_for_preset(ctx, _, value):
     Install Docker on the remote host for a given OpenShift version.
     Handles the special `--for` option.
 
+    :param ctx: Click context
+    :param _: command-line parameter
     :param value: version of OpenShift for which to install Docker
     """
     if not value or ctx.resilient_parsing:
@@ -111,7 +113,6 @@ def docker(version, repos, repourls):
     :param version: version of Docker to install
     :param repos: list of RPM repositories from which to install Docker
     :param repourls: list of RPM repository URLs from which to install Docker
-    :param preset: version of OpenShift for which to install Docker
     """
     install_docker(version, repos, repourls)
 

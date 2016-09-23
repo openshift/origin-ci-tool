@@ -14,11 +14,11 @@ from ..config.variables import default_variables
 
 
 class PlaybookRunner(object):
-    '''
+    """
     This class allows for a simple abstraction around the loading
     and execution of an Ansible playbook given an inventory and
     variables to expose to the playbook.
-    '''
+    """
 
     def __init__(self,
                  variable_manager=VariableManager(), data_loader=DataLoader(),

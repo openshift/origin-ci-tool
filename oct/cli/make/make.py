@@ -35,6 +35,8 @@ def make(repository, target, parameters, make_destination):
     """
     Execute some make targets on the remote host.
 
+    :param parameters: parameters to pass to make
+    :param make_destination: optional destination on the remote host
     :param repository: name of the repository in which to work
     :param target: make target or targets
     """
