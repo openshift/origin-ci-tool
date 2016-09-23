@@ -7,8 +7,7 @@ from oct.cli.sync.git_options import git_version_specifier, validate_git_specifi
 
 class ValidateGitSpecifierTestCase(TestCase):
     def test_commit(self):
-        # "self.assertNotRaises()"
-        validate_git_specifier(refspec=None, branch=None, commit='SHA', tag=None)
+        self.assertEqual(validate_git_specifier(refspec=None, branch=None, commit='SHA', tag=None), None)
 
     def test_commit_and_anything(self):
         with self.assertRaisesRegexp(UsageError, 'neither a refspec, branch, or tag'):
@@ -19,20 +18,18 @@ class ValidateGitSpecifierTestCase(TestCase):
             validate_git_specifier(refspec=None, branch=None, commit='SHA', tag='v1.0.0')
 
     def test_tag(self):
-        # "self.assertNotRaises()"
-        validate_git_specifier(refspec=None, branch=None, commit=None, tag='v1.0.0')
+        self.assertEqual(validate_git_specifier(refspec=None, branch=None, commit=None, tag='v1.0.0'), None)
 
     def test_tag_and_anything(self):
         with self.assertRaisesRegexp(UsageError, 'neither a refspec, branch, or commit'):
             validate_git_specifier(refspec='pulls/1/head', branch=None, commit=None, tag='v1.0.0')
         with self.assertRaisesRegexp(UsageError, 'neither a refspec, branch, or commit'):
             validate_git_specifier(refspec=None, branch='master', commit=None, tag='v1.0.0')
-        with self.assertRaises(UsageError): # the commit check aliases this, so we don't check the content
+        with self.assertRaises(UsageError):  # the commit check aliases this, so we don't check the content
             validate_git_specifier(refspec=None, branch=None, commit='SHA', tag='v1.0.0')
 
     def test_branch(self):
-        # "self.assertNotRaises()"
-        validate_git_specifier(refspec=None, branch='master', commit=None, tag=None)
+        self.assertEqual(validate_git_specifier(refspec=None, branch='master', commit=None, tag=None), None)
 
     def test_branch_and_anything(self):
         with self.assertRaises(UsageError):  # the commit check aliases this, so we don't check the content
@@ -49,8 +46,7 @@ class ValidateGitSpecifierTestCase(TestCase):
             validate_git_specifier(refspec='pulls/1/head', branch='master', commit=None, tag=None)
 
     def test_refspec_branch(self):
-        # "self.assertNotRaises()"
-        validate_git_specifier(refspec='pulls/1/head', branch='myfeature', commit=None, tag=None)
+        self.assertEqual(validate_git_specifier(refspec='pulls/1/head', branch='myfeature', commit=None, tag=None), None)
 
     def test_refspec_and_anything(self):
         with self.assertRaises(UsageError):  # the commit check aliases this, so we don't check the content
