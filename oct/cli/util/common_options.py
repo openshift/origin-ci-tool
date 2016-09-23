@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from ansible import constants as C
+from ansible import constants
 from click import option
 
 from ...config import CONFIG
@@ -100,7 +100,7 @@ def update_ansible_debug_mode(ctx, _, value):
     if not value or ctx.resilient_parsing:
         return
 
-    C.DEFAULT_DEBUG = True
+    constants.DEFAULT_DEBUG = True
 
 
 def ansible_debug_mode_option(func):
