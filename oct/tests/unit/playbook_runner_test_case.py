@@ -50,12 +50,12 @@ class PlaybookRunnerTestCase(TestCase):
         patcher = patch.object(
             target=PlaybookRunner,
             attribute='run',
-            new=lambda playbook_runner, playbook_source, playbook_variables=None: \
-                self._call_metadata.append({
-                    'playbook_source': playbook_source,
-                    'playbook_variables': playbook_variables,
-                    'ansible_options': playbook_runner._ansible_options
-                })
+            new=lambda playbook_runner, playbook_source, playbook_variables=None:
+            self._call_metadata.append({
+                'playbook_source': playbook_source,
+                'playbook_variables': playbook_variables,
+                'ansible_options': playbook_runner._ansible_options
+            })
         )
         patcher.start()
         self.addCleanup(patcher.stop)
