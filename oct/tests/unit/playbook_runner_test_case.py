@@ -11,7 +11,7 @@ from os import environ
 # Allow for run-time triggering of stack trace output
 show_stack_trace = 'SHOW_STACK_TRACE' in environ
 if not show_stack_trace:
-    __unittest = show_stack_trace
+    __unittest = True
 
 # Click does not expose these exit codes, so we need to define them
 CLICK_RC_OK = 0
