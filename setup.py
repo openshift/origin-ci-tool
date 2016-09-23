@@ -23,6 +23,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        oct=oct.oct:oct
+        oct=oct.oct:oct_command
     ''',
 )
