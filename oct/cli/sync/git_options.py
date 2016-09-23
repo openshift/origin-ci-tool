@@ -107,18 +107,12 @@ def validate_git_specifier(refspec, branch, commit, tag):
         raise UsageError('If a commit is specified, neither a refspec, branch, or tag can also be specified.')
 
     if tag and (commit or refspec or branch):
-
-    if branch and (commit or tag):
-        raise click.UsageError('If a branch is specified, neither a tag or commit can also be specified.')
-
-    if refspec and (commit or tag):
-        raise click.UsageError('If a refspec is specified, neither a tag or commit can also be specified.')
         raise UsageError('If a tag is specified, neither a refspec, branch, or commit can also be specified.')
 
     if refspec and not branch:
         raise UsageError('If a refspec is specified, the name of the branch to create for it is required.')
 
-    if refspec and branch and branch == 'master':
+    if refspec and branch == 'master':
         raise UsageError('The branch specified for a refspec cannot be the master branch.')
 
 
