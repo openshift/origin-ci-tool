@@ -11,13 +11,13 @@ def sync_options(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    options = [
+    all_options = [
         sync_source_option,
         sync_destination_option
     ]
 
-    for option in reversed(options):
-        func = option(func)
+    for sync_option in reversed(all_options):
+        func = sync_option(func)
 
     return func
 

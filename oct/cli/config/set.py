@@ -10,6 +10,7 @@ _short_help = 'Update or append to the serialized configuration.'
 
 
 @command(
+    name='set',
     short_help=_short_help,
     help=_short_help + '''
 
@@ -33,7 +34,7 @@ Examples:
 @argument(
     'value'
 )
-def set(option, value):
+def set_command(option, value):
     """
     Update or append to the configuration file.
 

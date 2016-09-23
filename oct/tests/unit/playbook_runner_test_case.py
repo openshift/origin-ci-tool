@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from click.testing import CliRunner
 from mock import patch
-from oct.oct import oct
+from oct.oct import oct_command
 from oct.tests.unit.formatting_util import format_assertion_failure, format_expectation
 from oct.util.playbook_runner import PlaybookRunner
 from os import environ
@@ -66,7 +66,7 @@ class PlaybookRunnerTestCase(TestCase):
 
         :param parameters: a TestCaseParameters instance
         """
-        result = CliRunner().invoke(cli=oct, args=parameters.args)
+        result = CliRunner().invoke(cli=oct_command, args=parameters.args)
         self.assertEqual(
             parameters.expected_result,
             result.exit_code,

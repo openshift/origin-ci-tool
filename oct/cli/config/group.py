@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 from click import group
 
 from .remove import remove
-from .set import set
+from .set import set_command
 from .show import show
 
 
@@ -26,5 +26,5 @@ def config():
 
 
 config.add_command(remove)
-config.add_command(set)
+config.add_command(set_command)
 config.add_command(show)

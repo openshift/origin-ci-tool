@@ -14,14 +14,14 @@ def ansible_output_options(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    options = [
+    output_options = [
         ansible_verbosity_option,
         ansible_dry_run_option,
         ansible_debug_mode_option
     ]
 
-    for option in reversed(options):
-        func = option(func)
+    for output_option in reversed(output_options):
+        func = output_option(func)
 
     return func
 

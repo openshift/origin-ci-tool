@@ -51,6 +51,7 @@ Examples:
 @sync_destination_option
 @option(
     '--remote', '-r',
+    'remote_name',
     metavar='NAME',
     help='Named remote server to use.  [default: origin]'
 )
@@ -63,7 +64,7 @@ Examples:
 )
 @git_options
 @ansible_output_options
-def remote(repository, sync_destination, remote, new_remote, tag, refspec, branch, commit):
+def remote(repository, sync_destination, remote_name, new_remote, tag, refspec, branch, commit):
     """
     Synchronize a repository on a remote host at the
     sync_destination from the specified remote to the
@@ -71,7 +72,7 @@ def remote(repository, sync_destination, remote, new_remote, tag, refspec, branc
 
     :param repository: name of the repository to sync
     :param sync_destination: repository location override
-    :param remote: name of a remote server to sync from
+    :param remote_name: name of a remote server to sync from
     :param new_remote: name and url of a new remote server to add and sync from
     :param tag: tag to synchronize to
     :param refspec: refspec to synchronize to
@@ -80,7 +81,7 @@ def remote(repository, sync_destination, remote, new_remote, tag, refspec, branc
     """
     validate_git_specifier(refspec, branch, commit, tag)
     validate_repository(repository)
-    validate_remote(remote, new_remote)
+    validate_remote(remote_name, new_remote)
 
     # We don't want to use default flag values as we cannot
     # tell if they are applied or not, and that makes validation
@@ -89,8 +90,8 @@ def remote(repository, sync_destination, remote, new_remote, tag, refspec, branc
     if not (refspec or branch or commit or tag):
         branch = 'master'
 
-    if not (remote or new_remote):
-        remote = 'origin'
+    if not (remote_name or new_remote):
+        remote_name = 'origin'
 
     playbook_variables = {
         'origin_ci_sync_repository': repository
@@ -107,7 +108,7 @@ def remote(repository, sync_destination, remote, new_remote, tag, refspec, branc
         playbook_variables['origin_ci_sync_remote'] = new_remote[0]
         playbook_variables['origin_ci_sync_address'] = new_remote[1]
     else:
-        playbook_variables['origin_ci_sync_remote'] = remote
+        playbook_variables['origin_ci_sync_remote'] = remote_name
 
     PlaybookRunner().run(
         playbook_source=playbook_path('sync/remote'),
@@ -129,12 +130,12 @@ def validate_repository(repository):
         raise UsageError('Synchronizing the %s repository using remote servers is not supported.' % repository)
 
 
-def validate_remote(remote, new_remote):
+def validate_remote(existing_remote, new_remote):
     """
     Validate that a remote was chosen.
 
-    :param remote: name of an existing remote
+    :param existing_remote: name of an existing remote
     :param new_remote: name and url for a new remote
     """
-    if new_remote and remote:
+    if new_remote and existing_remote:
         raise UsageError('A new remote and existing remote cannot be specified at once.')

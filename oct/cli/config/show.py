@@ -31,6 +31,7 @@ Examples:
 )
 @option(
     '--all', '-a',
+    'show_all',
     help='Print all configuration options.',
     is_flag=True
 )
@@ -38,22 +39,23 @@ Examples:
     'options',
     nargs=-1
 )
-def show(options, all):
+def show(options, show_all):
     """
     Print a nice representation of the configuration option
     as found in the serialized configuration. If no options
     are specified or if all are requested, print all options.
 
+    :param show_all: whether or not to print all options
     :param options: which options to show the value for
     """
     to_print = {}
 
-    if options and not all:
-        for option in options:
-            if option not in CONFIG['config']:
-                raise UsageError(message='Option ' + option + ' not found in configuration.')
+    if options and not show_all:
+        for config_option in options:
+            if config_option not in CONFIG['config']:
+                raise UsageError(message='Option ' + config_option + ' not found in configuration.')
             else:
-                to_print[option] = CONFIG['config'][option]
+                to_print[config_option] = CONFIG['config'][config_option]
 
         print_options(to_print)
     else:

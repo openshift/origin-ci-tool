@@ -29,6 +29,7 @@ _short_help = 'Install dependencies on remote hosts.'
 
 
 @command(
+    name='all',
     short_help=_short_help,
     help=_short_help + '''
 
@@ -49,7 +50,7 @@ Examples:
     callback=install_dependencies_for_preset
 )
 @ansible_output_options
-def all(preset):
+def all_command(preset):
     """
     Installs the full set of dependencies on the remote host.
 

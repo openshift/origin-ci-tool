@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import group
 
-from .all import all
+from .all import all_command
 from .docker import docker
 from .golang import golang
 from .repositories import repositories
@@ -31,7 +31,7 @@ def prepare():
     pass
 
 
-prepare.add_command(all)
+prepare.add_command(all_command)
 prepare.add_command(docker)
 prepare.add_command(golang)
 prepare.add_command(repositories)

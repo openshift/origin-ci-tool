@@ -16,11 +16,12 @@ from .cli.version import version
 
 
 @group(
+    name='oct',
     help='''
 A CLI tool for building, testing and composing OpenShift repositories.
 '''
 )
-def oct():
+def oct_command():
     """
     Do nothing -- this group should never be called without a sub-command.
     """
@@ -28,13 +29,13 @@ def oct():
     pass
 
 
-oct.add_command(bootstrap)
-oct.add_command(build)
-oct.add_command(config)
-oct.add_command(install)
-oct.add_command(make)
-oct.add_command(prepare)
-oct.add_command(provision)
-oct.add_command(sync)
-oct.add_command(test)
-oct.add_command(version)
+oct_command.add_command(bootstrap)
+oct_command.add_command(build)
+oct_command.add_command(config)
+oct_command.add_command(install)
+oct_command.add_command(make)
+oct_command.add_command(prepare)
+oct_command.add_command(provision)
+oct_command.add_command(sync)
+oct_command.add_command(test)
+oct_command.add_command(version)
