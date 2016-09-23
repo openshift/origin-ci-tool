@@ -11,7 +11,7 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
-def install_dependencies_for_preset(ctx, param, value):
+def install_dependencies_for_preset(ctx, _, value):
     """
     Installs the full set of dependencies on the remote host.
 

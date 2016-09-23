@@ -26,7 +26,7 @@ def ansible_output_options(func):
     return func
 
 
-def update_ansible_verbosity(ctx, param, value):
+def update_ansible_verbosity(ctx, _, value):
     """
     Update the desired Ansible verbosity level.
 
@@ -56,7 +56,7 @@ def ansible_verbosity_option(func):
     )(func)
 
 
-def update_ansible_dry_run(ctx, param, value):
+def update_ansible_dry_run(ctx, _, value):
     """
     Updated Ansible to do a dry run.
 
@@ -85,7 +85,7 @@ def ansible_dry_run_option(func):
     )(func)
 
 
-def update_ansible_debug_mode(ctx, param, value):
+def update_ansible_debug_mode(ctx, _, value):
     """
     Updated Ansible to run with debug mode on.
 

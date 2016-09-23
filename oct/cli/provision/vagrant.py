@@ -39,7 +39,7 @@ class Stage(object):
     install = 'install'
 
 
-def destroy_callback(ctx, param, value):
+def destroy_callback(ctx, _, value):
     """
     Tear down the currently running VM using `vagrant destroy`
 

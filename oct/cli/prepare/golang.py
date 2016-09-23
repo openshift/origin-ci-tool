@@ -10,7 +10,7 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
-def install_golang_custom_callback(ctx, param, value):
+def install_golang_custom_callback(ctx, _, value):
     """
     Install Go on the remote host for a given OpenShift version.
     Handles the special `--for` option.
@@ -76,7 +76,7 @@ Examples:
     preset_callback=install_golang_custom_callback
 )
 @ansible_output_options
-def golang(version, repos, repourls, preset):
+def golang(version, repos, repourls):
     """
     Installs the Go toolchain and source on the remote host.
 

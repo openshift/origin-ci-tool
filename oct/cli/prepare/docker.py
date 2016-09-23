@@ -12,7 +12,7 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
-def install_docker_for_preset(ctx, param, value):
+def install_docker_for_preset(ctx, _, value):
     """
     Install Docker on the remote host for a given OpenShift version.
     Handles the special `--for` option.
@@ -104,7 +104,7 @@ Examples:
     preset_callback=install_docker_for_preset
 )
 @ansible_output_options
-def docker(version, repos, repourls, preset):
+def docker(version, repos, repourls):
     """
     Installs the Docker daemon and CLI on the remote host.
 
