@@ -135,7 +135,7 @@ def install_docker(version, repos=None, repourls=None):
         playbook_variables['origin_ci_docker_enabledrepos'] = ','.join(repos)
 
     if repourls:
-        playbook_variables['origin_ci_docker_tmp_repourls'] = repourls
+        playbook_variables['origin_ci_docker_tmp_repourls'] = list(repourls)
 
     PlaybookRunner().run(
         playbook_source=playbook_path('prepare/docker'),
