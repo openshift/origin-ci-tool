@@ -1,8 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from unittest import TestCase
-from unittest import skip
+from unittest import TestCase, skip
 
 from oct.cli.prepare.docker import docker_version_for_preset, docker_version_with_epoch
 from oct.cli.util.preset_option import Preset
@@ -110,6 +109,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
                 }
             }]
         ))
+
 
 # TODO: when config is figured out ensure that we don't have VM info here
 @skip('WAITING ON CONFIG')

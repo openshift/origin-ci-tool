@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from click import UsageError
-from oct.cli.sync.git_options import validate_git_specifier, git_version_specifier
+from oct.cli.sync.git_options import git_version_specifier, validate_git_specifier
 
 
 class ValidateGitSpecifierTestCase(TestCase):

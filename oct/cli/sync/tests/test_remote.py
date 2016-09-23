@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function
 from oct.cli.util.repository_options import Repository
 from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace
 from oct.util.playbook import playbook_path
-from os.path import abspath, dirname
 
 if not show_stack_trace:
     __unittest = True

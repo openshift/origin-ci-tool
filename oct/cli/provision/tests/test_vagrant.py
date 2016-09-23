@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from oct.cli.provision.vagrant import OperatingSystem, Provider, Stage
 from oct.config import CONFIG
-from oct.tests.unit.playbook_runner_test_case import PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace, CLICK_RC_USAGE
+from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace
 from oct.util.playbook import playbook_path
 
 if not show_stack_trace:
