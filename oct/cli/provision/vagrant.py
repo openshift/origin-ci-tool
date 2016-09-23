@@ -1,13 +1,15 @@
-import click
-import config
-from cli.util.common_options import ansible_output_options
-from config.load import safe_update_config
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
 
+from click import Choice, UsageError, command, option
 
 class OperatingSystem:
+from ..util.common_options import ansible_output_options
+from ...config import CONFIG
+from ...config.load import add_host_to_inventory, remove_host_from_inventory, safe_update_config
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
+
+
     """
     An enumeration of supported operating systems for
     Vagrant provisioning of local VMs.
@@ -52,7 +54,7 @@ def destroy_callback(ctx, param, value):
 _short_help = 'Provision a local VM using Vagrant.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 
@@ -85,10 +87,10 @@ Examples:
   $ oct provision vagrant --ip=10.245.2.2
 '''
 )
-@click.option(
+@option(
     '--os', '-o',
     'operating_system',
-    type=click.Choice([
+    type=Choice([
         OperatingSystem.fedora,
         OperatingSystem.centos
     ]),
@@ -97,9 +99,9 @@ Examples:
     metavar='NAME',
     help='VM operating system.'
 )
-@click.option(
+@option(
     '--provider', '-p',
-    type=click.Choice([
+    type=Choice([
         Provider.libvirt,
         Provider.virtualbox,
         Provider.vmware
@@ -109,9 +111,9 @@ Examples:
     metavar='NAME',
     help='Virtualization provider.'
 )
-@click.option(
+@option(
     '--stage', '-s',
-    type=click.Choice([
+    type=Choice([
         Stage.bare,
         Stage.base,
         Stage.install
@@ -121,7 +123,7 @@ Examples:
     metavar='NAME',
     help='VM image stage.'
 )
-@click.option(
+@option(
     '--master-ip', '-i',
     'ip',
     default='10.245.2.2',
@@ -129,7 +131,7 @@ Examples:
     metavar='ADDRESS',
     help='Desired IP of the VM.'
 )
-@click.option(
+@option(
     '--destroy', '-d',
     is_flag=True,
     expose_value=False,
@@ -161,7 +163,7 @@ def validate(provider, stage):
     :param stage: image stage chosen
     """
     if provider == Provider.vmware and stage != Stage.bare:
-        raise click.UsageError('Only the %s stage is supported for the %s provider.' % (Stage.bare, Provider.vmware))
+        raise UsageError('Only the %s stage is supported for the %s provider.' % (Stage.bare, Provider.vmware))
 
 
 def provision(operating_system, provider, stage, ip):

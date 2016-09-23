@@ -1,5 +1,6 @@
-import click
 from __future__ import absolute_import, division, print_function
+
+from click import Path, option
 
 
 def sync_options(func):
@@ -27,10 +28,10 @@ def sync_source_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--src', '-s',
         'sync_source',
-        type=click.Path(
+        type=Path(
             exists=True,
             file_okay=False,
             dir_okay=True,
@@ -48,10 +49,10 @@ def sync_destination_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--dest', '-d',
         'sync_destination',
-        type=click.Path(
+        type=Path(
             file_okay=False,
             dir_okay=True
         ),

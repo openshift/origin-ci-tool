@@ -1,18 +1,20 @@
-import click
-from cli.boostrap.group import bootstrap
-from cli.build.group import build
-from cli.config.group import config
-from cli.install.group import install
-from cli.make.make import make
-from cli.prepare.group import prepare
-from cli.provision.group import provision
-from cli.sync.group import sync
-from cli.test.group import test
-from cli.version import version
 from __future__ import absolute_import, division, print_function
 
+from click import group
 
-@click.group(
+from .cli.boostrap.group import bootstrap
+from .cli.build.group import build
+from .cli.config.group import config
+from .cli.install.group import install
+from .cli.make.make import make
+from .cli.prepare.group import prepare
+from .cli.provision.group import provision
+from .cli.sync.group import sync
+from .cli.test.group import test
+from .cli.version import version
+
+
+@group(
     help='''
 A CLI tool for building, testing and composing OpenShift repositories.
 '''

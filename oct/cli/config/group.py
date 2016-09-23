@@ -1,11 +1,13 @@
-import click
-from cli.config.remove import remove
-from cli.config.set import set
-from cli.config.show import show
 from __future__ import absolute_import, division, print_function
 
+from click import group
 
-@click.group(
+from .remove import remove
+from .set import set
+from .show import show
+
+
+@group(
     short_help='View, update and append to the serialized configuration.',
     help='''
 Common configuration options for Ansible are stored in serialized

@@ -1,16 +1,18 @@
-import click
 from __future__ import absolute_import, division, print_function
+
 from __main__ import display
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
-from config.options import default_options, default_inventory
-from config.variables import default_variables
+from click import ClickException
 
+from ..config.options import default_inventory, default_options
+from ..config.variables import default_variables
 
 class PlaybookRunner:
+
     '''
     This class allows for a simple abstraction around the loading
     and execution of an Ansible playbook given an inventory and
@@ -95,4 +97,4 @@ class PlaybookRunner:
         ).run()
 
         if result is not TaskQueueManager.RUN_OK:
-            raise click.ClickException('Playbook execution failed with code ' + str(result))
+            raise ClickException('Playbook execution failed with code ' + str(result))

@@ -1,5 +1,6 @@
-import click
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, option
 
 git_options_helptext = '''
 \b
@@ -19,15 +20,15 @@ def git_options(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    options = [
+    click_options = [
         git_refspec_option,
         git_branch_option,
         git_commit_option,
         git_tag_option
     ]
 
-    for option in reversed(options):
-        func = option(func)
+    for click_option in reversed(click_options):
+        func = click_option(func)
 
     return func
 
@@ -39,7 +40,7 @@ def git_refspec_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--refspec', '-r',
         metavar='REF',
         help='Git ref spec to checkout.'
@@ -53,7 +54,7 @@ def git_branch_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--branch', '-b',
         metavar='BRANCH',
         help='Git branch to checkout.  [default: master]'
@@ -67,7 +68,7 @@ def git_commit_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--commit', '-c',
         metavar='SHA',
         help='Git commit SHA to checkout.'
@@ -81,7 +82,7 @@ def git_tag_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--tag', '-t',
         metavar='TAG',
         help='Git tag to checkout.'
@@ -103,22 +104,22 @@ def validate_git_specifier(refspec, branch, commit, tag):
     :param tag: provided tag like 'v1.3.0-rc2'
     """
     if commit and (refspec or branch or tag):
-        raise click.UsageError('If a commit is specified, neither a refspec, branch, or tag can also be specified.')
+        raise UsageError('If a commit is specified, neither a refspec, branch, or tag can also be specified.')
 
     if tag and (commit or refspec or branch):
-        raise click.UsageError('If a tag is specified, neither a refspec, branch, or commit can also be specified.')
 
     if branch and (commit or tag):
         raise click.UsageError('If a branch is specified, neither a tag or commit can also be specified.')
 
     if refspec and (commit or tag):
         raise click.UsageError('If a refspec is specified, neither a tag or commit can also be specified.')
+        raise UsageError('If a tag is specified, neither a refspec, branch, or commit can also be specified.')
 
     if refspec and not branch:
-        raise click.UsageError('If a refspec is specified, the name of the branch to create for it is required.')
+        raise UsageError('If a refspec is specified, the name of the branch to create for it is required.')
 
     if refspec and branch and branch == 'master':
-        raise click.UsageError('If a branch is specified for a refspec, it cannot be the master branch.')
+        raise UsageError('The branch specified for a refspec cannot be the master branch.')
 
 
 def git_version_specifier(refspec, branch, commit, tag):

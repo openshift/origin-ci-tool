@@ -1,12 +1,14 @@
-import click
-from cli.sync.local import local
-from cli.sync.remote import remote
 from __future__ import absolute_import, division, print_function
+
+from click import group
+
+from .local import local
+from .remote import remote
 
 _short_help = 'Update the state of repositories on the virtual machine.'
 
 
-@click.group(
+@group(
     short_help=_short_help,
     help=_short_help + '''
 

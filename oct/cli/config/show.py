@@ -1,11 +1,13 @@
-import click
-import config
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, argument, command, echo, option
+
+from ...config import CONFIG
 
 _short_help = 'View all or some serialized configuration options.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 
@@ -26,12 +28,12 @@ Examples:
   $ oct config show 'check' 'become' 'verbosity'
 '''
 )
-@click.option(
+@option(
     '--all', '-a',
     help='Print all configuration options.',
     is_flag=True
 )
-@click.argument(
+@argument(
     'options',
     nargs=-1
 )
@@ -48,7 +50,7 @@ def show(options, all):
     if options and not all:
         for option in options:
             if option not in config._config:
-                raise click.UsageError(message='Option ' + option + ' not found in configuration.')
+                raise UsageError(message='Option ' + option + ' not found in configuration.')
             else:
                 to_print[option] = config._config[option]
 
@@ -65,4 +67,4 @@ def print_options(options):
     """
     max_length = max([len(repr(key)) for key in options])
     for key in options:
-        click.echo('%*r: %r' % (max_length, str(key), str(options[key])))
+        echo('%*r: %r' % (max_length, str(key), str(options[key])))

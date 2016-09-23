@@ -1,9 +1,10 @@
-import click
 from __future__ import absolute_import, division, print_function
 
+from click import echo, group
 
-@click.group(
+
+@group(
     short_help='Run tests and other tasks for a synchronized repository.'
 )
 def test():
-    click.echo("placeholder for `test` functionality: shelling out to Makefiles for actions after builds/installs")
+    echo("placeholder for `test` functionality: shelling out to Makefiles for actions after builds/installs")

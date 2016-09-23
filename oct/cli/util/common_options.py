@@ -1,7 +1,9 @@
-import ansible.constants as C
-import click
-import config
 from __future__ import absolute_import, division, print_function
+
+from ansible import constants as C
+from click import option
+
+from ...config import CONFIG
 
 
 def ansible_output_options(func):
@@ -42,7 +44,7 @@ def ansible_verbosity_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--verbose', '-v',
         default=1,
         count=True,
@@ -72,7 +74,7 @@ def ansible_dry_run_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--dry-run', '--check', '-C',
         is_flag=True,
         expose_value=False,
@@ -101,7 +103,7 @@ def ansible_debug_mode_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--debug', '-d',
         is_flag=True,
         expose_value=False,

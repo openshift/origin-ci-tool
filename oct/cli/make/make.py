@@ -1,15 +1,17 @@
-import click
-from cli.util.common_options import ansible_output_options
-from cli.util.make_options import make_options
-from cli.util.repository_options import repository_argument
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, command
+
+from ..util.common_options import ansible_output_options
+from ..util.make_options import make_options
+from ..util.repository_options import repository_argument
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 _short_help = "Run targets from a repository's Makefile on the target host."
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 
@@ -44,7 +46,7 @@ def make(repository, target, parameters, make_destination):
         make_parameters = {}
         for param in parameters:
             if '=' not in param:
-                raise click.UsageError('Parameter values must be a key-value pair. Parameter %s is invalid.' % param)
+                raise UsageError('Parameter values must be a key-value pair. Parameter %s is invalid.' % param)
             (key, val) = param.split('=', 1)
             make_parameters[key] = val
 

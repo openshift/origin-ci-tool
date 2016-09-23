@@ -1,9 +1,11 @@
-import click
-from cli.util.repository_options import Repository
 from __future__ import absolute_import, division, print_function
 
+from click import Choice, option
 
 class Preset:
+from .repository_options import Repository
+
+
     """
     An enumeration of OpenShift versions that are acceptable
     for presets used by this CLI. Not using the Python Enum
@@ -25,10 +27,10 @@ def raw_preset_option(help_action, callback):
     :param callback: the callback for the preset option
     :return: the preset option
     """
-    return click.option(
+    return option(
         '--for', '-f',
         'preset',
-        type=click.Choice([
+        type=Choice([
             Preset.origin_master,
             Preset.ose_master,
             Preset.ose_32,

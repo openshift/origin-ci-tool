@@ -1,12 +1,14 @@
-import click
-import config
-from cli.prepare.isolated_install_options import isolated_install_options
-from cli.provision.vagrant import OperatingSystem
-from cli.util.common_options import ansible_output_options
-from cli.util.preset_option import Preset
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, command, echo
+
+from ..prepare.isolated_install_options import isolated_install_options
+from ..provision.vagrant import OperatingSystem
+from ..util.common_options import ansible_output_options
+from ..util.preset_option import Preset
+from ...config import CONFIG
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 
 def install_docker_for_preset(ctx, param, value):
@@ -35,7 +37,7 @@ def docker_version_for_preset(preset):
     if preset in [Preset.ose_32]:
         return docker_version_with_epoch('1.9.1')
     else:
-        raise click.UsageError('No Docker preset found for OpenShift version: %s' % preset)
+        raise UsageError('No Docker preset found for OpenShift version: %s' % preset)
 
 
 def docker_version_with_epoch(version):
@@ -56,8 +58,8 @@ def docker_version_with_epoch(version):
         if config._config['vm']['operating_system'] == OperatingSystem.fedora:
             return '2:' + version + '*'
     else:
-        click.echo('WARNING: No provisoning metadata found for the target hosts!')
-        click.echo('WARNING: Version specification is distro-specific and may fail.')
+        echo(message='WARNING: No provisoning metadata found for the target hosts!', err=True)
+        echo(message='WARNING: Version specification is distro-specific and may fail.', err=True)
 
     return version
 
@@ -65,7 +67,7 @@ def docker_version_with_epoch(version):
 _short_help = 'Install Docker on remote hosts.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 

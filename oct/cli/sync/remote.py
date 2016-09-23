@@ -1,16 +1,18 @@
-import click
-from cli.sync.git_options import git_options, validate_git_specifier, git_version_specifier, git_options_helptext
-from cli.sync.sync_options import sync_destination_option
-from cli.util.common_options import ansible_output_options
-from cli.util.repository_options import repository_argument, Repository
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, command, option
+
+from .git_options import git_options, git_options_helptext, git_version_specifier, validate_git_specifier
+from .sync_options import sync_destination_option
+from ..util.common_options import ansible_output_options
+from ..util.repository_options import Repository, repository_argument
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Synchronize a repository using remote servers.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 
@@ -46,12 +48,12 @@ Examples:
 )
 @repository_argument
 @sync_destination_option
-@click.option(
+@option(
     '--remote', '-r',
     metavar='NAME',
     help='Named remote server to use.  [default: origin]'
 )
-@click.option(
+@option(
     '--new-remote', '-n',
     'new_remote',
     nargs=2,
@@ -123,7 +125,7 @@ def validate_repository(repository):
     :param repository: repository to validate
     """
     if repository == Repository.enterprise:
-        raise click.UsageError('Synchronizing the %s repository using remote servers is not supported.' % repository)
+        raise UsageError('Synchronizing the %s repository using remote servers is not supported.' % repository)
 
 
 def validate_remote(remote, new_remote):
@@ -134,4 +136,4 @@ def validate_remote(remote, new_remote):
     :param new_remote: name and url for a new remote
     """
     if new_remote and remote:
-        raise click.UsageError('A new remote and existing remote cannot be specified at once.')
+        raise UsageError('A new remote and existing remote cannot be specified at once.')

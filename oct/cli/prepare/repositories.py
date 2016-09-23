@@ -1,13 +1,15 @@
-import click
-from cli.util.common_options import ansible_output_options
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import command
+
+from ..util.common_options import ansible_output_options
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Initialize source code repositories.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 

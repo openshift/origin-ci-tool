@@ -1,12 +1,14 @@
-import click
-from cli.prepare.all import all
-from cli.prepare.docker import docker
-from cli.prepare.golang import golang
-from cli.prepare.repositories import repositories
 from __future__ import absolute_import, division, print_function
 
+from click import group
 
-@click.group(
+from .all import all
+from .docker import docker
+from .golang import golang
+from .repositories import repositories
+
+
+@group(
     short_help='Prepare a host by installing and configuring dependencies.',
     help='''
 Once new hosts have been provisioned or existing hosts have been

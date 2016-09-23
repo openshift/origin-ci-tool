@@ -1,11 +1,13 @@
-import click
-from cli.provision.vagrant import vagrant
 from __future__ import absolute_import, division, print_function
+
+from click import group
+
+from .vagrant import vagrant
 
 _short_help = 'Provision a virtual machine for continuous integration tasks.'
 
 
-@click.group(
+@group(
     short_help=_short_help,
     help=_short_help + '''
 

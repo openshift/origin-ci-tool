@@ -1,11 +1,13 @@
-import click
-from cli.prepare.docker import docker_version_for_preset
-from cli.prepare.golang import golang_version_for_preset
-from cli.util.common_options import ansible_output_options
-from cli.util.preset_option import preset_option, Preset
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import command
+
+from .docker import docker_version_for_preset
+from .golang import golang_version_for_preset
+from ..util.common_options import ansible_output_options
+from ..util.preset_option import Preset, preset_option
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 
 def install_dependencies_for_preset(ctx, param, value):
@@ -25,7 +27,7 @@ def install_dependencies_for_preset(ctx, param, value):
 _short_help = 'Install dependencies on remote hosts.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 

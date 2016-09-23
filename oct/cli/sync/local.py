@@ -1,16 +1,18 @@
-import click
-from cli.sync.git_options import git_options, validate_git_specifier, git_version_specifier, git_options_helptext
-from cli.sync.sync_options import sync_options
-from cli.util.common_options import ansible_output_options
-from cli.util.repository_options import repository_argument
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import command
+
+from .git_options import git_options, git_options_helptext, git_version_specifier, validate_git_specifier
+from .sync_options import sync_options
+from ..util.common_options import ansible_output_options
+from ..util.repository_options import repository_argument
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Synchronize a repository using local sources.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 

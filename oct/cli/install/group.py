@@ -1,9 +1,10 @@
-import click
 from __future__ import absolute_import, division, print_function
 
+from click import echo, group
 
-@click.group(
+
+@group(
     short_help='Install and configure systems from binaries and artifacts.'
 )
 def install():
-    click.echo("placeholder for `install` functionality: installing binaries/RPMs/images")
+    echo("placeholder for `install` functionality: installing binaries/RPMs/images")

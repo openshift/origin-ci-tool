@@ -1,5 +1,6 @@
-import click
 from __future__ import absolute_import, division, print_function
+
+from click import Path, argument, option
 
 
 def make_options(func):
@@ -28,7 +29,7 @@ def make_target_argument(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.argument(
+    return argument(
         'target',
         nargs=-1,
         required=True
@@ -42,7 +43,7 @@ def make_parameter_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--env', '-e',
         'parameters',
         metavar='KEY=VAL',
@@ -58,10 +59,10 @@ def make_directory_override_option(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    return click.option(
+    return option(
         '--dest', '-d',
         'make_destination',
-        type=click.Path(
+        type=Path(
             file_okay=False,
             dir_okay=True
         ),

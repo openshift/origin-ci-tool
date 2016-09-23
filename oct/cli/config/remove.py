@@ -1,12 +1,14 @@
-import click
-import config
-from config.load import update_config
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, argument, command, echo
+
+from ...config import CONFIG
+from ...config.load import update_config
 
 _short_help = 'Remove an option from the serialized configuration.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 
@@ -20,7 +22,7 @@ Examples:
   $ oct config remove 'become_method'
 '''
 )
-@click.argument(
+@argument(
     'option'
 )
 def remove(option):
@@ -32,4 +34,4 @@ def remove(option):
     del config._config[option]
     update_config()
 
-    click.echo('Option %r removed from the configuration.' % str(option))
+    echo('Option %r removed from the configuration.' % str(option))

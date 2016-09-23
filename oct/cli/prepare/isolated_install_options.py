@@ -1,7 +1,8 @@
-import click
 from __future__ import absolute_import, division, print_function
 
-from cli.util.preset_option import raw_preset_option
+from click import option
+
+from ..util.preset_option import raw_preset_option
 
 
 def isolated_install_options(package_name, preset_callback):
@@ -14,20 +15,20 @@ def isolated_install_options(package_name, preset_callback):
     """
 
     def isolated_install_options_decorator(func):
-        options = [
-            click.option(
+        click_options = [
+            option(
                 '--version', '-v',
                 metavar='VERSION',
                 help='Version of ' + package_name + ' to install.'
             ),
-            click.option(
+            option(
                 '--repo', '-r',
                 'repos',
                 multiple=True,
                 metavar='NAME',
                 help='Name of a repository to enable when installing ' + package_name + '.'
             ),
-            click.option(
+            option(
                 '--repourl', '-u',
                 'repourls',
                 multiple=True,
@@ -40,8 +41,8 @@ def isolated_install_options(package_name, preset_callback):
             )
         ]
 
-        for option in reversed(options):
-            func = option(func)
+        for click_option in reversed(click_options):
+            func = click_option(func)
 
         return func
 

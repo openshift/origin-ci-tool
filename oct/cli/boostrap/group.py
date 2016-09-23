@@ -1,10 +1,12 @@
-import click
-from cli.boostrap.host import host
-from cli.boostrap.node import node
 from __future__ import absolute_import, division, print_function
 
+from click import group
 
-@click.group(
+from .host import host
+from .node import node
+
+
+@group(
     short_help='Get a machine ready to be an Ansible node or target host.',
     help='''
 In order for Ansible to interact with a target host, or for a machine

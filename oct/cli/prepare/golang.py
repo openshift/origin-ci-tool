@@ -1,10 +1,12 @@
-import click
-from cli.prepare.isolated_install_options import isolated_install_options
-from cli.util.common_options import ansible_output_options
-from cli.util.preset_option import Preset
-from util.playbook import playbook_path
-from util.playbook_runner import PlaybookRunner
 from __future__ import absolute_import, division, print_function
+
+from click import UsageError, command
+
+from ..prepare.isolated_install_options import isolated_install_options
+from ..util.common_options import ansible_output_options
+from ..util.preset_option import Preset
+from ...util.playbook import playbook_path
+from ...util.playbook_runner import PlaybookRunner
 
 
 def install_golang_custom_callback(ctx, param, value):
@@ -31,13 +33,13 @@ def golang_version_for_preset(preset):
     if preset in [Preset.origin_master, Preset.ose_master, Preset.ose_32, Preset.ose_321, Preset.ose_33]:
         return '1.6.2'
     else:
-        raise click.UsageError('No Golang preset found for OpenShift version: %s' % preset)
+        raise UsageError('No Golang preset found for OpenShift version: %s' % preset)
 
 
 _short_help = 'Install Golang on remote hosts.'
 
 
-@click.command(
+@command(
     short_help=_short_help,
     help=_short_help + '''
 
