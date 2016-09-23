@@ -1,17 +1,15 @@
-import config
 from __future__ import absolute_import, division, print_function
 
 
-def default_config():
+def default_config(host_list):
     """
     Generate a default configuration.
 
     :return: the default configuration dictionary
     """
     return {
-        'config_path': config._config_path,
-        'host_list': config._inventory_path,
         'hosts': 'vms',
+        'host_list': host_list,
         'connection': 'ssh',
         'verbosity': 1,
         'module_path': None,

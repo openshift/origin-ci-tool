@@ -34,7 +34,7 @@ def update_ansible_verbosity(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
 
-    config._config['verbosity'] = value
+    CONFIG['config']['verbosity'] = value
 
 
 def ansible_verbosity_option(func):
@@ -64,7 +64,7 @@ def update_ansible_dry_run(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
 
-    config._config['check'] = True
+    CONFIG['config']['check'] = True
 
 
 def ansible_dry_run_option(func):

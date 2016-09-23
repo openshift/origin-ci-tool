@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function
+
 from collections import namedtuple
 
-import config
+from . import CONFIG
 
 
 def default_options(options):
@@ -13,8 +14,8 @@ def default_options(options):
     :return: defaulted Ansible options
     """
     for option in options:
-        if options[option] is None and option in config._config:
-            options[option] = config._config[option]
+        if options[option] is None and option in CONFIG['config']:
+            options[option] = CONFIG['config'][option]
 
     return namedtuple('Options', options.keys())(**options)
 
@@ -28,6 +29,6 @@ def default_inventory(host_list):
     :return: defaulted inventory or list of hosts
     """
     if not host_list:
-        return config._config['host_list']
+        return CONFIG['config']['host_list']
 
     return host_list

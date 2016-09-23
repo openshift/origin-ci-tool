@@ -31,7 +31,10 @@ def remove(option):
 
     :param option: name of the option to remove
     """
-    del config._config[option]
+    if option not in CONFIG['config']:
+        raise UsageError('Option %r not found in the configuration.' % str(option))
+
+    del CONFIG['config'][option]
     update_config()
 
     echo('Option %r removed from the configuration.' % str(option))

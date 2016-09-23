@@ -40,10 +40,10 @@ def set(option, value):
     :param value: value to update to or append
     """
     verb = 'added to'
-    if option in config._config:
+    if option in CONFIG['config']:
         verb = 'updated in'
 
-    config._config[option] = value
+    CONFIG['config'][option] = value
     update_config()
 
     echo('Option %r %s the configuration to be %r.' % (str(option), verb, str(value)))

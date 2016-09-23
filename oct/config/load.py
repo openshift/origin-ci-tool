@@ -1,11 +1,21 @@
-import copy
-import os
 from __future__ import absolute_import, division, print_function
 
-import click
-import config
-import yaml
-from config.default import default_config, default_inventory
+from copy import deepcopy
+
+from click import UsageError
+from os import environ, getenv, mkdir, path, remove
+from yaml import YAMLError, dump, load
+
+from .default import default_config, default_inventory
+
+# these module-level "private" dictionary keys will hold our
+# in-memory cache of information regarding configuration
+CONFIG = {
+    'config': {},
+    'config_home': '',
+    'vagrant_home': '',
+    'inventory_path': ''
+}
 
 
 def initialize_paths():
@@ -15,10 +25,10 @@ def initialize_paths():
     specification:
     https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
     """
-    config._config_home = os.getenv('XDG_CONFIG_HOME', os.environ['HOME'] + '/.config/origin-ci-tool/')
-    config._config_path = config._config_home + 'config.yml'
-    config._inventory_path = config._config_home + 'inventory'
-    config._vagrant_home = config._config_home + 'vagrant'
+    CONFIG['config_home'] = getenv('XDG_CONFIG_HOME', environ['HOME'] + '/.config/origin-ci-tool/')
+    CONFIG['config_path'] = CONFIG['config_home'] + 'config.yml'
+    CONFIG['inventory_path'] = CONFIG['config_home'] + 'inventory'
+    CONFIG['vagrant_home'] = CONFIG['config_home'] + 'vagrant'
 
 
 def load_config():
@@ -27,12 +37,12 @@ def load_config():
     If the configuration directory does not exist, it will
     be created and filled with default values.
     """
-    if os.path.exists(config._config_home):
-        if not os.path.isdir(config._config_home):
+    if path.exists(CONFIG['config_home']):
+        if not path.isdir(CONFIG['config_home']):
             # something is in our config dir, but it is not our
             # config dir -- we want to delete whatever is there
             # and place a new directory there to use
-            os.remove(config._config_home)
+            remove(CONFIG['config_home'])
             write_defaults()
             return
     else:
@@ -40,22 +50,24 @@ def load_config():
         write_defaults()
         return
 
-    with open(config._config_path, 'r') as config_file:
+    with open(CONFIG['config_path'], 'r') as config_file:
         try:
-            config._config = yaml.load(config_file)
-        except yaml.YAMLError as exception:
-            click.UsageError('Could not load origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
+            CONFIG['config'] = load(config_file)
+        except YAMLError as exception:
+            raise UsageError('Could not load origin-ci-tool configuration at: ' + CONFIG['config_path'] + ': ' +
+                             exception.message)
 
 
 def update_config():
     """
     Update the Ansible configuration on disk.
     """
-    with open(config._config_path, 'w') as config_file:
+    with open(CONFIG['config_path'], 'w') as config_file:
         try:
-            yaml.dump(config._config, config_file, default_flow_style=False)
-        except yaml.YAMLError as exception:
-            click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
+            dump(CONFIG['config'], config_file, default_flow_style=False)
+        except YAMLError as exception:
+            raise UsageError('Could not save origin-ci-tool configuration at: ' + CONFIG['config_path'] + ': ' +
+                             exception.message)
 
 
 def safe_update_config():
@@ -69,17 +81,18 @@ def safe_update_config():
     points so that options like `-vvvvvv` don't stick
     around.
     """
-    with open(config._config_path, 'r+') as config_file:
-        current_config = yaml.load(config_file)
-        runtime_config_copy = copy.deepcopy(config._config)
+    with open(CONFIG['config_path'], 'r+') as config_file:
+        current_config = load(config_file)
+        runtime_config_copy = deepcopy(CONFIG['config'])
         runtime_config_copy['verbosity'] = current_config['verbosity']
         runtime_config_copy['check'] = current_config['check']
         try:
             config_file.seek(0)
             config_file.truncate(0)
-            yaml.dump(runtime_config_copy, config_file, default_flow_style=False)
-        except yaml.YAMLError as exception:
-            click.UsageError('Could not save origin-ci-tool configuration at: ' + config._config_path + ': ' + exception.message)
+            dump(runtime_config_copy, config_file, default_flow_style=False)
+        except YAMLError as exception:
+            raise UsageError('Could not save origin-ci-tool configuration at: ' + CONFIG['config_path'] + ': ' +
+                             exception.message)
 
 
 def add_host_to_inventory(host):
@@ -88,7 +101,7 @@ def add_host_to_inventory(host):
 
     :param host: name of host to add
     """
-    with open(config._inventory_path, 'a') as inventory_file:
+    with open(CONFIG['inventory_path'], 'a') as inventory_file:
         inventory_file.write(host + '\n')
 
 
@@ -98,7 +111,7 @@ def remove_host_from_inventory(host):
 
     :param host: name of host to remove
     """
-    with open(config._inventory_path, 'r+') as inventory_file:
+    with open(CONFIG['inventory_path'], 'r+') as inventory_file:
         entries = inventory_file.readlines()
         inventory_file.seek(0)
         inventory_file.truncate(0)
@@ -113,9 +126,13 @@ def write_defaults():
     Initialize the configuration directory and write defaults
     to all the constituent files.
     """
-    os.mkdir(config._config_home)
-    config._config = default_config()
+    mkdir(CONFIG['config_home'])
+    CONFIG['config'] = default_config(CONFIG['inventory_path'])
     update_config()
 
-    with open(config._inventory_path, 'w') as inventory_file:
+    with open(CONFIG['inventory_path'], 'w') as inventory_file:
         inventory_file.write(default_inventory())
+
+
+initialize_paths()
+load_config()

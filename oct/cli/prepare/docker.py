@@ -54,8 +54,8 @@ def docker_version_with_epoch(version):
     :param version: version of Docker to be installed
     :return: version with epoch conditionally prepended
     """
-    if 'vm' in config._config:
-        if config._config['vm']['operating_system'] == OperatingSystem.fedora:
+    if 'vm' in CONFIG['config']:
+        if CONFIG['config']['vm']['operating_system'] == OperatingSystem.fedora:
             return '2:' + version + '*'
     else:
         echo(message='WARNING: No provisoning metadata found for the target hosts!', err=True)

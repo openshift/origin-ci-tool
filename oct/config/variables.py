@@ -1,14 +1,15 @@
-import config
 from __future__ import absolute_import, division, print_function
 
-_config_var_fields = [
+from . import CONFIG
+
+_config_var_fields = (
     'hosts',
     'connection',
     'become',
     'become_method',
     'become_user',
     'docker_volume_group'
-]
+)
 
 
 def default_variables(playbook_variables):
@@ -25,8 +26,8 @@ def default_variables(playbook_variables):
     for field in _config_var_fields:
         var = 'origin_ci_' + field
         if var not in playbook_variables:
-            playbook_variables[var] = config._config[field]
+            playbook_variables[var] = CONFIG['config'][field]
 
-    playbook_variables['origin_ci_user'] = config._config['become_user']
+    playbook_variables['origin_ci_user'] = CONFIG['config']['become_user']
 
     return playbook_variables

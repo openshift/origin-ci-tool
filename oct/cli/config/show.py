@@ -49,14 +49,14 @@ def show(options, all):
 
     if options and not all:
         for option in options:
-            if option not in config._config:
+            if option not in CONFIG['config']:
                 raise UsageError(message='Option ' + option + ' not found in configuration.')
             else:
-                to_print[option] = config._config[option]
+                to_print[option] = CONFIG['config'][option]
 
         print_options(to_print)
     else:
-        print_options(config._config)
+        print_options(CONFIG['config'])
 
 
 def print_options(options):
