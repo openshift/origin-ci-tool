@@ -1,3 +1,4 @@
+# coding=utf-8
 from difflib import ndiff
 
 from yaml import dump

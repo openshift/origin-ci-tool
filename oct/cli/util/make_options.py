@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import absolute_import, division, print_function
 
 from click import Path, argument, option
@@ -10,14 +11,14 @@ def make_options(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    options = [
+    makefile_options = [
         make_target_argument,
         make_parameter_option,
         make_directory_override_option
     ]
 
-    for option in reversed(options):
-        func = option(func)
+    for make_option in reversed(makefile_options):
+        func = make_option(func)
 
     return func
 
@@ -63,8 +64,7 @@ def make_directory_override_option(func):
         '--dest', '-d',
         'make_destination',
         type=Path(
-            file_okay=False,
-            dir_okay=True
+            file_okay=False
         ),
         help='Remote directory to run make in. Optional.'
     )(func)

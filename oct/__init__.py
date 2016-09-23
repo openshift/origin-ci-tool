@@ -1,3 +1,4 @@
+# coding=utf-8
 # Ansible Python API currently is not well formed for
 # consumers that want to set display attributes like
 # the verbosity, so we need to make sure we are the
