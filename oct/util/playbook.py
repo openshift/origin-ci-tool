@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-_playbooks_root = os.path.abspath(os.path.dirname(oct.__file__)) + '/ansible/oct/playbooks/'
 from os import path
 
 
@@ -11,5 +10,5 @@ def playbook_path(playbook_name):
     :param playbook_name: the name of the playbook
     :return: the path to the playbook
     """
-    return _playbooks_root + playbook_name + '.yml'
     from ..oct import __file__ as root_path
+    return path.join(path.abspath(path.dirname(root_path)), 'ansible', 'oct', 'playbooks', playbook_name + '.yml')
