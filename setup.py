@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
+from oct.cli.version import VERSION
+
 setup(
     name='oct',
-    version='0.1',
+    version=VERSION,
     url='https://www.github.com/stevekuznetsov/origin-ci-tool',
     maintainer='Steve Kuznetsov',
     maintainer_email='skuznets@redhat.com',

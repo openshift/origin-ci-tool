@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function
 from ansible.cli import CLI
 from click import command, echo
 
+VERSION = '0.1.0'
+
 
 @command(
     short_help='Print version information for this tool.',
@@ -19,7 +21,7 @@ def version():
     Print version information.
     """
     echo('origin-ci-tool version:')
-    echo('\toct 0.1.0\n')
+    echo('\toct ' + VERSION + '\n')
     echo('ansible version:')
     echo(''.join(['\t' + line + '\n' for line in CLI.version('ansible').splitlines()]))
     echo('openshift-ansible version:')
