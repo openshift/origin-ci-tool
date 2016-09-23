@@ -35,9 +35,7 @@ def sync_source_option(func):
         type=Path(
             exists=True,
             file_okay=False,
-            dir_okay=True,
-            resolve_path=True,
-            readable=True
+            resolve_path=True
         ),
         help='Local directory from which to sync. Optional.'
     )(func)
@@ -54,8 +52,7 @@ def sync_destination_option(func):
         '--dest', '-d',
         'sync_destination',
         type=Path(
-            file_okay=False,
-            dir_okay=True
+            file_okay=False
         ),
         help='Remote directory to sync to. Optional.'
     )(func)

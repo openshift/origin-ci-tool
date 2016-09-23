@@ -51,7 +51,7 @@ def load_config():
         write_defaults()
         return
 
-    with open(CONFIG['config_path'], 'r') as config_file:
+    with open(CONFIG['config_path']) as config_file:
         try:
             CONFIG['config'] = load(config_file)
         except YAMLError as exception:
