@@ -8,7 +8,7 @@ if not show_stack_trace:
 
 
 class BootstrapNodeTestCase(PlaybookRunnerTestCase):
-    def test_boostrap_node(self):
+    def test_bootstrap_node(self):
         self.run_test(
             TestCaseParameters(
                 args=['bootstrap', 'node'],

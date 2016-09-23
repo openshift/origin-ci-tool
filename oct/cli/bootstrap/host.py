@@ -6,29 +6,28 @@ from ..util.common_options import ansible_output_options
 from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
-_short_help = 'Bootstrap a machine to be an Ansible controller node.'
+_short_help = 'Bootstrap a machine to be an Ansible target host.'
 
 
 @command(
     short_help=_short_help,
     help=_short_help + '''
 
-In order for a machine to run Ansible playbooks, a set of requisite
+In order for Ansible to interact with a target host, a set of requisite
 dependencies need to be installed first. This command will install them
-as well as a copy of this tool so that the node can be used to modify
-itself.
+using the `raw` module, so these actions will not be idempotent.
 
 \b
 Examples:
   Bootstrap a machine
-  $ oct boostrap node
+  $ oct bootstrap host
 '''
 )
 @ansible_output_options
-def node():
+def host():
     """
-    Bootstrap a machine to be an Ansible controller node.
+    Bootstrap a machine to be an Ansible target host.
     """
     PlaybookRunner().run(
-        playbook_source=playbook_path('bootstrap/node')
+        playbook_source=playbook_path('bootstrap/host')
     )

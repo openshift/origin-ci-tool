@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import group
 
-from .cli.boostrap.group import bootstrap
+from .cli.bootstrap.group import bootstrap
 from .cli.build.group import build
 from .cli.config.group import config
 from .cli.install.group import install
