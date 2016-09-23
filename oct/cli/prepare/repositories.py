@@ -2,6 +2,7 @@ import click
 from cli.util.common_options import ansible_output_options
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
+from __future__ import absolute_import, division, print_function
 
 _short_help = 'Initialize source code repositories.'
 

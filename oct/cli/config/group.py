@@ -2,6 +2,7 @@ import click
 from cli.config.remove import remove
 from cli.config.set import set
 from cli.config.show import show
+from __future__ import absolute_import, division, print_function
 
 
 @click.group(

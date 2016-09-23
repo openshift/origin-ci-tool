@@ -3,6 +3,7 @@ from cli.prepare.all import all
 from cli.prepare.docker import docker
 from cli.prepare.golang import golang
 from cli.prepare.repositories import repositories
+from __future__ import absolute_import, division, print_function
 
 
 @click.group(

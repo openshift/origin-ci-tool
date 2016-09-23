@@ -4,6 +4,7 @@ from cli.util.common_options import ansible_output_options
 from config.load import safe_update_config
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
+from __future__ import absolute_import, division, print_function
 
 
 class OperatingSystem:

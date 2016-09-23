@@ -1,5 +1,6 @@
 import click
 import config
+from __future__ import absolute_import, division, print_function
 
 _short_help = 'View all or some serialized configuration options.'
 

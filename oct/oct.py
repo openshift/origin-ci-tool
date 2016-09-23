@@ -9,6 +9,7 @@ from cli.provision.group import provision
 from cli.sync.group import sync
 from cli.test.group import test
 from cli.version import version
+from __future__ import absolute_import, division, print_function
 
 
 @click.group(

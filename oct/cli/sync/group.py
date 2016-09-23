@@ -1,6 +1,7 @@
 import click
 from cli.sync.local import local
 from cli.sync.remote import remote
+from __future__ import absolute_import, division, print_function
 
 _short_help = 'Update the state of repositories on the virtual machine.'
 

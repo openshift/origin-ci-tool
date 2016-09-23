@@ -4,6 +4,7 @@ from cli.util.make_options import make_options
 from cli.util.repository_options import repository_argument
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
+from __future__ import absolute_import, division, print_function
 
 _short_help = "Run targets from a repository's Makefile on the target host."
 

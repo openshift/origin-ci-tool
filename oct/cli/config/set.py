@@ -1,6 +1,7 @@
 import click
 import config
 from config.load import update_config
+from __future__ import absolute_import, division, print_function
 
 _short_help = 'Update or append to the serialized configuration.'
 

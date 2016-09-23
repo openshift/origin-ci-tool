@@ -1,5 +1,6 @@
 import click
 from cli.provision.vagrant import vagrant
+from __future__ import absolute_import, division, print_function
 
 _short_help = 'Provision a virtual machine for continuous integration tasks.'
 

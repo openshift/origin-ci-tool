@@ -1,6 +1,7 @@
 import ansible.constants as C
 import click
 import config
+from __future__ import absolute_import, division, print_function
 
 
 def ansible_output_options(func):

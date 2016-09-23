@@ -1,4 +1,5 @@
 import config
+from __future__ import absolute_import, division, print_function
 
 _config_var_fields = [
     'hosts',

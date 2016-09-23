@@ -5,6 +5,7 @@ from cli.util.common_options import ansible_output_options
 from cli.util.repository_options import repository_argument, Repository
 from util.playbook import playbook_path
 from util.playbook_runner import PlaybookRunner
+from __future__ import absolute_import, division, print_function
 
 _short_help = 'Synchronize a repository using remote servers.'
 
