@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, UsageError, command, option
 
-class OperatingSystem:
 from ..util.common_options import ansible_output_options
 from ...config import CONFIG
 from ...config.load import add_host_to_inventory, remove_host_from_inventory, safe_update_config
@@ -10,6 +9,7 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
+class OperatingSystem(object):
     """
     An enumeration of supported operating systems for
     Vagrant provisioning of local VMs.
@@ -18,7 +18,7 @@ from ...util.playbook_runner import PlaybookRunner
     centos = 'centos'
 
 
-class Provider:
+class Provider(object):
     """
     An enumeration of supported virtualization providers
     for provisioning of local VMs.
@@ -28,7 +28,7 @@ class Provider:
     vmware = 'vmware_fusion'
 
 
-class Stage:
+class Stage(object):
     """
     An enumeration of supported stages for boxes used
     for Vagrant provisioning of local VMs.

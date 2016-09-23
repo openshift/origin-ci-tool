@@ -2,10 +2,10 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, option
 
-class Preset:
 from .repository_options import Repository
 
 
+class Preset(object):
     """
     An enumeration of OpenShift versions that are acceptable
     for presets used by this CLI. Not using the Python Enum

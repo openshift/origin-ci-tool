@@ -11,8 +11,8 @@ from click import ClickException
 from ..config.options import default_inventory, default_options
 from ..config.variables import default_variables
 
-class PlaybookRunner:
 
+class PlaybookRunner(object):
     '''
     This class allows for a simple abstraction around the loading
     and execution of an Ansible playbook given an inventory and
