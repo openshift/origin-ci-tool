@@ -32,7 +32,7 @@ STAGES = [
   # nothing done to it. From this stage we can build the rest
   # of the stages
   :bare,
-  # :base is a box with all of the dependencies requried for
+  # :base is a box with all of the dependencies required for
   # OpenShift installed, all of the related Git repositories
   # cloned but not recompiled or installed
   :base,

@@ -129,7 +129,7 @@ class DockerPresetTestCase(TestCase):
         self.assertEqual(docker_version_for_preset(Preset.ose_32), '1.9.1')
 
 
-# TOOD: when config is figured out, these will be worth something
+# TODO: when config is figured out, these will be worth something
 @skip('WAITING ON CONFIG')
 class DockerEpochTestCase(TestCase):
     def test_non_fedora(self):

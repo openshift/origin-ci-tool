@@ -58,7 +58,7 @@ class ValidateGitSpecifierTestCase(TestCase):
             validate_git_specifier(refspec='pulls/1/head', branch=None, commit=None, tag='v1.0.0')
 
 
-class GitVersionSpecfierTestCase(TestCase):
+class GitVersionSpecifierTestCase(TestCase):
     def test_commit(self):
         self.assertEqual(
             git_version_specifier(refspec=None, branch=None, commit='SHA', tag=None),

@@ -42,7 +42,7 @@ def docker_version_for_preset(preset):
 
 def docker_version_with_epoch(version):
     """
-    Prepend epoch to the Docker version as neccessary.
+    Prepend epoch to the Docker version as necessary.
 
     Fedora `dnf` requires the epoch incorrectly, so we must
     provide it: https://bugzilla.redhat.com/show_bug.cgi?id=1286877
@@ -58,8 +58,8 @@ def docker_version_with_epoch(version):
         if CONFIG['config']['vm']['operating_system'] == OperatingSystem.fedora:
             return '2:' + version + '*'
     else:
-        echo(message='WARNING: No provisoning metadata found for the target hosts!', err=True)
-        echo(message='WARNING: Version specification is distro-specific and may fail.', err=True)
+        echo(message='WARNING: No provisioning metadata found for the target hosts!', err=True)
+        echo(message='WARNING: Version specification is distribution-specific and may fail.', err=True)
 
     return version
 

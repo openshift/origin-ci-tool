@@ -46,7 +46,7 @@ class PlaybookRunner(object):
         :param forks: number of parallel processes to spawn when communicating with remote hosts
         :param become: determine if privilege escalation should be activated
         :param become_method: method to use for privilege escalation
-        :param become_user: user to assume in order to escalate priviliges
+        :param become_user: user to assume in order to escalate privileges
         :param check: do a dry run, simulating actions Ansible would take on a remote host
         """
         self._variable_manager = variable_manager

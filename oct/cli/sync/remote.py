@@ -36,7 +36,7 @@ Examples:
   Synchronize the Origin repo, specifying a different remote
   $ oct sync remote origin --new-remote myfork https://host/origin.git
 \b
-  Synchronize the Origin repo, speciyfing a branch on an existing remote
+  Synchronize the Origin repo, specifying a branch on an existing remote
   $ oct sync remote origin --remote=myfork --branch=my-feature-branch
 \b
   Synchronize the logging repo, specifying a specific branch
