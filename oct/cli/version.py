@@ -6,11 +6,12 @@ from click import command, echo
 
 VERSION = '0.1.0'
 
+_short_help = 'Print version information for this tool.'
+
 
 @command(
-    short_help='Print version information for this tool.',
-    help='''
-Print version information for this tool.
+    short_help=_short_help,
+    help=_short_help + '''
 
 As this tool bundles a number of other tools to achieve
 its goals, the version of all of those tools is important
