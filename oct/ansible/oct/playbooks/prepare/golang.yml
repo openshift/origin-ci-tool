@@ -13,7 +13,6 @@
       with_items:
         - origin_ci_hosts
         - origin_ci_connection
-        - origin_ci_golang_package
 
 - name: install Golang on a new host
   hosts: '{{ origin_ci_hosts }}'
@@ -22,9 +21,10 @@
   become_user: root
 
   pre_tasks:
-    - name: register origin_ci_isolated_package
+    - name: register origin_ci_isolated_package_version
       set_fact:
-        origin_ci_isolated_package: '{{ origin_ci_golang_package }}'
+        origin_ci_isolated_package_version: '{{ origin_ci_golang_version }}'
+      when: origin_ci_golang_version is defined
     
     - name: register origin_ci_isolated_disabledrepos
       set_fact:
@@ -43,4 +43,4 @@
 
   roles:
     - role: isolated-install
-      origin_ci_isolated_base_package: 'golang'
+      origin_ci_isolated_package_name: 'golang'

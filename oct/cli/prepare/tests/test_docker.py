@@ -18,9 +18,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             args=['prepare', 'docker'],
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
-                'playbook_variables': {
-                    'origin_ci_docker_package': 'docker',
-                }
+                'playbook_variables': {}
             }]
         ))
 
@@ -30,7 +28,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker-' + docker_version_for_preset(Preset.origin_master)
+                    'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master)
                 }
             }]
         ))
@@ -41,7 +39,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker-1.10.3'
+                    'origin_ci_docker_version': '1.10.3'
                 }
             }]
         ))
@@ -52,7 +50,6 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker',
                     'origin_ci_docker_disabledrepos': '*',
                     'origin_ci_docker_enabledrepos': 'reponame'
                 }
@@ -65,7 +62,6 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker',
                     'origin_ci_docker_disabledrepos': '*',
                     'origin_ci_docker_enabledrepos': 'reponame,otherrepo'
                 }
@@ -78,7 +74,6 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker',
                     'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever']
                 }
             }]
@@ -90,7 +85,6 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker',
                     'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok']
                 }
             }]
@@ -102,7 +96,6 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/docker'),
                 'playbook_variables': {
-                    'origin_ci_docker_package': 'docker',
                     'origin_ci_docker_disabledrepos': '*',
                     'origin_ci_docker_enabledrepos': 'reponame',
                     'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever']

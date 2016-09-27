@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function
 from click import UsageError, command, echo
 
 from ..prepare.isolated_install_options import isolated_install_options
-from ..provision.vagrant import OperatingSystem
 from ..util.common_options import ansible_output_options
 from ..util.preset_option import Preset
 from ...config import CONFIG
@@ -36,35 +35,11 @@ def docker_version_for_preset(preset):
     :return: the Docker version to install
     """
     if preset in [Preset.origin_master, Preset.ose_master, Preset.ose_33, Preset.ose_321]:
-        return docker_version_with_epoch('1.10.3')
+        return '1.10.3'
     if preset in [Preset.ose_32]:
-        return docker_version_with_epoch('1.9.1')
+        return '1.9.1'
     else:
         raise UsageError('No Docker preset found for OpenShift version: %s' % preset)
-
-
-def docker_version_with_epoch(version):
-    """
-    Prepend epoch to the Docker version as necessary.
-
-    Fedora `dnf` requires the epoch incorrectly, so we must
-    provide it: https://bugzilla.redhat.com/show_bug.cgi?id=1286877
-
-    Furthermore, `yum` *requires* an arch when an epoch is present,
-    so we additionally accept any epoch, but must literally do so
-    with a glob.
-
-    :param version: version of Docker to be installed
-    :return: version with epoch conditionally prepended
-    """
-    if 'vm' in CONFIG['config']:
-        if CONFIG['config']['vm']['operating_system'] == OperatingSystem.fedora:
-            return '2:' + version + '*'
-    else:
-        echo(message='WARNING: No provisioning metadata found for the target hosts!', err=True)
-        echo(message='WARNING: Version specification is distribution-specific and may fail.', err=True)
-
-    return version
 
 
 _short_help = 'Install Docker on remote hosts.'
@@ -125,12 +100,10 @@ def install_docker(version, repos=None, repourls=None):
     :param repos: list of RPM repositories from which to install Docker
     :param repourls: list of RPM repository URLs from which to install Docker
     """
-    playbook_variables = {
-        'origin_ci_docker_package': 'docker'
-    }
+    playbook_variables = {}
 
     if version:
-        playbook_variables['origin_ci_docker_package'] += '-' + version
+        playbook_variables['origin_ci_docker_version'] = version
 
     if repos:
         playbook_variables['origin_ci_docker_disabledrepos'] = '*'

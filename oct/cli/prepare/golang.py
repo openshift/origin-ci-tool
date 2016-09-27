@@ -97,12 +97,10 @@ def install_golang(version, repos=None, repourls=None):
     :param repos: list of RPM repositories from which to install Golang
     :param repourls: list of RPM repository URLs from which to install Golang
     """
-    playbook_variables = {
-        'origin_ci_golang_package': 'golang'
-    }
+    playbook_variables = {}
 
     if version:
-        playbook_variables['origin_ci_golang_package'] += '-' + version
+        playbook_variables['origin_ci_golang_version'] = version
 
     if repos:
         playbook_variables['origin_ci_golang_disabledrepos'] = '*'

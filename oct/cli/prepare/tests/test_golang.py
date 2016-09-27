@@ -16,9 +16,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             args=['prepare', 'golang'],
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
-                'playbook_variables': {
-                    'origin_ci_golang_package': 'golang',
-                }
+                'playbook_variables': {}
             }]
         ))
 
@@ -28,7 +26,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang-' + golang_version_for_preset(Preset.origin_master)
+                    'origin_ci_golang_version': golang_version_for_preset(Preset.origin_master)
                 }
             }]
         ))
@@ -39,7 +37,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang-1.10.3'
+                    'origin_ci_golang_version': '1.10.3'
                 }
             }]
         ))
@@ -50,7 +48,6 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang',
                     'origin_ci_golang_disabledrepos': '*',
                     'origin_ci_golang_enabledrepos': 'reponame'
                 }
@@ -63,7 +60,6 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang',
                     'origin_ci_golang_disabledrepos': '*',
                     'origin_ci_golang_enabledrepos': 'reponame,otherrepo'
                 }
@@ -76,7 +72,6 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang',
                     'origin_ci_golang_tmp_repourls': ['https://www.myrepo.com/whatever']
                 }
             }]
@@ -88,7 +83,6 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang',
                     'origin_ci_golang_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok']
                 }
             }]
@@ -100,7 +94,6 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_source': playbook_path('prepare/golang'),
                 'playbook_variables': {
-                    'origin_ci_golang_package': 'golang',
                     'origin_ci_golang_disabledrepos': '*',
                     'origin_ci_golang_enabledrepos': 'reponame',
                     'origin_ci_golang_tmp_repourls': ['https://www.myrepo.com/whatever']

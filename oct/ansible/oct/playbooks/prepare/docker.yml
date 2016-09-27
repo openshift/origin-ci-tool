@@ -13,7 +13,6 @@
       with_items:
         - origin_ci_hosts
         - origin_ci_connection
-        - origin_ci_docker_package
         - origin_ci_docker_volume_group
 
 - name: install Docker on a new host
@@ -23,9 +22,20 @@
   become_user: root
 
   pre_tasks:
-    - name: register origin_ci_isolated_package
+#     Fedora `dnf` requires the epoch incorrectly, so we must
+#     provide it: https://bugzilla.redhat.com/show_bug.cgi?id=1286877
+#     Furthermore, `yum` *requires* an arch when an epoch is present,
+#     so we additionally accept any arch, but must literally do so
+#     with a glob suffix.
+    - name: register origin_ci_isolated_package_version to account for epoch weirdness with Fedora and DNF
       set_fact:
-        origin_ci_isolated_package: '{{ origin_ci_docker_package }}'
+        origin_ci_isolated_package_version: '2:{{ origin_ci_docker_version }}*'
+      when: ansible_distribution == 'Fedora' and origin_ci_docker_version is defined
+
+    - name: register origin_ci_isolated_package_version
+      set_fact:
+        origin_ci_isolated_package_version: '{{ origin_ci_docker_version }}'
+      when: ansible_distribution != 'Fedora' and origin_ci_docker_version is defined
 
     - name: register origin_ci_isolated_disabledrepos
       set_fact:
@@ -44,5 +54,5 @@
 
   roles:
     - role: isolated-install
-      origin_ci_isolated_base_package: 'docker'
+      origin_ci_isolated_package_name: 'docker'
     - role: docker

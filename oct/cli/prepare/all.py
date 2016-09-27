@@ -75,8 +75,8 @@ def prepare_all(preset):
         preset = Preset.origin_master
 
     playbook_variables = {
-        'origin_ci_docker_package': 'docker-' + docker_version_for_preset(preset),
-        'origin_ci_golang_package': 'golang-' + golang_version_for_preset(preset)
+        'origin_ci_docker_version': docker_version_for_preset(preset),
+        'origin_ci_golang_version': golang_version_for_preset(preset)
     }
 
     PlaybookRunner().run(

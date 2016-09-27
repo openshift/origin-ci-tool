@@ -9,8 +9,17 @@
     msg: 'This playbook requires {{ item }} to be set.'
   when: item not in vars and item not in hostvars[inventory_hostname]
   with_items:
-    - origin_ci_isolated_package
-    - origin_ci_isolated_base_package
+    - origin_ci_isolated_package_name
+    
+- name: export the full name of the package to install
+  set_fact:
+    origin_ci_isolated_package: '{{ origin_ci_isolated_package_name }}-{{ origin_ci_isolated_package_version }}'
+  when: origin_ci_isolated_package_version is defined
+
+- name: export the full name of the package to install
+  set_fact:
+    origin_ci_isolated_package: '{{ origin_ci_isolated_package_name }}'
+  when: origin_ci_isolated_package_version is not defined
 
 # we need the --{en,dis}ablerepo functionality from yum so
 # we cannot use the agnostic package module from Ansible
@@ -20,9 +29,9 @@
     state: present
   when: ansible_pkg_mgr != 'yum'
 
-- name: 'uninstall {{ origin_ci_isolated_base_package }} if it is installed'
+- name: 'uninstall {{ origin_ci_isolated_package_name }} if it is installed'
   package:
-    name: '{{ origin_ci_isolated_base_package }}'
+    name: '{{ origin_ci_isolated_package_name }}'
     state: absent
 
 - name: 'register temporary repositories that we need to install {{ origin_ci_isolated_package }}'
