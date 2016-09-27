@@ -11,22 +11,22 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
-def install_dependencies_for_preset(ctx, _, value):
+def install_dependencies_for_preset(context, _, value):
     """
     Installs the full set of dependencies on the remote host.
 
     Handles the special `--for` option, defaults to `origin/master` if
     a preset is not provided by the user.
 
-    :param ctx: Click context
+    :param context: Click context
     :param _: command-line parameter
     :param value: version of OpenShift for which to install dependencies
     """
-    if not value or ctx.resilient_parsing:
+    if not value or context.resilient_parsing:
         return
 
     prepare_all(value)
-    ctx.exit()
+    context.exit()
 
 
 _short_help = 'Install dependencies on remote hosts.'

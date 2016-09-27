@@ -10,20 +10,20 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
-def install_golang_custom_callback(ctx, _, value):
+def install_golang_custom_callback(context, _, value):
     """
     Install Go on the remote host for a given OpenShift version.
     Handles the special `--for` option.
 
-    :param ctx: Click context
+    :param context: Click context
     :param _: command-line parameter
     :param value: version of OpenShift for which to install Golang
     """
-    if not value or ctx.resilient_parsing:
+    if not value or context.resilient_parsing:
         return
 
     install_golang(version=golang_version_for_preset(value))
-    ctx.exit()
+    context.exit()
 
 
 def golang_version_for_preset(preset):

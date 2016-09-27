@@ -11,20 +11,20 @@ from ...util.playbook import playbook_path
 from ...util.playbook_runner import PlaybookRunner
 
 
-def install_docker_for_preset(ctx, _, value):
+def install_docker_for_preset(context, _, value):
     """
     Install Docker on the remote host for a given OpenShift version.
     Handles the special `--for` option.
 
-    :param ctx: Click context
+    :param context: Click context
     :param _: command-line parameter
     :param value: version of OpenShift for which to install Docker
     """
-    if not value or ctx.resilient_parsing:
+    if not value or context.resilient_parsing:
         return
 
     install_docker(version=docker_version_for_preset(value))
-    ctx.exit()
+    context.exit()
 
 
 def docker_version_for_preset(preset):

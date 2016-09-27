@@ -39,19 +39,19 @@ class Stage(object):
     install = 'install'
 
 
-def destroy_callback(ctx, _, value):
+def destroy_callback(context, _, value):
     """
     Tear down the currently running VM using `vagrant destroy`
 
-    :param ctx: Click context
+    :param context: Click context
     :param _: command-line parameter
     :param value: whether or not to tear down the VM
     """
-    if not value or ctx.resilient_parsing:
+    if not value or context.resilient_parsing:
         return
 
     destroy()
-    ctx.exit()
+    context.exit()
 
 
 _short_help = 'Provision a local VM using Vagrant.'
