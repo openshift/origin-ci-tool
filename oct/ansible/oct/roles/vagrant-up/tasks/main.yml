@@ -40,3 +40,4 @@
     dest: '{{ ansible_env.HOME }}/.ssh/config'
     block: '{{ origin_ci_vagrant_ssh_config.stdout }}'
     state: present
+    marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_vagrant_hostname }}'

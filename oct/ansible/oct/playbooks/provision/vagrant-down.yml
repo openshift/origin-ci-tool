@@ -12,6 +12,7 @@
       when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
         - origin_ci_vagrant_home_dir
+        - origin_ci_vagrant_hostname
 
 - name: tear down a local VM provisioned with Vagrant
   hosts: 'localhost'

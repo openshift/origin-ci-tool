@@ -3,6 +3,7 @@
   blockinfile:
     dest: '{{ ansible_env.HOME }}/.ssh/config'
     state: absent
+    marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_vagrant_hostname }}'
 
 - name: tear down the old VM
   command: "/usr/bin/vagrant destroy --force"
