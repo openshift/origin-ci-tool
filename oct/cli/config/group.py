@@ -17,7 +17,7 @@ files should not be edited by hand; rather, they should be viewed
 and updated using these command-line endpoints.
 '''
 )
-def config():
+def configure():
     """
     Do nothing -- this group should never be called without a sub-command.
     """
@@ -26,5 +26,5 @@ def config():
 
 
 config.add_command(remove)
-config.add_command(set_command)
-config.add_command(show)
+configure.add_command(set_command)
+configure.add_command(show)
