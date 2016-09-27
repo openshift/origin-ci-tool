@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from os import path
+from os.path import abspath, dirname, join
 
 
 def playbook_path(playbook_name):
@@ -12,4 +12,4 @@ def playbook_path(playbook_name):
     :return: the path to the playbook
     """
     from ..oct import __file__ as root_path
-    return path.join(path.abspath(path.dirname(root_path)), 'ansible', 'oct', 'playbooks', playbook_name + '.yml')
+    return join(abspath(dirname(root_path)), 'ansible', 'oct', 'playbooks', playbook_name + '.yml')
