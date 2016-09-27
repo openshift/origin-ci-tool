@@ -1,11 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import command
+from click import command, pass_context
 
 from ..util.common_options import ansible_output_options
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Initialize source code repositories.'
 
@@ -28,10 +26,13 @@ Examples:
 '''
 )
 @ansible_output_options
-def repositories():
+@pass_context
+def repositories(context):
     """
     Initialize source code repositories on the target hosts.
+
+    :param context: Click context
     """
-    PlaybookRunner().run(
-        playbook_source=playbook_path('prepare/repositories')
+    context.obj.run_playbook(
+        playbook_relative_path='prepare/repositories'
     )

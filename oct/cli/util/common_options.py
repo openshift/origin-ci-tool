@@ -2,9 +2,7 @@
 from __future__ import absolute_import, division, print_function
 
 from ansible import constants
-from click import option
-
-from ...config import CONFIG
+from click import get_current_context, option
 
 
 def ansible_output_options(func):
@@ -37,7 +35,7 @@ def update_ansible_verbosity(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    CONFIG['config']['verbosity'] = value
+    context.obj['verbosity'] = value
 
 
 def ansible_verbosity_option(func):
@@ -69,7 +67,7 @@ def update_ansible_dry_run(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    CONFIG['config']['check'] = True
+    context.obj['check'] = value
 
 
 def ansible_dry_run_option(func):

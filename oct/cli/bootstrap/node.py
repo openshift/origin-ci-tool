@@ -1,11 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import command
+from click import command, pass_context
 
 from ..util.common_options import ansible_output_options
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Bootstrap a machine to be an Ansible controller node.'
 
@@ -26,10 +24,13 @@ Examples:
 '''
 )
 @ansible_output_options
-def node():
+@pass_context
+def node(context):
     """
     Bootstrap a machine to be an Ansible controller node.
+
+    :param context: Click context
     """
-    PlaybookRunner().run(
-        playbook_source=playbook_path('bootstrap/node')
+    context.obj.run_playbook(
+        playbook_relative_path='bootstrap/node'
     )

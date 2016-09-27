@@ -1,13 +1,11 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import UsageError, command
+from click import UsageError, command, pass_context
 
 from ..util.common_options import ansible_output_options
 from ..util.make_options import make_options
 from ..util.repository_options import repository_argument
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 _short_help = "Run targets from a repository's Makefile on the target host."
 
@@ -31,10 +29,12 @@ Examples:
 @repository_argument
 @make_options
 @ansible_output_options
-def make(repository, target, parameters, make_destination):
+@pass_context
+def make(context, repository, target, parameters, make_destination):
     """
     Execute some make targets on the remote host.
 
+    :param context: Click context
     :param parameters: parameters to pass to make
     :param make_destination: optional destination on the remote host
     :param repository: name of the repository in which to work
@@ -58,7 +58,7 @@ def make(repository, target, parameters, make_destination):
     if make_destination:
         playbook_variables['origin_ci_make_destination'] = make_destination
 
-    PlaybookRunner().run(
-        playbook_source=playbook_path('make/main'),
+    context.obj.run_playbook(
+        playbook_relative_path='make/main',
         playbook_variables=playbook_variables
     )

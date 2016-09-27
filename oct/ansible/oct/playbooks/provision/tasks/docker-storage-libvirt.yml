@@ -1,6 +1,6 @@
 ---
 - name: inspect the guest domain
-  command: '/usr/bin/virsh dumpxml vagrant_{{ origin_ci_vagrant_hostname }}'
+  command: '/usr/bin/virsh dumpxml {{ origin_ci_vagrant_hostname }}_{{ origin_ci_vagrant_hostname }}'
   register: origin_ci_vagrant_info
 
 - name: generate a location for domain information

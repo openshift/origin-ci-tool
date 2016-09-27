@@ -1,12 +1,11 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from unittest import TestCase, skip
+from unittest import TestCase
 
-from oct.cli.prepare.docker import docker_version_for_preset, docker_version_with_epoch
+from oct.cli.prepare.docker import docker_version_for_preset
 from oct.cli.util.preset_option import Preset
 from oct.tests.unit.playbook_runner_test_case import PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace
-from oct.util.playbook import playbook_path
 
 if not show_stack_trace:
     __unittest = True
@@ -17,7 +16,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {}
             }]
         ))
@@ -26,7 +25,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--for', Preset.origin_master],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master)
                 }
@@ -37,7 +36,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--version', '1.10.3'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_version': '1.10.3'
                 }
@@ -48,7 +47,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--repo', 'reponame'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_disabledrepos': '*',
                     'origin_ci_docker_enabledrepos': 'reponame'
@@ -60,7 +59,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--repo', 'reponame', '--repo', 'otherrepo'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_disabledrepos': '*',
                     'origin_ci_docker_enabledrepos': 'reponame,otherrepo'
@@ -72,7 +71,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever']
                 }
@@ -83,7 +82,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever', '--repourl', 'https://www.myrepo.com/ok'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok']
                 }
@@ -94,7 +93,7 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['prepare', 'docker', '--repo', 'reponame', '--repourl', 'https://www.myrepo.com/whatever'],
             expected_calls=[{
-                'playbook_source': playbook_path('prepare/docker'),
+                'playbook_relative_path': 'prepare/docker',
                 'playbook_variables': {
                     'origin_ci_docker_disabledrepos': '*',
                     'origin_ci_docker_enabledrepos': 'reponame',
@@ -104,8 +103,6 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         ))
 
 
-# TODO: when config is figured out ensure that we don't have VM info here
-@skip('WAITING ON CONFIG')
 class DockerPresetTestCase(TestCase):
     def test_origin_master(self):
         self.assertEqual(docker_version_for_preset(Preset.origin_master), '1.10.3')
@@ -121,13 +118,3 @@ class DockerPresetTestCase(TestCase):
 
     def test_ose_32(self):
         self.assertEqual(docker_version_for_preset(Preset.ose_32), '1.9.1')
-
-
-# TODO: when config is figured out, these will be worth something
-@skip('WAITING ON CONFIG')
-class DockerEpochTestCase(TestCase):
-    def test_non_fedora(self):
-        self.assertEqual(docker_version_with_epoch('test'), 'test')
-
-    def test_fedora(self):
-        self.assertEqual(docker_version_with_epoch('test'), '2:test*')

@@ -1,14 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import UsageError, command, option
+from click import UsageError, command, option, pass_context
 
 from .git_options import git_options, git_options_helptext, git_version_specifier, validate_git_specifier
 from .sync_options import sync_destination_option
 from ..util.common_options import ansible_output_options
 from ..util.repository_options import Repository, repository_argument
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Synchronize a repository using remote servers.'
 
@@ -64,12 +62,14 @@ Examples:
 )
 @git_options
 @ansible_output_options
-def remote(repository, sync_destination, remote_name, new_remote, tag, refspec, branch, commit):
+@pass_context
+def remote(context, repository, sync_destination, remote_name, new_remote, tag, refspec, branch, commit):
     """
     Synchronize a repository on a remote host at the
     sync_destination from the specified remote to the
     desired state.
 
+    :param context: Click context
     :param repository: name of the repository to sync
     :param sync_destination: repository location override
     :param remote_name: name of a remote server to sync from
@@ -110,8 +110,8 @@ def remote(repository, sync_destination, remote_name, new_remote, tag, refspec, 
     else:
         playbook_variables['origin_ci_sync_remote'] = remote_name
 
-    PlaybookRunner().run(
-        playbook_source=playbook_path('sync/remote'),
+    context.obj.run_playbook(
+        playbook_relative_path='sync/remote',
         playbook_variables=playbook_variables
     )
 

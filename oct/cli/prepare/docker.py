@@ -1,14 +1,11 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import UsageError, command, echo
+from click import UsageError, command, pass_context
 
 from ..prepare.isolated_install_options import isolated_install_options
 from ..util.common_options import ansible_output_options
 from ..util.preset_option import Preset
-from ...config import CONFIG
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 
 def install_docker_for_preset(context, _, value):
@@ -23,7 +20,7 @@ def install_docker_for_preset(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    install_docker(version=docker_version_for_preset(value))
+    install_docker(client=context.obj, version=docker_version_for_preset(value))
     context.exit()
 
 
@@ -81,21 +78,24 @@ Examples:
     preset_callback=install_docker_for_preset
 )
 @ansible_output_options
-def docker(version, repos, repourls):
+@pass_context
+def docker(context, version, repos, repourls):
     """
     Installs the Docker daemon and CLI on the remote host.
 
+    :param context: Click context
     :param version: version of Docker to install
     :param repos: list of RPM repositories from which to install Docker
     :param repourls: list of RPM repository URLs from which to install Docker
     """
-    install_docker(version, repos, repourls)
+    install_docker(context.obj, version, repos, repourls)
 
 
-def install_docker(version, repos=None, repourls=None):
+def install_docker(client, version, repos=None, repourls=None):
     """
     Install Docker on the remote host.
 
+    :param client: Ansible client
     :param version: version of Docker to install
     :param repos: list of RPM repositories from which to install Docker
     :param repourls: list of RPM repository URLs from which to install Docker
@@ -112,7 +112,7 @@ def install_docker(version, repos=None, repourls=None):
     if repourls:
         playbook_variables['origin_ci_docker_tmp_repourls'] = list(repourls)
 
-    PlaybookRunner().run(
-        playbook_source=playbook_path('prepare/docker'),
+    client.run_playbook(
+        playbook_relative_path='prepare/docker',
         playbook_variables=playbook_variables
     )

@@ -1,13 +1,11 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import UsageError, command
+from click import UsageError, command, pass_context
 
 from ..prepare.isolated_install_options import isolated_install_options
 from ..util.common_options import ansible_output_options
 from ..util.preset_option import Preset
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 
 def install_golang_custom_callback(context, _, value):
@@ -22,7 +20,7 @@ def install_golang_custom_callback(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    install_golang(version=golang_version_for_preset(value))
+    install_golang(client=context.obj, version=golang_version_for_preset(value))
     context.exit()
 
 
@@ -78,21 +76,24 @@ Examples:
     preset_callback=install_golang_custom_callback
 )
 @ansible_output_options
-def golang(version, repos, repourls):
+@pass_context
+def golang(context, version, repos, repourls):
     """
     Installs the Go toolchain and source on the remote host.
 
+    :param context: Click context
     :param version: version of Golang to install
     :param repos: list of RPM repositories from which to install Golang
     :param repourls: list of RPM repository URLs from which to install Golang
     """
-    install_golang(version, repos, repourls)
+    install_golang(context.obj, version, repos, repourls)
 
 
-def install_golang(version, repos=None, repourls=None):
+def install_golang(client, version, repos=None, repourls=None):
     """
     Install Go on the remote host.
 
+    :param client: Ansible client
     :param version: version of Golang to install
     :param repos: list of RPM repositories from which to install Golang
     :param repourls: list of RPM repository URLs from which to install Golang
@@ -109,7 +110,8 @@ def install_golang(version, repos=None, repourls=None):
     if repourls:
         playbook_variables['origin_ci_golang_tmp_repourls'] = list(repourls)
 
-    PlaybookRunner().run(
-        playbook_source=playbook_path('prepare/golang'),
+    client.run_playbook(
+        playbook_relative_path='prepare/golang',
         playbook_variables=playbook_variables
+
     )

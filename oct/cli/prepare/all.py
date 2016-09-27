@@ -1,14 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import command
+from click import command, pass_context
 
 from .docker import docker_version_for_preset
 from .golang import golang_version_for_preset
 from ..util.common_options import ansible_output_options
 from ..util.preset_option import Preset, preset_option
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 
 def install_dependencies_for_preset(context, _, value):
@@ -25,7 +23,7 @@ def install_dependencies_for_preset(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    prepare_all(value)
+    prepare_all(context.obj, value)
     context.exit()
 
 
@@ -54,19 +52,22 @@ Examples:
     callback=install_dependencies_for_preset
 )
 @ansible_output_options
-def all_command(preset=None):
+@pass_context
+def all_command(context, preset=None):
     """
     Installs the full set of dependencies on the remote host.
 
+    :param context: Click context
     :param preset: version of OpenShift for which to install dependencies
     """
-    prepare_all(preset)
+    prepare_all(context.obj, preset)
 
 
-def prepare_all(preset):
+def prepare_all(client, preset):
     """
     Installs the full set of dependencies on the remote host.
 
+    :param client: Ansible client
     :param preset: version of OpenShift for which to install dependencies
     """
     # we can't default on a eager option or it would always trigger,
@@ -79,7 +80,7 @@ def prepare_all(preset):
         'origin_ci_golang_version': golang_version_for_preset(preset)
     }
 
-    PlaybookRunner().run(
-        playbook_source=playbook_path('prepare/main'),
+    client.run_playbook(
+        playbook_relative_path='prepare/main',
         playbook_variables=playbook_variables
     )

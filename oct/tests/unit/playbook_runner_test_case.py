@@ -1,11 +1,16 @@
 # coding=utf-8
+from __future__ import absolute_import, division, print_function
+
+from traceback import format_exception
 from unittest import TestCase
 
 from click.testing import CliRunner
 from mock import patch
+from oct.config.ansible_client import AnsibleCoreClient
+from oct.config.configuration import Configuration
+from oct.config.variables import PlaybookExtraVariables
 from oct.oct import oct_command
 from oct.tests.unit.formatting_util import format_assertion_failure, format_expectation
-from oct.util.playbook_runner import PlaybookRunner
 from os import environ
 
 # Allow for run-time triggering of stack trace output
@@ -22,7 +27,7 @@ CLICK_RC_USAGE = 2
 class TestCaseParameters(object):
     def __init__(self, args, expected_result=CLICK_RC_OK, expected_calls=None, expected_output=None):
         """
-        Parameterize a Click PlaybookRunner test case.
+        Parameterize a Click playbook test case.
 
         :param args: command-line arguments to Click
         :param expected_result: expected exit code of the command-line invocation
@@ -38,27 +43,57 @@ class TestCaseParameters(object):
 class PlaybookRunnerTestCase(TestCase):
     """
     Set up a common test case that validates correct
-    interaction with the PlaybookRunner.
+    interaction with the Ansible playbook API.
     """
 
     def setUp(self):
         """
-        Mock out the `run()` method on the PlaybookRunner
+        Mock out the `run_playbook()` method on the Config
         so that we can validate that it is called correctly.
+
+        Mock out the filesystem methods on Configuration
+        so we don't touch disk in our tests.
         """
         self._call_metadata = []
-        patcher = patch.object(
-            target=PlaybookRunner,
-            attribute='run',
-            new=lambda playbook_runner, playbook_source, playbook_variables=None:
-            self._call_metadata.append({
-                'playbook_source': playbook_source,
-                'playbook_variables': playbook_variables,
-                'ansible_options': playbook_runner._ansible_options
-            })
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        patches = [
+            patch.object(
+                target=Configuration,
+                attribute='run_playbook',
+                new=lambda _, playbook_relative_path, playbook_variables=None:
+                self._call_metadata.append({
+                    'playbook_relative_path': playbook_relative_path,
+                    'playbook_variables': playbook_variables
+                })
+            ),
+            patch.object(
+                target=Configuration,
+                attribute='load_ansible_configuration',
+                new=lambda configuration: setattr(configuration, 'ansible_configuration', AnsibleCoreClient())
+            ),
+            patch.object(
+                target=Configuration,
+                attribute='load_ansible_variables',
+                new=lambda configuration: setattr(configuration, 'ansible_variables', PlaybookExtraVariables())
+            ),
+            patch.object(
+                target=Configuration,
+                attribute='write_ansible_configuration',
+                new=lambda _: None
+            ),
+            patch.object(
+                target=Configuration,
+                attribute='write_ansible_variables',
+                new=lambda _: None
+            ),
+            patch.object(
+                target=Configuration,
+                attribute='load_vagrant_metadata',
+                new=lambda _: None
+            )
+        ]
+        for patcher in patches:
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def run_test(self, parameters):
         """
@@ -67,13 +102,16 @@ class PlaybookRunnerTestCase(TestCase):
         :param parameters: a TestCaseParameters instance
         """
         result = CliRunner().invoke(cli=oct_command, args=parameters.args)
+        extra = 'Full output:\n{}'.format(result.output)
+        if result.exception is not None:
+            extra = ''.join(format_exception(*result.exc_info))
         self.assertEqual(
             parameters.expected_result,
             result.exit_code,
             format_assertion_failure(
                 message='Command did not exit with correct code.',
                 expectation=(parameters.expected_result, result.exit_code),
-                extra='Full output:\n{}'.format(result.output)
+                extra=extra
             )
         )
         self.validate_call_metadata(parameters.expected_calls)
@@ -83,7 +121,7 @@ class PlaybookRunnerTestCase(TestCase):
                 result.output,
                 msg=format_assertion_failure(
                     message='Phrase `{}` not found in output.'.format(parameters.expected_output),
-                    extra='Full output:\n{}'.format(result.output)
+                    extra=extra
                 )
             )
 
@@ -105,11 +143,6 @@ class PlaybookRunnerTestCase(TestCase):
 
         self._expected_calls = expected_calls
 
-        for actual, expected in zip(self._call_metadata, expected_calls):
-            # don't pollute output if we don't care about it
-            if 'ansible_options' not in expected:
-                actual['ansible_options'] = '<ignored>'
-
         self.make_equality_assertion(
             actual=len(self._call_metadata),
             expected=len(expected_calls),
@@ -120,8 +153,8 @@ class PlaybookRunnerTestCase(TestCase):
             prefix = '[playbook {}]'.format(i)
 
             self.make_equality_assertion(
-                actual=actual['playbook_source'],
-                expected=expected['playbook_source'],
+                actual=actual['playbook_relative_path'],
+                expected=expected['playbook_relative_path'],
                 message='{}: Invalid source.'.format(prefix)
             )
 
@@ -130,24 +163,6 @@ class PlaybookRunnerTestCase(TestCase):
                 expected=expected['playbook_variables'],
                 message='{}: Invalid variables.'.format(prefix)
             )
-
-            # we will be comparing a dictionary in `expected`
-            # with a named tuple in the metadata, and we only
-            # want to check that the expected keys have the
-            # right values
-            if 'ansible_options' in expected:
-                for option in expected['ansible_options']:
-                    self.make_equality_assertion(
-                        actual=hasattr(actual['ansible_options'], option),
-                        expected=True,
-                        message='{}: Extraneous Ansible option {}.'.format(prefix, option)
-                    )
-
-                    self.make_equality_assertion(
-                        actual=getattr(actual['ansible_options'], option),
-                        expected=expected['ansible_options'][option],
-                        message='{}: Invalid Ansible option {}.'.format(prefix, option)
-                    )
 
     def make_equality_assertion(self, actual, expected, message):
         """

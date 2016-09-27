@@ -2,10 +2,9 @@
 from __future__ import absolute_import, division, print_function
 
 from click import command
+from click import pass_context
 
 from ..util.common_options import ansible_output_options
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Bootstrap a machine to be an Ansible target host.'
 
@@ -25,10 +24,13 @@ Examples:
 '''
 )
 @ansible_output_options
-def host():
+@pass_context
+def host(context):
     """
     Bootstrap a machine to be an Ansible target host.
+
+    :param context: Click context
     """
-    PlaybookRunner().run(
-        playbook_source=playbook_path('bootstrap/host')
+    context.obj.run_playbook(
+        playbook_relative_path='bootstrap/host'
     )

@@ -1,14 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import command
+from click import command, pass_context
 
 from .git_options import git_options, git_options_helptext, git_version_specifier, validate_git_specifier
 from .sync_options import sync_options
 from ..util.common_options import ansible_output_options
 from ..util.repository_options import repository_argument
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
 
 _short_help = 'Synchronize a repository using local sources.'
 
@@ -48,12 +46,14 @@ Examples:
 @sync_options
 @git_options
 @ansible_output_options
-def local(repository, sync_source, sync_destination, tag, refspec, branch, commit):
+@pass_context
+def local(context, repository, sync_source, sync_destination, tag, refspec, branch, commit):
     """
     Synchronize a repository on a remote host at the
     sync_destination by pushing the git state of the
     repository on the local machine at the sync_source.
 
+    :param context: Click context
     :param repository: name of the repository to sync
     :param sync_source: local repository location override
     :param sync_destination: repository location override
@@ -85,7 +85,7 @@ def local(repository, sync_source, sync_destination, tag, refspec, branch, commi
     for key in version_specifier:
         playbook_variables[key] = version_specifier[key]
 
-    PlaybookRunner().run(
-        playbook_source=playbook_path('sync/local'),
+    context.obj.run_playbook(
+        playbook_relative_path='sync/local',
         playbook_variables=playbook_variables
     )

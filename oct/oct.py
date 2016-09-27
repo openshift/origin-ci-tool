@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import group
+from click import group, pass_context
 
 from .cli.bootstrap.group import bootstrap
 from .cli.build.group import build
@@ -13,6 +13,7 @@ from .cli.provision.group import provision
 from .cli.sync.group import sync
 from .cli.test.group import test
 from .cli.version import version
+from .config.configuration import Configuration
 
 
 @group(
@@ -21,12 +22,14 @@ from .cli.version import version
 A CLI tool for building, testing and composing OpenShift repositories.
 '''
 )
-def oct_command():
+@pass_context
+def oct_command(context):
     """
-    Do nothing -- this group should never be called without a sub-command.
+    Load the on-disk configuration and save it in the
+    Click context so that children of this root command
+    will have access to it.
     """
-
-    pass
+    context.obj = Configuration()
 
 
 oct_command.add_command(bootstrap)

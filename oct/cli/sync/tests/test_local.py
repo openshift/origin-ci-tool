@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function
 
 from oct.cli.util.repository_options import Repository
 from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace
-from oct.util.playbook import playbook_path
 from os.path import abspath, dirname
 
 if not show_stack_trace:
@@ -22,7 +21,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_version': 'master'
@@ -35,7 +34,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin, '--src', abspath(dirname(__file__))],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_source': abspath(dirname(__file__)),
@@ -48,7 +47,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin, '--dest', '/some/remote/path'],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_destination': '/some/remote/path',
@@ -61,7 +60,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin, '--commit', 'SHA'],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_version': 'SHA'
@@ -73,7 +72,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin, '--branch', 'myfeature'],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_version': 'myfeature'
@@ -85,7 +84,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin, '--tag', 'v1.0.0'],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_version': 'v1.0.0'
@@ -97,7 +96,7 @@ class SyncLocalTestCase(PlaybookRunnerTestCase):
         self.run_test(TestCaseParameters(
             args=['sync', 'local', Repository.origin, '--refspec', '/pulls/1/head', '--branch', 'myfeature'],
             expected_calls=[{
-                'playbook_source': playbook_path('sync/local'),
+                'playbook_relative_path': 'sync/local',
                 'playbook_variables': {
                     'origin_ci_sync_repository': Repository.origin,
                     'origin_ci_sync_version': 'myfeature',

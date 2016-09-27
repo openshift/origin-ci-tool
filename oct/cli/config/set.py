@@ -1,12 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import argument, command, echo
+from click import ClickException, argument, command, echo, pass_context
 
-from ...config import CONFIG
-from ...config.load import update_config
-
-_short_help = 'Update or append to the serialized configuration.'
+_short_help = 'Update a setting in the serialized configuration.'
 
 
 @command(
@@ -14,18 +11,14 @@ _short_help = 'Update or append to the serialized configuration.'
     short_help=_short_help,
     help=_short_help + '''
 
-Existing configuration options can be edited, or new
-configuration options can be added to the set of all
-configurations that are used by default for every
-interaction with Ansible.
+Existing configuration options that are used by default
+for every interaction with Ansible can be edited with
+this command.
 
 \b
 Examples:
   Update the option 'become_method' option to 'pfexec'
   $ oct config set 'become_method' 'pfexec'
-\b
-  Add a new option 'ssh_extra_args' with value '-l'
-  $ oct config set 'ssh_extra_args' '-l'
 '''
 )
 @argument(
@@ -34,18 +27,20 @@ Examples:
 @argument(
     'value'
 )
-def set_command(option, value):
+@pass_context
+def set_command(context, option, value):
     """
-    Update or append to the configuration file.
+    Update a setting in the configuration file.
 
-    :param option: name of the option to update or append
-    :param value: value to update to or append
+    :param context: Click context
+    :param option: name of the option to update
+    :param value: value to update to
     """
-    verb = 'added to'
-    if option in CONFIG['config']:
-        verb = 'updated in'
+    configuration = context.obj
+    if option not in configuration:
+        raise ClickException(message='Option ' + option + ' not found in configuration.')
 
-    CONFIG['config'][option] = value
-    update_config()
+    configuration[option] = value
+    configuration.write_configuration()
 
-    echo('Option %r %s the configuration to be %r.' % (str(option), verb, str(value)))
+    echo('Option %r updated to be %r.' % (str(option), str(value)))

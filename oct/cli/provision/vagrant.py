@@ -1,13 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import Choice, UsageError, command, option
+from click import Choice, UsageError, command, option, pass_context
 
 from ..util.common_options import ansible_output_options
-from ...config import CONFIG
-from ...config.load import add_host_to_inventory, remove_host_from_inventory, safe_update_config
-from ...util.playbook import playbook_path
-from ...util.playbook_runner import PlaybookRunner
+from ...config.vagrant import VagrantVMMetadata
+
+DEFAULT_MASTER_IP = '10.245.2.2'
 
 
 class OperatingSystem(object):
@@ -50,11 +49,11 @@ def destroy_callback(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    destroy()
+    destroy(context.obj)
     context.exit()
 
 
-_short_help = 'Provision a local VM using Vagrant.'
+_short_help = 'Provision local VMs using Vagrant.'
 
 
 @command(
@@ -77,13 +76,10 @@ Examples:
   Provision a VM with default parameters (fedora, libvirt, install)
   $ oct provision vagrant
 \b
-  Remove the current VM
-  $ oct provision vagrant --destroy
-\b
   Provision a VM with custom parameters
   $ oct provision vagrant --os=centos --provider=virtualbox --stage=base
 \b
-  Tear down the currently running VM
+  Tear down the currently running VMs
   $ oct provision vagrant --destroy
 \b
   Provision a VM with a specific IP address
@@ -129,7 +125,7 @@ Examples:
 @option(
     '--master-ip', '-i',
     'ip',
-    default='10.245.2.2',
+    default=DEFAULT_MASTER_IP,
     show_default=True,
     metavar='ADDRESS',
     help='Desired IP of the VM.'
@@ -138,21 +134,24 @@ Examples:
     '--destroy', '-d',
     is_flag=True,
     expose_value=False,
-    help='Tear down the current VM.',
+    help='Tear down the current VMs.',
     callback=destroy_callback
 )
 @ansible_output_options
-def vagrant(operating_system, provider, stage, ip):
+@pass_context
+def vagrant(context, operating_system, provider, stage, ip):
     """
     Provision a local VM using Vagrant.
 
+    :param context: Click context
     :param operating_system: operating system to use for the VM
     :param provider: provider to use with Vagrant
     :param stage: image stage to base the VM off of
     :param ip: desired VM IP address
     """
+    configuration = context.obj
     validate(provider, stage)
-    provision(operating_system, provider, stage, ip)
+    provision(configuration, operating_system, provider, stage, ip)
 
 
 def validate(provider, stage):
@@ -169,64 +168,87 @@ def validate(provider, stage):
         raise UsageError('Only the %s stage is supported for the %s provider.' % (Stage.bare, Provider.vmware))
 
 
-def provision(operating_system, provider, stage, ip):
+def provision(configuration, operating_system, provider, stage, ip):
     """
     Provision a local VM using Vagrant.
 
+    :param configuration: Origin CI tool configuration
     :param operating_system: operating system to use for the VM
     :param provider: provider to use with Vagrant
     :param stage: image stage to base the VM off of
     :param ip: desired VM IP address
     """
-    PlaybookRunner().run(
-        playbook_source=playbook_path('provision/vagrant-up'),
+    hostname = configuration.next_available_vagrant_name
+    home_dir = configuration.vagrant_home_directory(hostname)
+    configuration.run_playbook(
+        playbook_relative_path='provision/vagrant-up',
         playbook_variables={
-            'origin_ci_vagrant_home_dir': CONFIG['vagrant_home'],
+            'origin_ci_vagrant_home_dir': home_dir,
             'origin_ci_vagrant_os': operating_system,
             'origin_ci_vagrant_provider': provider,
             'origin_ci_vagrant_stage': stage,
             'origin_ci_vagrant_ip': ip,
-            'origin_ci_vagrant_hostname': CONFIG['config']['vm_hostname']
+            'origin_ci_vagrant_hostname': hostname
         }
     )
 
-    # if we successfully executed the playbook, we have a new host
-    add_host_to_inventory(CONFIG['config']['vm_hostname'])
-    CONFIG['config']['vm'] = {
-        'operating_system': operating_system,
-        'provider': provider,
-        'stage': stage
-    }
-    safe_update_config()
+    # if we successfully executed the playbook, we have a
+    # new host and need to update our metadata and records
+    register_host(configuration, home_dir, hostname, operating_system, provider, stage)
 
     if stage == Stage.bare:
         # once we have the new host, we must partition the space on it
         # that was set aside for Docker storage, then power cycle it to
         # update the kernel partition tables, then set up the volume
         # group backed by the LVM pool
-        PlaybookRunner().run(
-            playbook_source=playbook_path('provision/vagrant-docker-storage'),
+        configuration.run_playbook(
+            playbook_relative_path='provision/vagrant-docker-storage',
             playbook_variables={
                 'origin_ci_vagrant_provider': provider,
-                'origin_ci_vagrant_home_dir': CONFIG['vagrant_home'],
-                'origin_ci_vagrant_hostname': CONFIG['config']['vm_hostname']
+                'origin_ci_vagrant_home_dir': home_dir,
+                'origin_ci_vagrant_hostname': hostname
             }
         )
 
 
-def destroy():
+def register_host(configuration, home_dir, hostname, operating_system, provider, stage):
     """
-    Tear down the currently running Vagrant VM.
-    """
-    PlaybookRunner().run(
-        playbook_source=playbook_path('provision/vagrant-down'),
-        playbook_variables={
-            'origin_ci_vagrant_home_dir': CONFIG['vagrant_home']
-        }
-    )
+    Register a new host by updating metadata records for the
+    new VM both in the in-memory cache for this process and
+    the on-disk records that will persist past this CLI call.
 
-    # if we successfully executed the playbook, we have removed a host
-    remove_host_from_inventory(CONFIG['config']['vm_hostname'])
-    if 'vm' in CONFIG['config']:
-        CONFIG['config'].pop('vm')
-    safe_update_config()
+    :param configuration: Origin CI tool configuration
+    :param home_dir: directory from which the VM was created
+    :param hostname: hostname of the VM
+    :param operating_system: operating system used for the VM
+    :param provider: provider used with Vagrant
+    :param stage: image stage the VM was based off of
+    """
+    configuration.register_vagrant_host(VagrantVMMetadata(data={
+        'directory': home_dir,
+        'hostname': hostname,
+        'provisioning_details': {
+            'operating_system': operating_system,
+            'provider': provider,
+            'stage': stage
+        }
+    }))
+
+
+def destroy(configuration):
+    """
+    Tear down the currently running Vagrant VMs.
+
+    :param configuration: Origin CI Tool configuration
+    """
+    for vm in configuration.registered_vagrant_machines():
+        configuration.run_playbook(
+            playbook_relative_path='provision/vagrant-down',
+            playbook_variables={
+                'origin_ci_vagrant_home_dir': vm.directory,
+                'origin_ci_vagrant_hostname': vm.hostname
+            }
+        )
+
+        # if we successfully executed the playbook, we have removed a host
+        vm.remove()
