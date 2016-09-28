@@ -40,3 +40,4 @@
     version: '{{ origin_ci_sync_version }}'
     refspec: '{{ origin_ci_sync_refspec | default(omit) }}'
     dest: '{{ origin_ci_sync_destination }}'
+    force: yes
