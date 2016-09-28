@@ -35,6 +35,12 @@
         line: '{{ origin_ci_user }}  ALL=(ALL)  NOPASSWD: ALL'
         state: present
 
+    - name: ensure the user has a home directory
+      file:
+        path: '/home/{{ origin_ci_user }}'
+        state: directory
+        owner: '{{ origin_ci_user }}'
+
   roles:
     - role: dependencies
 
