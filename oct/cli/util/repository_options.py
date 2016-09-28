@@ -3,8 +3,10 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, argument
 
+from .choices import Choices
 
-class Repository(object):
+
+class Repository(Choices):
     """
     An enumeration of repository names that are currently
     supported as a part of the OpenShift ecosystem.
@@ -27,12 +29,7 @@ def repository_argument(func):
     return argument(
         'repository',
         nargs=1,
-        type=Choice([
-            Repository.origin,
-            Repository.enterprise,
-            Repository.web_console,
-            Repository.source_to_image,
-            Repository.metrics,
-            Repository.logging
-        ])
+        type=Choice(
+            Repository
+        )
     )(func)

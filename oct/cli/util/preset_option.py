@@ -4,9 +4,10 @@ from __future__ import absolute_import, division, print_function
 from click import Choice, option
 
 from .repository_options import Repository
+from .choices import Choices
 
 
-class Preset(object):
+class Preset(Choices):
     """
     An enumeration of OpenShift versions that are acceptable
     for presets used by this CLI. Not using the Python Enum
@@ -31,13 +32,9 @@ def raw_preset_option(help_action, callback):
     return option(
         '--for', '-f',
         'preset',
-        type=Choice([
-            Preset.origin_master,
-            Preset.ose_master,
-            Preset.ose_32,
-            Preset.ose_321,
-            Preset.ose_33
-        ]),
+        type=Choice(
+            Preset
+        ),
         metavar='PRESET',
         expose_value=False,
         help=help_action + ' using a pre-set configuration for a specific version of OpenShift.',

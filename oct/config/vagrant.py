@@ -52,15 +52,19 @@ class VagrantVMMetadata(object):
         self.private_key_file, self.remote_user, self.extra_ssh_args = None, None, None
         self.extra = {}
 
+        # Either raise a custom exception or use a better built in exception
+        # https://docs.python.org/2/library/exceptions.html#exception-hierarchy
+
         # this is an overloaded constructor since we will
         # want to create metadata objects in one of two
         # distinct ways: either from the constituent data
         # or from a file containing variables on disk
         if data is not None and variable_file is not None:
             raise Exception('Vagrant VM Metadata should be initialized with a file or with data, not both!')
-        elif data:
+        elif data is not None:  # Is it possible to have key errors here?
             self.set_metadata(data['directory'], data['hostname'], data['provisioning_details'])
-        elif file:
+        elif variable_file is not None: # this is probably what you meant
+        # elif file:  # dynamic languages have the greatest bugs :)
             self.load(variable_file)
         else:
             raise Exception('Vagrant VM Metadata should be initialized with a file or with data, not neither!')
@@ -112,9 +116,9 @@ class VagrantVMMetadata(object):
         with open(variable_file) as variables:
             raw_data = load(variables)
             # data in the variable file we don't understand
-            self.extra = {k: v for k, v in raw_data.items() if k not in _variable_name_to_metadata_field}
+            self.extra = {k: v for k, v in raw_data.iteritems() if k not in _variable_name_to_metadata_field}
 
-            for variable, field in _variable_name_to_metadata_field.items():
+            for variable, field in _variable_name_to_metadata_field.iteritems():
                 setattr(self, field, raw_data[variable])
 
     def write(self):
@@ -122,10 +126,11 @@ class VagrantVMMetadata(object):
         Serialize VM metadata to disk.
         """
         raw_data = deepcopy(self.extra)
-        for variable, field in _variable_name_to_metadata_field.items():
+        for variable, field in _variable_name_to_metadata_field.iteritems():
             raw_data[variable] = getattr(self, field)
 
-        with open(join(self.directory, 'variables.yml'), 'w+') as variables_file:
+        # not sure why you would need w+, wb is best practice for windows compatibility
+        with open(join(self.directory, 'variables.yml'), 'wb') as variables_file:
             dump(raw_data, variables_file, default_flow_style=False, explicit_start=True)
 
     def remove(self):

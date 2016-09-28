@@ -58,7 +58,7 @@ def show(context, options, show_all):
             else:
                 to_print[config_option] = configuration[config_option]
     else:
-        for k, v in configuration.items():
+        for k, v in configuration:
             to_print[k] = v
 
     print_options(to_print)

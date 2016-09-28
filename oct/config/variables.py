@@ -59,9 +59,8 @@ class PlaybookExtraVariables(object):
         if playbook_variables is None:
             playbook_variables = {}
 
-        for field in self.__dict__:
+        for field, value in vars(self).iteritems():
             variable = 'origin_ci_{}'.format(field)
-            if variable not in playbook_variables:
-                playbook_variables[variable] = self.__dict__[field]
+            playbook_variables.setdefault(variable, value)
 
         return playbook_variables
