@@ -8,9 +8,9 @@
     state: latest
   with_items:
    - augeas
-   - bzr
    - bridge-utils
    - bzip2
+   - bzr
    - bind
    - btrfs-progs-devel
    - bind-utils
