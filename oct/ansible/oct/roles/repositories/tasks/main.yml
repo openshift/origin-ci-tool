@@ -9,41 +9,16 @@
     - pkg
     - bin
 
-- name: register the list of repositories we are concerned with
-  set_fact:
-    origin_ci_repositories: [
-      'origin',
-      'origin-web-console',
-      'source-to-image',
-      'origin-metrics',
-      'origin-aggregated-logging'
-    ]
-
-- name: clone the source repositories
-  git:
-    repo: 'https://github.com/openshift/{{ item }}.git'
-    clone: yes
-    dest: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
-    accept_hostkey: yes
-  with_items: '{{ origin_ci_repositories }}'
-
-- name: ensure all repositories allow pushes to happen to the current branch
-  command: '/usr/bin/git config --add receive.denyCurrentBranch ignore'
-  args:
-    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
-  with_items: '{{ origin_ci_repositories }}'
-
-- name: ensure all repositories allow pushes to happen from the correct group
-  command: '/usr/bin/git config --add core.sharedRepository group'
-  args:
-    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
-  with_items: '{{ origin_ci_repositories }}'
-
-- name: allow unsafe fast-forward pushes to the repository
-  command: '/usr/bin/git config --add receive.denyNonFastForwards false'
-  args:
-    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ item }}'
-  with_items: '{{ origin_ci_repositories }}'
+- name: clone and initialize configuration for each repository
+  include: initialize_repository.yml
+  vars:
+    origin_ci_repository: '{{ item }}'
+  with_items:
+    - 'origin'
+    - 'origin-web-console'
+    - 'source-to-image'
+    - 'origin-metrics'
+    - 'origin-aggregated-logging'
 
 - name: ensure the repository management group exists
   group:
@@ -69,7 +44,6 @@
     - '{{ ansible_user_id }}'
     - '{{ ansible_env.SUDO_USER }}'
 
-
 - name: persist the GOPATH
   lineinfile:
     dest: /etc/environment
@@ -77,3 +51,22 @@
     line: 'GOPATH={{ origin_ci_gopath }}'
     state: present
     create: true
+
+- name: determine current Git configuration to allow for idempotency
+  command: '/usr/bin/git config --list --global'
+  register: origin_ci_global_config_probe
+  ignore_errors: yes
+  become: yes
+  become_user: '{{ origin_ci_user }}'
+
+- name: add name to the local Git client to allow us to make Git actions
+  command: '/usr/bin/git config --add --global user.name "Origin-CI Robot"'
+  when: "'user.name' not in origin_ci_global_config_probe.stdout"
+  become: yes
+  become_user: '{{ origin_ci_user }}'
+
+- name: add email to the local Git client to allow us to make Git actions
+  command: '/usr/bin/git config --add --global user.email noreply@redhat.com'
+  when: "'user.email' not in origin_ci_global_config_probe.stdout"
+  become: yes
+  become_user: '{{ origin_ci_user }}'

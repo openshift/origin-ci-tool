@@ -54,6 +54,18 @@
       args:
         chdir: '{{ origin_ci_sync_destination }}'
 
+    - name: check out the desired post-merge state, if requested
+      shell: '/usr/bin/git checkout {{ origin_ci_sync_merge_target }}'
+      args:
+        chdir: '{{ origin_ci_sync_destination }}'
+      when: origin_ci_sync_merge_target is defined
+
+    - name: merge the resulting state into another branch, if requested
+      shell: '/usr/bin/git merge {{ origin_ci_sync_version }}'
+      args:
+        chdir: '{{ origin_ci_sync_destination }}'
+      when: origin_ci_sync_merge_target is defined
+
     - name: determine the message of the last commit
       command: '/usr/bin/git log -n 1 --format=%s'
       args:

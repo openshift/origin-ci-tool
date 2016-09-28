@@ -1,0 +1,31 @@
+---
+- name: clone the source repository
+  git:
+    repo: 'https://github.com/openshift/{{ origin_ci_repository }}.git'
+    clone: yes
+    dest: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ origin_ci_repository }}'
+    accept_hostkey: yes
+
+- name: determine current Git configuration to allow for idempotency
+  command: '/usr/bin/git config --list'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ origin_ci_repository }}'
+  register: origin_ci_repository_config_probe
+
+- name: allow pushes to happen to the current branch
+  command: '/usr/bin/git config --add receive.denyCurrentBranch ignore'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ origin_ci_repository }}'
+  when: "'receive.denycurrentbranch=ignore' not in origin_ci_repository_config_probe.stdout"
+
+- name: allow unsafe fast-forward pushes to the repository
+  command: '/usr/bin/git config --add receive.denyNonFastForwards false'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ origin_ci_repository }}'
+  when: "'receive.denynonfastforwards=false' not in origin_ci_repository_config_probe.stdout"
+
+- name: allow pushes to happen from the owning group
+  command: '/usr/bin/git config --add core.sharedRepository group'
+  args:
+    chdir: '{{ origin_ci_gopath }}/src/github.com/openshift/{{ origin_ci_repository }}'
+  when: "'core.sharedrepository=group' not in origin_ci_repository_config_probe.stdout"

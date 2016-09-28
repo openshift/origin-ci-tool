@@ -11,6 +11,9 @@ A git state is specified in one of the following ways:
  - a tag present locally or on a remote
  - a refspec and branch, where the refspec will
    be fetched and labeled with the branch name
+ - (optionally) a second branch reference into
+   which the state specified above will be merged
+   into on the remote host
 '''
 
 
@@ -25,7 +28,8 @@ def git_options(func):
         git_refspec_option,
         git_branch_option,
         git_commit_option,
-        git_tag_option
+        git_tag_option,
+        git_destination_option
     ]
 
     for click_option in reversed(click_options):
@@ -87,6 +91,21 @@ def git_tag_option(func):
         '--tag', '-t',
         metavar='TAG',
         help='Git tag to checkout.'
+    )(func)
+
+
+def git_destination_option(func):
+    """
+    Add the Git destination option to the decorated command func.
+
+    :param func: Click CLI command to decorate
+    :return: decorated CLI command
+    """
+    return option(
+        '--merge-into', '-m',
+        'merge_target',
+        metavar='BRANCH',
+        help='Git branch to merge synced state into.'
     )(func)
 
 

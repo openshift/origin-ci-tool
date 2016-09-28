@@ -41,3 +41,15 @@
     refspec: '{{ origin_ci_sync_refspec | default(omit) }}'
     dest: '{{ origin_ci_sync_destination }}'
     force: yes
+
+- name: check out the desired post-merge state, if requested
+  shell: '/usr/bin/git checkout {{ origin_ci_sync_merge_target }}'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  when: origin_ci_sync_merge_target is defined
+
+- name: merge the resulting state into another branch, if requested
+  shell: '/usr/bin/git merge {{ origin_ci_sync_version }}'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  when: origin_ci_sync_merge_target is defined

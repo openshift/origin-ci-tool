@@ -40,6 +40,9 @@ Examples:
 \b
   Synchronize the Origin repo, specifying a local branch
   $ oct sync local origin --branch=my-feature-branch
+\b
+  Synchronize the Origin repo, resulting in a merged state of two branches
+  $ oct sync local origin --branch=my-feature-branch --merge-into=master
 '''
 )
 @repository_argument
@@ -47,7 +50,7 @@ Examples:
 @git_options
 @ansible_output_options
 @pass_context
-def local(context, repository, sync_source, sync_destination, tag, refspec, branch, commit):
+def local(context, repository, sync_source, sync_destination, tag, refspec, branch, commit, merge_target):
     """
     Synchronize a repository on a remote host at the
     sync_destination by pushing the git state of the
@@ -61,6 +64,7 @@ def local(context, repository, sync_source, sync_destination, tag, refspec, bran
     :param refspec: refspec to synchronize to
     :param branch: branch to synchronize to (or create for refspec)
     :param commit: commit to synchronize to
+    :param merge_target: optional second branch to merge the state into
     """
     validate_git_specifier(refspec, branch, commit, tag)
 
@@ -80,6 +84,9 @@ def local(context, repository, sync_source, sync_destination, tag, refspec, bran
 
     if sync_destination:
         playbook_variables['origin_ci_sync_destination'] = sync_destination
+
+    if merge_target:
+        playbook_variables['origin_ci_sync_merge_target'] = merge_target
 
     version_specifier = git_version_specifier(refspec, branch, commit, tag)
     for key in version_specifier:

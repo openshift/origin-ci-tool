@@ -43,6 +43,9 @@ Examples:
 \b
   Synchronize the Origin repo, specifying a pull request refspec
   $ oct sync remote origin --refspec=/pull/1000/head --branch=pull-1000
+\b
+  Synchronize the Origin repo, resulting in a merged state of two branches
+  $ oct sync remote origin --remote=myfork --branch=my-feature-branch --merge-into=master
 '''
 )
 @repository_argument
@@ -63,7 +66,7 @@ Examples:
 @git_options
 @ansible_output_options
 @pass_context
-def remote(context, repository, sync_destination, remote_name, new_remote, tag, refspec, branch, commit):
+def remote(context, repository, sync_destination, remote_name, new_remote, tag, refspec, branch, commit, merge_target):
     """
     Synchronize a repository on a remote host at the
     sync_destination from the specified remote to the
@@ -78,6 +81,7 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
     :param refspec: refspec to synchronize to
     :param branch: branch to synchronize to (or create for refspec)
     :param commit: commit to synchronize to
+    :param merge_target: optional second branch to merge the state into
     """
     validate_git_specifier(refspec, branch, commit, tag)
     validate_repository(repository)
@@ -99,6 +103,9 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
 
     if sync_destination:
         playbook_variables['origin_ci_sync_destination'] = sync_destination
+
+    if merge_target:
+        playbook_variables['origin_ci_sync_merge_target'] = merge_target
 
     version_specifier = git_version_specifier(refspec, branch, commit, tag)
     for key in version_specifier:
