@@ -32,7 +32,7 @@ def golang_version_for_preset(preset):
     :return: the Golang version to install
     """
     if preset in [Preset.origin_master, Preset.ose_master, Preset.ose_32, Preset.ose_321, Preset.ose_33]:
-        return '1.6.2'
+        return '1.6.3'
     else:
         raise UsageError('No Golang preset found for OpenShift version: %s' % preset)
 
@@ -68,7 +68,7 @@ Examples:
   $ oct prepare golang --version=1.5.3 --repo=my-custom-golang-repo
 \b
   Install a specific Go version from an RPM repository available on the web
-  $ oct prepare golang --version=1.6.2 --repourl=myrepo.com/golang/x86_64/
+  $ oct prepare golang --version=1.6.3 --repourl=myrepo.com/golang/x86_64/
 '''
 )
 @isolated_install_options(

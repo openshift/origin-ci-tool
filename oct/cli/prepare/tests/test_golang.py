@@ -20,82 +20,90 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
         ))
 
     def test_preset(self):
+        preset = Preset.origin_master
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--for', Preset.origin_master],
+            args=['prepare', 'golang', '--for', preset],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
-                    'origin_ci_golang_version': golang_version_for_preset(Preset.origin_master)
+                    'origin_ci_golang_version': golang_version_for_preset(preset)
                 }
             }]
         ))
 
     def test_version(self):
+        version = '1.6.3'
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--version', '1.10.3'],
+            args=['prepare', 'golang', '--version', version],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
-                    'origin_ci_golang_version': '1.10.3'
+                    'origin_ci_golang_version': version
                 }
             }]
         ))
 
     def test_repo(self):
+        repo = 'reponame'
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--repo', 'reponame'],
+            args=['prepare', 'golang', '--repo', repo],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
                     'origin_ci_golang_disabledrepos': '*',
-                    'origin_ci_golang_enabledrepos': 'reponame'
+                    'origin_ci_golang_enabledrepos': repo
                 }
             }]
         ))
 
     def test_repos(self):
+        repos = ['reponame', 'otherrepo']
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--repo', 'reponame', '--repo', 'otherrepo'],
+            args=['prepare', 'golang', '--repo', repos[0], '--repo', repos[1]],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
                     'origin_ci_golang_disabledrepos': '*',
-                    'origin_ci_golang_enabledrepos': 'reponame,otherrepo'
+                    'origin_ci_golang_enabledrepos': ','.join(repos)
                 }
             }]
         ))
 
     def test_repourl(self):
+        repourl = 'https://www.myrepo.com/whatever'
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--repourl', 'https://www.myrepo.com/whatever'],
+            args=['prepare', 'golang', '--repourl', repourl],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
-                    'origin_ci_golang_tmp_repourls': ['https://www.myrepo.com/whatever']
+                    'origin_ci_golang_tmp_repourls': [repourl]
                 }
             }]
         ))
 
     def test_tmp_repourls(self):
+        repourls = ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok']
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--repourl', 'https://www.myrepo.com/whatever', '--repourl', 'https://www.myrepo.com/ok'],
+            args=['prepare', 'golang', '--repourl', repourls[0], '--repourl', repourls[1]],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
-                    'origin_ci_golang_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok']
+                    'origin_ci_golang_tmp_repourls': repourls
                 }
             }]
         ))
 
     def test_repo_and_repourl(self):
+        repo = 'reponame'
+        repourl = 'https://www.myrepo.com/whatever'
         self.run_test(TestCaseParameters(
-            args=['prepare', 'golang', '--repo', 'reponame', '--repourl', 'https://www.myrepo.com/whatever'],
+            args=['prepare', 'golang', '--repo', repo, '--repourl', repourl],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
                     'origin_ci_golang_disabledrepos': '*',
-                    'origin_ci_golang_enabledrepos': 'reponame',
-                    'origin_ci_golang_tmp_repourls': ['https://www.myrepo.com/whatever']
+                    'origin_ci_golang_enabledrepos': repo,
+                    'origin_ci_golang_tmp_repourls': [repourl]
                 }
             }]
         ))
