@@ -33,13 +33,13 @@
   with_items: '{{ groups[origin_ci_hosts] }}' # TODO: this is fragile if literal hosts are passed in. do we care?
 
 - name: reset commit of unstaged changes if one was made
-  command: '/usr/bin/git reset --soft HEAD^1'
+  command: '/usr/bin/git reset --mixed HEAD^1'
   args:
     chdir: '{{ origin_ci_sync_source }}'
   when: origin_ci_sync_unstaged_commit | succeeded
 
 - name: reset commit of staged changes if one was made
-  command: '/usr/bin/git reset --mixed HEAD^1'
+  command: '/usr/bin/git reset --soft HEAD^1'
   args:
     chdir: '{{ origin_ci_sync_source }}'
   when: origin_ci_sync_staged_commit | succeeded

@@ -61,10 +61,10 @@
       register: origin_ci_sync_commit_subject
 
     - name: reset automated commits that transferred unstaged changes
-      command: '/usr/bin/git reset --soft HEAD^1'
+      command: '/usr/bin/git reset --mixed HEAD^1'
       args:
         chdir: '{{ origin_ci_sync_destination }}'
-      when: "'<AUTOMATED COMMIT OF UNSTAGED CHANGES>' in origin_ci_sync_commit_subject"
+      when: "'AUTOMATED COMMIT OF UNSTAGED CHANGES' in origin_ci_sync_commit_subject.stdout"
       register: origin_ci_sync_reset_unstaged
 
     - name: determine the message of the last commit
@@ -72,11 +72,10 @@
       args:
         chdir: '{{ origin_ci_sync_destination }}'
       register: origin_ci_sync_commit_subject
-      when: origin_ci_sync_reset_unstaged | succeeded
 
     - name: reset automated commits that transferred staged changes
-      command: '/usr/bin/git reset --mixed HEAD^1'
+      command: '/usr/bin/git reset --soft HEAD^1'
       args:
         chdir: '{{ origin_ci_sync_destination }}'
-      when: "'<AUTOMATED COMMIT OF STAGED CHANGES>' in origin_ci_sync_commit_subject"
+      when: "'AUTOMATED COMMIT OF STAGED CHANGES' in origin_ci_sync_commit_subject.stdout"
       register: origin_ci_sync_reset_unstaged
