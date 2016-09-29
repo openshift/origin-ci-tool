@@ -72,4 +72,4 @@ def print_options(options):
     """
     max_length = max([len(repr(key)) for key in options])
     for key in options:
-        echo('%*r: %r' % (max_length, str(key), str(options[key])))
+        echo('%*r: %r' % (max_length, str(key), str(options[key])))  # use str.format

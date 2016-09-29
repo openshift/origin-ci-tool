@@ -2,7 +2,6 @@
 
 
 class Choices(object):
-    class Iterator(type):
-        def __iter__(self):
-            return (v for k, v in vars(self).iteritems() if not k.startswith('_'))
-    __metaclass__ = Iterator
+    __metaclass__ = type('anonymous', (type,), dict(
+        __iter__=lambda self: (v for k, v in vars(self).iteritems() if not k.startswith('_'))
+    ))

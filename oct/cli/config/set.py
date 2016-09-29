@@ -43,4 +43,4 @@ def set_command(context, option, value):
     configuration[option] = value
     configuration.write_configuration()
 
-    echo('Option %r updated to be %r.' % (str(option), str(value)))
+    echo('Option %r updated to be %r.' % (str(option), str(value)))  # use str.format

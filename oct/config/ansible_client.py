@@ -28,8 +28,8 @@ class AnsibleCoreClient(object):
                  dry_run=False):
         if inventory_file is None:
             # default to the dynamic Vagrant inventory
-            from ..vagrant.inventory import __file__ as inventory_directory
-            inventory_file = abspath(inventory_directory)
+            from ..vagrant.inventory import __file__ as inventory_full_path
+            inventory_file = abspath(inventory_full_path)
 
         # location of the inventory file to use
         self.host_list = inventory_file
