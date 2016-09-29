@@ -4,12 +4,13 @@ from __future__ import absolute_import, division, print_function
 from click import Choice, UsageError, command, option, pass_context
 
 from ..util.common_options import ansible_output_options
+from ..util.choices import Choices
 from ...config.vagrant import VagrantVMMetadata
 
 DEFAULT_MASTER_IP = '10.245.2.2'
 
 
-class OperatingSystem(object):
+class OperatingSystem(Choices):
     """
     An enumeration of supported operating systems for
     Vagrant provisioning of local VMs.
@@ -18,7 +19,7 @@ class OperatingSystem(object):
     centos = 'centos'
 
 
-class Provider(object):
+class Provider(Choices):
     """
     An enumeration of supported virtualization providers
     for provisioning of local VMs.
@@ -28,7 +29,7 @@ class Provider(object):
     vmware = 'vmware_fusion'
 
 
-class Stage(object):
+class Stage(Choices):
     """
     An enumeration of supported stages for boxes used
     for Vagrant provisioning of local VMs.
@@ -89,10 +90,9 @@ Examples:
 @option(
     '--os', '-o',
     'operating_system',
-    type=Choice([
-        OperatingSystem.fedora,
-        OperatingSystem.centos
-    ]),
+    type=Choice(
+        OperatingSystem
+    ),
     default=OperatingSystem.fedora,
     show_default=True,
     metavar='NAME',
@@ -100,11 +100,9 @@ Examples:
 )
 @option(
     '--provider', '-p',
-    type=Choice([
-        Provider.libvirt,
-        Provider.virtualbox,
-        Provider.vmware
-    ]),
+    type=Choice(
+        Provider
+    ),
     default=Provider.libvirt,
     show_default=True,
     metavar='NAME',
@@ -112,11 +110,9 @@ Examples:
 )
 @option(
     '--stage', '-s',
-    type=Choice([
-        Stage.bare,
-        Stage.base,
-        Stage.install
-    ]),
+    type=Choice(
+        Stage
+    ),
     default=Stage.install,
     show_default=True,
     metavar='NAME',

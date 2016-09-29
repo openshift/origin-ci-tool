@@ -38,22 +38,6 @@ from os.path import abspath, exists, expanduser, isdir, join
 from re import search
 from yaml import load
 
-parser = OptionParser(usage='%prog --list | --host <machine>')
-parser.add_option(
-    '--list',
-    default=False,
-    dest='list',
-    action='store_true',
-    help='Emit a full inventory as a JSON mapping of groups to hostnames and variables.'
-)
-parser.add_option(
-    '--host',
-    default=None,
-    dest='host',
-    help='Emit host metadata for a specific host as a JSON mapping of key-value pairs.'
-)
-(options, args) = parser.parse_args()
-
 
 def get_vagrant_info(vm_directory):
     """
@@ -104,8 +88,7 @@ def determine_inventory_groups(vm_directory):
     if exists(group_config):
         with open(group_config) as group_file:
             return load(group_file)
-    else:
-        return []
+    return []
 
 
 def determine_host_variables(vm_directory):
@@ -120,8 +103,7 @@ def determine_host_variables(vm_directory):
     if exists(vars_config):
         with open(vars_config) as vars_file:
             return load(vars_file)
-    else:
-        return {}
+    return {}
 
 
 def add_host_to_inventory(inventory, hostname, groups, variables):
@@ -164,42 +146,58 @@ def list_vagrant_directories():
     config_dir = getenv('XDG_CONFIG_HOME', expanduser('~'))
     base_directory = abspath(join(config_dir, '.config', 'origin-ci-tool', 'vagrant'))
     vagrant_directories = []
-    for entry in listdir(base_directory):
-        entry = join(base_directory, entry)
+    for name in listdir(base_directory):
+        entry = join(base_directory, name)
         if isdir(entry):
             vagrant_directories.append(entry)
 
     return vagrant_directories
 
+if __name__ == '__main__':
+    parser = OptionParser(usage='%prog --list | --host <machine>')
+    parser.add_option(
+        '--list',
+        default=False,
+        dest='list',
+        action='store_true',
+        help='Emit a full inventory as a JSON mapping of groups to hostnames and variables.'
+    )
+    parser.add_option(
+        '--host',
+        default=None,
+        dest='host',
+        help='Emit host metadata for a specific host as a JSON mapping of key-value pairs.'
+    )
+    options, args = parser.parse_args()
 
-if options.list:
-    full_inventory = {
-        '_meta': {
-            'hostvars': {}
-        },
-        'vms': {
-            'hosts': [],
-            'vars': {}
+    if options.list:
+        full_inventory = {
+            '_meta': {
+                'hostvars': {}
+            },
+            'vms': {
+                'hosts': [],
+                'vars': {}
+            }
         }
-    }
-    for directory in list_vagrant_directories():
-        current_hostname, host_groups, host_variables = get_vagrant_info(directory)
-        if current_hostname:
-            add_host_to_inventory(full_inventory, current_hostname, host_groups, host_variables)
+        for directory in list_vagrant_directories():
+            current_hostname, host_groups, host_variables = get_vagrant_info(directory)
+            if current_hostname:
+                add_host_to_inventory(full_inventory, current_hostname, host_groups, host_variables)
 
-    print(dumps(full_inventory))
+        print(dumps(full_inventory))
 
-elif options.host:
-    # terribly inefficient implementation, only useful
-    # if someone manages to make this run with an old
-    # version of Ansible
-    for directory in list_vagrant_directories():
-        current_hostname, host_groups, host_variables = get_vagrant_info(directory)
-        if current_hostname == options.host:
-            print(dumps(host_variables))
+    elif options.host:
+        # terribly inefficient implementation, only useful
+        # if someone manages to make this run with an old
+        # version of Ansible
+        for directory in list_vagrant_directories():
+            current_hostname, host_groups, host_variables = get_vagrant_info(directory)
+            if current_hostname == options.host:
+                print(dumps(host_variables))
 
-    print(dumps({}))
+        print(dumps({}))  # Eh?
 
-else:
-    parser.print_help()
-    exit(2)
+    else:
+        parser.print_help()
+        exit(2)

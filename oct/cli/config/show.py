@@ -58,7 +58,7 @@ def show(context, options, show_all):
             else:
                 to_print[config_option] = configuration[config_option]
     else:
-        for k, v in configuration.items():
+        for k, v in configuration:
             to_print[k] = v
 
     print_options(to_print)
@@ -72,4 +72,4 @@ def print_options(options):
     """
     max_length = max([len(repr(key)) for key in options])
     for key in options:
-        echo('%*r: %r' % (max_length, str(key), str(options[key])))
+        echo('%*r: %r' % (max_length, str(key), str(options[key])))  # use str.format

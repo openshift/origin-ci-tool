@@ -18,6 +18,9 @@ _ANSIBLE_CONFIGURATION_FILE = 'ansible_configuration.yml'
 _ANSIBLE_VARIABLES_FILE = 'ansible_variables.yml'
 
 
+# Stop using the word yeild
+# Yield != return
+
 class Configuration(object):
     """
     This container holds all of the state that this tool needs
@@ -37,6 +40,9 @@ class Configuration(object):
 
         if not exists(self._path):
             mkdir(self._path)
+
+        # This may be easier to read if instead of setting these vars throughout functions
+        # you just have them return the value and assign it here
 
         # configuration options for Ansible core
         self.ansible_configuration = None
@@ -68,7 +74,7 @@ class Configuration(object):
     @property
     def configuration_path(self):
         """
-        Yield the path to the Ansible core configuration file.
+        Return the path to the Ansible core configuration file.
         :return: absolute path to the Ansible core configuration
         """
         return join(self._path, _ANSIBLE_CONFIGURATION_FILE)
@@ -143,7 +149,7 @@ class Configuration(object):
     @property
     def vagrant_directory_root(self):
         """
-        Yield the root path for Vagrant VM locations.
+        Return the root path for Vagrant VM locations.
         :return: absolute path to Vagrant VM containers directory
         """
         return join(self._path, 'vagrant')
@@ -214,11 +220,19 @@ class Configuration(object):
 
         :param data: VagrantVMMetadata for the host
         """
-        if not isinstance(data, VagrantVMMetadata):
+        if not isinstance(data, VagrantVMMetadata):  # Why is a type check needed?  It's not like you make sure of types anywhere else
             raise TypeError('Registering a machine requires {}, got {} instead!'.format(type(VagrantVMMetadata), type(data)))
         else:
             self._vagrant_metadata.append(data)
             data.write()
+
+    def _get_config(self, key):
+        if hasattr(self.ansible_configuration, key):
+            return self.ansible_configuration
+        elif hasattr(self.ansible_variables, key):
+            return self.ansible_variables
+        else:
+            raise KeyError('No such option `{}`.'.format(key))
 
     def __getitem__(self, key):
         """
@@ -229,12 +243,7 @@ class Configuration(object):
         :param key: name of the item to fetch
         :return: value of the item
         """
-        if hasattr(self.ansible_configuration, key):
-            return getattr(self.ansible_configuration, key)
-        elif hasattr(self.ansible_variables, key):
-            return getattr(self.ansible_variables, key)
-        else:
-            raise KeyError('No such option `{}`.'.format(key))
+        return getattr(self._get_config(key), key)
 
     def __setitem__(self, key, value):
         """
@@ -245,12 +254,7 @@ class Configuration(object):
         :param key: name of the item to update
         :param value: value to update the item to
         """
-        if hasattr(self.ansible_configuration, key):
-            setattr(self.ansible_configuration, key, value)
-        elif hasattr(self.ansible_variables, key):
-            setattr(self.ansible_variables, key, value)
-        else:
-            raise KeyError('No such option `{}`.'.format(key))
+        setattr(self._get_config(key), key, value)
 
     def __contains__(self, key):
         """
@@ -268,20 +272,4 @@ class Configuration(object):
 
         :return: the iterator
         """
-        return self
-
-    def next(self):
-        """
-        Implements the iterator functionality by yielding
-        the contents of the underlying containers.
-
-        """
-        return chain(vars(self.ansible_variables), vars(self.ansible_configuration))
-
-    def items(self):
-        """
-        Implements the items iterator functionality by
-        yielding the contents of the underlying containers'
-        keys and values.
-        """
-        return chain(vars(self.ansible_variables).items(), vars(self.ansible_configuration).items())
+        return chain(vars(self.ansible_variables).iteritems(), vars(self.ansible_configuration).iteritems())

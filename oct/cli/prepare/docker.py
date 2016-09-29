@@ -31,6 +31,7 @@ def docker_version_for_preset(preset):
     :param preset: version of OpenShift for which to install Docker
     :return: the Docker version to install
     """
+    # Maybe make this functionality as class methods on Preset?
     if preset in [Preset.origin_master, Preset.ose_master, Preset.ose_33, Preset.ose_321]:
         return '1.10.3'
     if preset in [Preset.ose_32]:

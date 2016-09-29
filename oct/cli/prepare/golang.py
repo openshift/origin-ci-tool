@@ -31,6 +31,9 @@ def golang_version_for_preset(preset):
     :param preset: version of OpenShift for which to install Golang
     :return: the Golang version to install
     """
+    # All of them??
+    # If so, could do
+    # if present in Preset:
     if preset in [Preset.origin_master, Preset.ose_master, Preset.ose_32, Preset.ose_321, Preset.ose_33]:
         return '1.6.3'
     else:
@@ -108,7 +111,7 @@ def install_golang(client, version, repos=None, repourls=None):
         playbook_variables['origin_ci_golang_enabledrepos'] = ','.join(repos)
 
     if repourls:
-        playbook_variables['origin_ci_golang_tmp_repourls'] = list(repourls)
+        playbook_variables['origin_ci_golang_tmp_repourls'] = list(repourls)  # Why the explicit list call?
 
     client.run_playbook(
         playbook_relative_path='prepare/golang',

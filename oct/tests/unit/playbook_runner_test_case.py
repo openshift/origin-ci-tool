@@ -13,12 +13,14 @@ from oct.oct import oct_command
 from oct.tests.unit.formatting_util import format_assertion_failure, format_expectation
 from os import environ
 
+# This seems hacky ...
 # Allow for run-time triggering of stack trace output
 show_stack_trace = 'SHOW_STACK_TRACE' in environ
 if not show_stack_trace:
     __unittest = True
 
 # Click does not expose these exit codes, so we need to define them
+# Shouldn't these be global constants?
 CLICK_RC_OK = 0
 CLICK_RC_EXCEPTION = 1
 CLICK_RC_USAGE = 2

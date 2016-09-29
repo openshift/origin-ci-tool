@@ -9,7 +9,7 @@ from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from click import ClickException
-from os.path import abspath, dirname, join
+from os.path import abspath
 
 DEFAULT_VERBOSITY = 1
 
@@ -21,14 +21,15 @@ class AnsibleCoreClient(object):
     Ansible Core, allowing us to run playbooks.
     """
 
+    # Move the comments about the parameters into a doc string
     def __init__(self,
                  inventory_file=None,
                  verbosity=DEFAULT_VERBOSITY,
                  dry_run=False):
         if inventory_file is None:
             # default to the dynamic Vagrant inventory
-            from ..vagrant import __file__ as inventory_directory
-            inventory_file = join(abspath(dirname(inventory_directory)), 'inventory.py')
+            from ..vagrant.inventory import __file__ as inventory_full_path
+            inventory_file = abspath(inventory_full_path)
 
         # location of the inventory file to use
         self.host_list = inventory_file
@@ -44,6 +45,7 @@ class AnsibleCoreClient(object):
         fields that may or may not be needed from the options,
         so we let the Ansible code parse them out and set other
         defaults as necessary.
+
         :return: namedtuple-esque playbook options object
         """
         playbook_args = [
@@ -92,4 +94,4 @@ class AnsibleCoreClient(object):
         ).run()
 
         if result != TaskQueueManager.RUN_OK:
-            raise ClickException('Playbook execution failed with code ' + str(result))
+            raise ClickException('Playbook execution failed with code {}'.format(result))
