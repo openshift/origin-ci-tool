@@ -54,6 +54,7 @@ class CallbackModule(CallbackBase):
     MSG_FORMAT="%(now)s - %(category)s - %(data)s\n\n"
 
     def __init__(self):
+        # TODO: better OS-agnostic filesystem code for this
         self.log_root_dir = os.environ.get('ANSIBLE_LOG_ROOT_PATH', '/tmp/ansible/log')
 
         super(CallbackModule, self).__init__()

@@ -14,6 +14,7 @@ from ansible.playbook.play import Play
 from ansible.playbook.task import Task
 from ansible.plugins.callback import CallbackBase
 from backports.shutil_get_terminal_size import get_terminal_size
+from os import environ
 from os.path import basename
 
 RUNNING_PREFIX = 'RUNNING'
@@ -538,6 +539,14 @@ class Failure(object):
         full_message += format_failure_message(self.result)
         full_message += format_item_failures(self.result)
         full_message += format_terminal_output(self.result)
+
+        if full_message.count('\n') == 1:
+            # we have not been able to get any use-able
+            # messages from the result, so we should
+            # tell the user to look at the logs
+            # TODO: better OS-agnostic filesystem code for this
+            log_location = environ.get('ANSIBLE_LOG_ROOT_PATH', '/tmp/ansible/log') + '/' + self.host
+            full_message += 'No useful error messages could be extracted, see full output at {}\n'.format(log_location)
 
         return full_message
 
