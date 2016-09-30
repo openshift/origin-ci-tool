@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function
 
 from ansible import constants
-from click import get_current_context, option
+from click import option
 
 
 def ansible_output_options(func):

@@ -1,7 +1,6 @@
 # coding=utf-8
-from setuptools import setup, find_packages
-
 from oct.cli.version import VERSION
+from setuptools import find_packages, setup
 
 base_requires = [
     'Click',
