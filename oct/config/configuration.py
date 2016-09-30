@@ -14,7 +14,7 @@ from ..util.playbook import playbook_path
 
 DEFAULT_HOSTNAME = 'openshiftdevel'
 
-_ANSIBLE_CONFIGURATION_FILE = 'ansible_configuration.yml'
+_ANSIBLE_CLIENT_CONFIGURATION_FILE = 'ansible_client_configuration.yml'
 _ANSIBLE_VARIABLES_FILE = 'ansible_variables.yml'
 
 
@@ -35,12 +35,18 @@ class Configuration(object):
         # path to the local configuration directory
         self._path = abspath(join(base_dir, '.config', 'origin-ci-tool'))
 
-        if not exists(self._path):
-            mkdir(self._path)
+        directories = [
+            self._path,
+            self.ansible_log_path,
+            self.vagrant_directory_root
+        ]
+        for directory in directories:
+            if not exists(directory):
+                mkdir(directory)
 
         # configuration options for Ansible core
-        self.ansible_configuration = None
-        self.load_ansible_configuration()
+        self.ansible_client_configuration = None
+        self.load_ansible_client_configuration()
 
         # extra variables we want to send to Ansible playbooks
         self.ansible_variables = None
@@ -60,40 +66,40 @@ class Configuration(object):
         :param playbook_relative_path: the location of the playbook
         :param playbook_variables: extra variables for the playbook
         """
-        self.ansible_configuration.run_playbook(
+        self.ansible_client_configuration.run_playbook(
             playbook_file=playbook_path(playbook_relative_path),
             playbook_variables=self.ansible_variables.default(playbook_variables)
         )
 
     @property
-    def configuration_path(self):
+    def ansible_client_configuration_path(self):
         """
         Yield the path to the Ansible core configuration file.
         :return: absolute path to the Ansible core configuration
         """
-        return join(self._path, _ANSIBLE_CONFIGURATION_FILE)
+        return join(self._path, _ANSIBLE_CLIENT_CONFIGURATION_FILE)
 
-    def load_ansible_configuration(self):
+    def load_ansible_client_configuration(self):
         """
         Load the Ansible core configuration options from disk,
         or if they have not yet been written to disk, use the
         default values and write them for future callers.
         """
-        if not exists(self.configuration_path):
-            self.ansible_configuration = AnsibleCoreClient()
-            self.write_ansible_configuration()
+        if not exists(self.ansible_client_configuration_path):
+            self.ansible_client_configuration = AnsibleCoreClient(log_directory=self.ansible_log_path)
+            self.write_ansible_client_configuration()
         else:
-            with open(self.configuration_path) as configuration_file:
-                self.ansible_configuration = load(configuration_file)
+            with open(self.ansible_client_configuration_path) as configuration_file:
+                self.ansible_client_configuration = load(configuration_file)
 
-    def write_ansible_configuration(self):
+    def write_ansible_client_configuration(self):
         """
         Write the current set of Ansible core configuration
         options to disk.
         """
-        with open(self.configuration_path, 'w+') as configuration_file:
+        with open(self.ansible_client_configuration_path, 'w+') as configuration_file:
             dump(
-                self.ansible_configuration,
+                self.ansible_client_configuration,
                 configuration_file,
                 default_flow_style=False,
                 explicit_start=True
@@ -137,7 +143,7 @@ class Configuration(object):
         """
         Write the entire set of configuration options to disk.
         """
-        self.write_ansible_configuration()
+        self.write_ansible_client_configuration()
         self.write_ansible_variables()
 
     @property
@@ -220,6 +226,14 @@ class Configuration(object):
             self._vagrant_metadata.append(data)
             data.write()
 
+    @property
+    def ansible_log_path(self):
+        """
+        Yield the root path for Ansible log files.
+        :return: absolute path to Ansible logging directory
+        """
+        return join(self._path, 'logs')
+
     def __getitem__(self, key):
         """
         Fetch the configuration key. Makes the inclusion
@@ -229,8 +243,8 @@ class Configuration(object):
         :param key: name of the item to fetch
         :return: value of the item
         """
-        if hasattr(self.ansible_configuration, key):
-            return getattr(self.ansible_configuration, key)
+        if hasattr(self.ansible_client_configuration, key):
+            return getattr(self.ansible_client_configuration, key)
         elif hasattr(self.ansible_variables, key):
             return getattr(self.ansible_variables, key)
         else:
@@ -245,8 +259,8 @@ class Configuration(object):
         :param key: name of the item to update
         :param value: value to update the item to
         """
-        if hasattr(self.ansible_configuration, key):
-            setattr(self.ansible_configuration, key, value)
+        if hasattr(self.ansible_client_configuration, key):
+            setattr(self.ansible_client_configuration, key, value)
         elif hasattr(self.ansible_variables, key):
             setattr(self.ansible_variables, key, value)
         else:
@@ -260,7 +274,7 @@ class Configuration(object):
         :param key: name of the item to search for
         :return: whether or not we contain the item
         """
-        return hasattr(self.ansible_configuration, key) or hasattr(self.ansible_variables, key)
+        return hasattr(self.ansible_client_configuration, key) or hasattr(self.ansible_variables, key)
 
     def __iter__(self):
         """
@@ -276,7 +290,7 @@ class Configuration(object):
         the contents of the underlying containers.
 
         """
-        return chain(vars(self.ansible_variables), vars(self.ansible_configuration))
+        return chain(vars(self.ansible_variables), vars(self.ansible_client_configuration))
 
     def items(self):
         """
@@ -284,4 +298,4 @@ class Configuration(object):
         yielding the contents of the underlying containers'
         keys and values.
         """
-        return chain(vars(self.ansible_variables).items(), vars(self.ansible_configuration).items())
+        return chain(vars(self.ansible_variables).items(), vars(self.ansible_client_configuration).items())

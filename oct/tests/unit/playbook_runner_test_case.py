@@ -67,7 +67,7 @@ class PlaybookRunnerTestCase(TestCase):
             ),
             patch.object(
                 target=Configuration,
-                attribute='load_ansible_configuration',
+                attribute='load_ansible_client_configuration',
                 new=lambda configuration: setattr(configuration, 'ansible_configuration', AnsibleCoreClient())
             ),
             patch.object(
@@ -77,7 +77,7 @@ class PlaybookRunnerTestCase(TestCase):
             ),
             patch.object(
                 target=Configuration,
-                attribute='write_ansible_configuration',
+                attribute='write_ansible_client_configuration',
                 new=lambda _: None
             ),
             patch.object(

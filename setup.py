@@ -4,7 +4,8 @@ from setuptools import find_packages, setup
 
 base_requires = [
     'Click',
-    'ansible'
+    'ansible',
+    'backports.shutil_get_terminal_size'
 ]
 
 setup(

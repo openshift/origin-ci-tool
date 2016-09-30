@@ -1,14 +1,20 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
+from functools import partial
+from time import sleep
+
 from __main__ import display
+from ansible import constants
 from ansible.cli.playbook import PlaybookCLI
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
+from ansible.plugins import callback_loader
 from ansible.vars import VariableManager
 from click import ClickException
+from os import environ
 from os.path import abspath, dirname, join
 
 DEFAULT_VERBOSITY = 1
@@ -24,7 +30,8 @@ class AnsibleCoreClient(object):
     def __init__(self,
                  inventory_file=None,
                  verbosity=DEFAULT_VERBOSITY,
-                 dry_run=False):
+                 dry_run=False,
+                 log_directory=None):
         if inventory_file is None:
             # default to the dynamic Vagrant inventory
             from ..vagrant import __file__ as inventory_directory
@@ -36,6 +43,8 @@ class AnsibleCoreClient(object):
         self.verbosity = verbosity
         # whether or not to make changes on the remote host
         self.check = dry_run
+        # where to store logs for Ansible playbooks
+        self.log_directory = log_directory
 
     def generate_playbook_options(self, playbook):
         """
@@ -82,6 +91,27 @@ class AnsibleCoreClient(object):
         options = self.generate_playbook_options(playbook_file)
         display.verbosity = options.verbosity
 
+        # we want to log everything so we can parse output
+        # nicely later from files and don't miss output due
+        # to the pretty printer, if it's on
+        from ..oct import __file__ as root_dir
+        callback_loader.add_directory(join(dirname(root_dir), 'ansible', 'oct', 'callback_plugins'))
+        constants.DEFAULT_CALLBACK_WHITELIST = 'log_results'
+        environ['ANSIBLE_LOG_ROOT_PATH'] = self.log_directory
+
+        if options.verbosity == 1:
+            # if the user has not asked for verbose output
+            # we will use our pretty printer for progress
+            # on the TTY
+            constants.DEFAULT_STDOUT_CALLBACK = 'pretty_progress'
+
+            # we really don't want output in std{err,out}
+            # that we didn't put there, but some code in
+            # Ansible calls directly to the Display, not
+            # through a callback, so we need to ensure
+            # that those raw calls don't go to stdout
+            display.display = partial(display.display, log_only=True)
+
         result = PlaybookExecutor(
             playbooks=[playbook_file],
             inventory=inventory,
@@ -92,4 +122,6 @@ class AnsibleCoreClient(object):
         ).run()
 
         if result != TaskQueueManager.RUN_OK:
+            # TODO: this seems bad, but can we discover the thread here to join() it?
+            sleep(0.2)
             raise ClickException('Playbook execution failed with code ' + str(result))
