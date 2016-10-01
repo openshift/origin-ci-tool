@@ -433,6 +433,22 @@ class Workload(object):
         return '{:02.0f}:{:06.3f}'.format(*divmod(end - self.start_time, 60))
 
 
+def format_result(result):
+    """
+    Attempt to extract and format information
+    about an Ansible workload result.
+
+    :param result: result to inspect
+    :return: message
+    """
+    full_message = format_failure_message(result)
+    full_message += format_item_failures(result)
+    full_message += format_terminal_output(result)
+    # detect internal module failures
+    full_message += format_terminal_output(result, stdout_key='module_stdout', stderr_key='module_stdout')
+    return full_message
+
+
 def format_failure_message(result):
     """
     Output a formatted version of the failure
@@ -465,7 +481,10 @@ def format_item_failures(result):
         item_preamble = 'The following error messages came from items:'
         item_messages = []
         for item_result in result['results']:
-            item_messages.append(format_failure_message(item_result))
+            # the item could possibly contain any
+            # valid result output, as any Ansible
+            # workload can be looped over
+            item_messages.append(format_result(item_result))
 
         item_messages = [message for message in item_messages if len(message) > 0]
         if len(item_messages) > 0:
@@ -474,7 +493,7 @@ def format_item_failures(result):
     return ''
 
 
-def format_terminal_output(result):
+def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
     """
     Output a formatted version of the terminal
     output (std{out,err}), if the result contains
@@ -484,16 +503,16 @@ def format_terminal_output(result):
     :return:
     """
     output_message = ''
-    if 'stdout' in result:
+    if stdout_key in result:
         # this is most likely a shell/command/raw failure
-        if len(result['stdout']) > 0:
-            output_message += '{}\n{}\n'.format('Output to stdout:', result['stdout'])
+        if len(result[stdout_key]) > 0:
+            output_message += '{}\n{}\n'.format('Output to stdout:', result[stdout_key])
 
-    if 'stderr' in result:
-        if len(result['stderr']) > 0:
-            output_message += '{}\n{}\n'.format(colorize('Output to stderr:', color=COLOR_ERROR), result['stderr'])
+    if stderr_key in result:
+        if len(result[stderr_key]) > 0:
+            output_message += '{}\n{}\n'.format(colorize('Output to stderr:', color=COLOR_ERROR), result[stderr_key])
 
-    if 'stdout' in result and len(result['stdout']) == 0 and 'stderr' in result and len(result['stderr']) == 0:
+    if stdout_key in result and len(result[stdout_key]) == 0 and stderr_key in result and len(result[stderr_key]) == 0:
         output_message = colorize('No output was written to stdout or stderr!', color=COLOR_ERROR)
 
     return output_message
@@ -535,10 +554,7 @@ class Failure(object):
         :return: the formatted error
         """
         full_message = colorize('A task failed on host `{}`!\n'.format(self.host), color=COLOR_ERROR)
-
-        full_message += format_failure_message(self.result)
-        full_message += format_item_failures(self.result)
-        full_message += format_terminal_output(self.result)
+        full_message += format_result(self.result)
 
         if full_message.count('\n') == 1:
             # we have not been able to get any use-able
@@ -580,4 +596,4 @@ def colorize(text, color):
     """String in color."""
     return u"\033[%sm%s\033[0m" % (codeCodes[color], text)
 
-    # --- end "pretty"
+# --- end "pretty"
