@@ -1,5 +1,5 @@
 ---
-- name: ensure we have the parameters necessary to execute a make target
+- name: ensure we have the parameters necessary to execute a make target or targets
   hosts: 'localhost'
   connection: 'local'
   become: no
@@ -16,7 +16,7 @@
         - origin_ci_make_repository
         - origin_ci_make_targets
 
-- name: push local changes to the remote host
+- name: execute a make target or targets on the remote host
   hosts: '{{ origin_ci_hosts }}'
   connection: '{{ origin_ci_connection }}'
   become: '{{ origin_ci_become | default(omit) }}'

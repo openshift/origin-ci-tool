@@ -9,7 +9,7 @@
     origin_ci_make_destination: "{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_make_repository }}"
   when: origin_ci_make_destination is not defined
 
-- name: execute the make target specified
+- name: "execute make target(s) \"{{ origin_ci_make_targets | join(', ') }}\" in the {{ origin_ci_make_repository }} repository"
   make:
     target: '{{ item }}'
     params: '{{ origin_ci_make_parameters | default(omit) }}'
