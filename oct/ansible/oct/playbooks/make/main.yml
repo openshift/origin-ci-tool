@@ -1,5 +1,5 @@
 ---
-- name: ensure the call to this playbook is well-formed
+- name: ensure we have the parameters necessary to execute a make target
   hosts: 'localhost'
   connection: 'local'
   become: no
