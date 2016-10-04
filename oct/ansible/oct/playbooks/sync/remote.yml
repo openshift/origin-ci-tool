@@ -17,7 +17,7 @@
         - origin_ci_sync_remote
         - origin_ci_sync_version
 
-- name: push local changes to the remote host
+- name: sync the remote host with code from the remote repository
   hosts: '{{ origin_ci_hosts }}'
   connection: '{{ origin_ci_connection }}'
   become: '{{ origin_ci_become | default(omit) }}'
