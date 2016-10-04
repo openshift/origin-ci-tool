@@ -15,7 +15,6 @@ from ansible.playbook.task import Task
 from ansible.plugins.callback import CallbackBase
 from backports.shutil_get_terminal_size import get_terminal_size
 from os import environ
-from os.path import basename
 
 RUNNING_PREFIX = 'RUNNING'
 SUCCESS_PREFIX = 'SUCCESS'
@@ -97,13 +96,12 @@ class CallbackModule(CallbackBase):
 
         super(CallbackModule, self).__init__(*args, **kwargs)
 
-    def update_last_workload(self, status, result, ignore_errors=False):
+    def update_last_workload(self, status, ignore_errors=False):
         """
         Update the last workload to complete and send
         the updated list of workloads to the consumer.
 
         :param status: status to update to
-        :param result: result of the last task
         :param ignore_errors: whether or not to ignore errors
         """
         self._workloads[-1].complete(status, ignore_errors)
@@ -113,6 +111,8 @@ class CallbackModule(CallbackBase):
         Update the last play to be complete and remove
         any trace of the tasks that were displayed for it
         while it was running if it succeeded.
+
+        :param status: status to update to
         """
         last_play_index = -1
         for i, workload in reversed(list(enumerate(self._workloads))):
@@ -198,7 +198,7 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the last task
         """
-        self.update_last_workload(SUCCESS_PREFIX, result)
+        self.update_last_workload(SUCCESS_PREFIX)
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
         """
@@ -212,7 +212,7 @@ class CallbackModule(CallbackBase):
         :param ignore_errors: if we should consider this a failure
         """
         status = IGNORED_PREFIX if ignore_errors else FAILURE_PREFIX
-        self.update_last_workload(status, result, ignore_errors)
+        self.update_last_workload(status, ignore_errors)
 
         if not ignore_errors:
             self._workloads.append(Failure(result))
@@ -226,7 +226,7 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the last task
         """
-        self.update_last_workload(ERRORED_PREFIX, result)
+        self.update_last_workload(ERRORED_PREFIX)
         self._workloads.append(Failure(result))
 
     def v2_runner_on_skipped(self, result):
@@ -236,7 +236,7 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the last task
         """
-        self.update_last_workload(SKIPPED_PREFIX, result)
+        self.update_last_workload(SKIPPED_PREFIX)
 
     def v2_on_any(self, *args, **kwargs):
         """
@@ -292,7 +292,6 @@ class CallbackModule(CallbackBase):
                     status = FAILURE_PREFIX
                     break
 
-
         self.finalize_playbook(status)
         # we need to manually trigger this queue update
         self._queue.put(self._workloads)
@@ -326,7 +325,7 @@ def format_identifier(workload):
         # unfortunately there is no nice way to self-
         # identify for a playbook, so we must access
         # a protected member
-        return 'PLAYBOOK [{}]'.format(basename(workload._file_name))
+        return 'PLAYBOOK [{}]'.format(workload._file_name)
     elif isinstance(workload, Play):
         return 'PLAY [{}]'.format(workload.get_name())
     elif isinstance(workload, Task):
@@ -514,8 +513,10 @@ def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
     output (std{out,err}), if the result contains
     either.
 
+    :param stdout_key: where stdout is recorded
+    :param stderr_key: where stderr is recorded
     :param result: result to inspect
-    :return:
+    :return: formatted output message
     """
     output_message = ''
     if stdout_key in result:
@@ -552,12 +553,8 @@ class Failure(object):
         Render a representation of this failure
         onto the terminal screen.
 
-        :return: numebr of lines written
+        :return: number of lines written
         """
-        # TODO: remove after logging is added
-        with open('/tmp/errfile', 'wb') as errfile:
-            yaml.dump(self.result, errfile, default_flow_style=False, explicit_start=True)
-
         full_message = self.format()
         stderr.write(full_message)
         return full_message.count('\n')

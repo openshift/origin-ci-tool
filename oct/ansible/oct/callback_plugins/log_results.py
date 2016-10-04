@@ -1,103 +1,150 @@
-# (C) 2012, Michael DeHaan, <michael.dehaan@gmail.com>
-
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-
-#
-# This file has been edited to make fewer assumptions about the host
-# that is running on, but remains largely the work of the original
-# authors.
-#              Steve Kuznetsov <skuznets@redhat.com>
-#
-
-# Make coding more python3-ish
 from __future__ import (absolute_import, division, print_function)
-__metaclass__ = type
 
-import os
-import time
-import json
+from datetime import datetime
+from shutil import rmtree
+from tempfile import mkdtemp
 
-from ansible.module_utils._text import to_bytes
 from ansible.plugins.callback import CallbackBase
-
-
-# NOTE: in Ansible 1.2 or later general logging is available without
-# this plugin, just set ANSIBLE_LOG_PATH as an environment variable
-# or log_path in the DEFAULTS section of your ansible configuration
-# file.  This callback is an example of per hosts logging for those
-# that want it.
+from os import environ, makedirs
+from os.path import exists, join, sep
+from yaml import dump
 
 
 class CallbackModule(CallbackBase):
     """
-    logs playbook results, per host
+    Logs results from tasks, per playbook, per host.
+    Logfiles are aggregates of YAML snippets that
+    describe actions, their results, and where full
+    log messages can be found. Full log messages are
+    aggregates of YAML snippets that were given to
+    the callback, like the result, whether errors are
+    to be ignored, etc.
     """
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'log_results'
     CALLBACK_NEEDS_WHITELIST = True
 
-    TIME_FORMAT="%b %d %Y %H:%M:%S"
-    MSG_FORMAT="%(now)s - %(category)s - %(data)s\n\n"
-
     def __init__(self):
-        # TODO: better OS-agnostic filesystem code for this
-        self.log_root_dir = os.environ.get('ANSIBLE_LOG_ROOT_PATH', '/tmp/ansible/log')
-
         super(CallbackModule, self).__init__()
 
-        if not os.path.exists(self.log_root_dir):
-            os.makedirs(self.log_root_dir)
+        self.log_root_dir = environ.get('ANSIBLE_LOG_ROOT_PATH', mkdtemp(prefix='ansible_log'))
+        if not exists(self.log_root_dir):
+            makedirs(self.log_root_dir)
 
-    def log(self, host, category, data):
-        if type(data) == dict:
-            if '_ansible_verbose_override' in data:
-                # avoid logging extraneous data
-                data = 'omitted'
-            else:
-                data = data.copy()
-                invocation = data.pop('invocation', None)
-                data = json.dumps(data)
-                if invocation is not None:
-                    data = json.dumps(invocation) + " => %s " % data
+        # we will update the current playbook log path
+        # once we know we are executing a playbook
+        self.current_playbook_log_path = None
 
-        path = os.path.join(self.log_root_dir, host)
-        now = time.strftime(self.TIME_FORMAT, time.localtime())
+    def write_log(self, message, logfile=None, data=None):
+        with open(self.current_playbook_log_path, 'a') as playbook_log:
+            playbook_log.write('{} | {}\n'.format(datetime.now(), message))
+            if logfile and data:
+                playbook_log.write('\tFull output at:{}\n'.format(logfile))
+                with open(logfile, 'wb') as log_file:
+                    log_file.write(dump(data, default_flow_style=False, explicit_start=True))
 
-        msg = to_bytes(self.MSG_FORMAT % dict(now=now, category=category, data=data))
-        with open(path, "ab") as fd:
-            fd.write(msg)
+    def log_task_result(self, status, result):
+        host = result._host.get_name()
+        message = 'Task finished with status "{}" on host "{}"'.format(status, host)
+        logfile = join(self.log_dir_for_task(result._task), '{}_{}.yml'.format(host, status))
+        data = result._result
+        self.write_log(message, logfile, data)
 
-    def runner_on_failed(self, host, res, ignore_errors=False):
-        self.log(host, 'FAILED', res)
+    def log_dir_for_task(self, task):
+        return join(self.log_dir_for_play(task._parent._play), 'task_{}'.format(task._uuid))
 
-    def runner_on_ok(self, host, res):
-        self.log(host, 'OK', res)
+    def log_dir_for_play(self, play):
+        return join(self.log_dir_for_playbook(play._attributes['name']._data_source), 'play_{}'.format(play._uuid))
 
-    def runner_on_skipped(self, host, item=None):
-        self.log(host, 'SKIPPED', '...')
+    def log_dir_for_playbook(self, playbook_source):
+        return join(self.log_root_dir, 'playbook_{}'.format(playbook_source.replace(sep, '_')))
 
-    def runner_on_unreachable(self, host, res):
-        self.log(host, 'UNREACHABLE', res)
+    def log_message_for_task(self, task, message_prefix):
+        task_file = task._attributes['name']._data_source
+        task_line = task._attributes['name']._line_number
+        self.write_log('{} task with name "task_{}" from "{}:{}".'.format(message_prefix, task._uuid, task_file, task_line))
 
-    def runner_on_async_failed(self, host, res, jid):
-        self.log(host, 'ASYNC_FAILED', res)
+    def v2_playbook_on_start(self, playbook):
+        playbook_log_dir = self.log_dir_for_playbook(playbook._file_name)
+        if exists(playbook_log_dir):
+            rmtree(playbook_log_dir)
 
-    def playbook_on_import_for_host(self, host, imported_file):
-        self.log(host, 'IMPORTED', imported_file)
+        makedirs(playbook_log_dir)
+        self.current_playbook_log_path = join(playbook_log_dir, 'log')
+        self.write_log('Starting execution for playbook at {}'.format(playbook._file_name))
 
-    def playbook_on_not_import_for_host(self, host, missing_file):
-        self.log(host, 'NOTIMPORTED', missing_file)
+    def v2_playbook_on_import_for_host(self, result, imported_file):
+        # TODO: determine what this result looks like and place it in the right log dir
+        host = result._host.get_name()
+        self.write_log('Imported file at "{}" on host "{}"'.format(imported_file, host))
+        self.write_log(dump(result, default_flow_style=False, explicit_start=True))
+
+    def v2_playbook_on_not_import_for_host(self, result, missing_file):
+        # TODO: determine what this result looks like and place it in the right log dir
+        host = result._host.get_name()
+        self.write_log('Failed to import file at "{}" on host "{}"'.format(missing_file, host))
+        self.write_log(dump(result, default_flow_style=False, explicit_start=True))
+
+    def v2_playbook_on_include(self, included_file):
+        self.write_log('Included file at "{}"'.format(included_file))
+
+    def v2_playbook_on_setup(self):
+        self.write_log('Running setup for playbook.')
+
+    def v2_playbook_on_play_start(self, play):
+        makedirs(self.log_dir_for_play(play))
+        play_file = play._attributes['name']._data_source
+        play_line = play._attributes['name']._line_number
+        self.write_log('Starting execution for play with name "play_{}" from "{}:{}".'.format(play._uuid, play_file, play_line))
+
+    def v2_playbook_on_task_start(self, task, is_conditional):
+        makedirs(self.log_dir_for_task(task))
+        if task._attributes['action'] != 'setup':
+            # setup "tasks" aren't really tasks and don't
+            # have all of the fields we need to describe
+            # them nicely, so they don't get a task start
+            # message and instead get one from the above
+            # `playbook_on_setup` callback
+            self.log_message_for_task(task, 'Starting')
+
+    def v2_runner_on_failed(self, result, ignore_errors=False):
+        self.log_task_result('failed', result)
+
+    def v2_runner_on_ok(self, result):
+        self.log_task_result('ok', result)
+
+    def v2_runner_on_skipped(self, result):
+        self.log_task_result('skipped', result)
+
+    def v2_runner_on_unreachable(self, result):
+        self.log_task_result('unreachable', result)
+
+    def v2_runner_on_no_hosts(self, task):
+        self.log_message_for_task(task, 'No hosts found for')
+
+    def v2_runner_on_async_ok(self, result):
+        self.log_task_result('async ok', result)
+
+    def v2_runner_on_async_failed(self, result):
+        self.log_task_result('async failed', result)
+
+    def v2_playbook_on_no_hosts_matched(self):
+        self.write_log('No hosts matched.')
+
+    def v2_playbook_on_no_hosts_remaining(self):
+        self.write_log('No hosts remaining.')
+
+        # TODO: unimplemented methods follow - do we need them?
+        # def v2_runner_item_on_ok(self, result):
+        # def v2_runner_item_on_failed(self, result):
+        # def v2_runner_item_on_skipped(self, result):
+        # def v2_runner_retry(self, result):
+        # def v2_runner_on_file_diff(self, result, diff):
+        # def v2_playbook_on_notify(self, result, handler):
+        # def v2_playbook_on_cleanup_task_start(self, task):
+        # def v2_playbook_on_handler_task_start(self, task):
+        # def v2_playbook_on_vars_prompt(self, varname, private=True, prompt=None, encrypt=None,
+        #                                confirm=False, salt_size=None, salt=None, default=None):
+        # def v2_on_file_diff(self, result):
+        # def v2_playbook_on_stats(self, stats):
