@@ -89,6 +89,10 @@ class CallbackModule(CallbackBase):
         # which we get callbacks at
         self._queue = Queue()
         self._worker = Process(target=display_workload, args=(self._queue,))
+        # ensure that the worker thread is reaped if
+        # the main thread dies by marking the thread
+        # as a daemon
+        self._worker.daemon = True
         self._worker.start()
 
         super(CallbackModule, self).__init__(*args, **kwargs)
@@ -273,10 +277,21 @@ class CallbackModule(CallbackBase):
         # there isn't a good API for determining failures,
         # so we need to search for them ourselves
         status = SUCCESS_PREFIX
-        for _, amount in stats.failures.items():
-            if amount > 0:
-                status = FAILURE_PREFIX
-                break
+        if hasattr(stats, 'unreachable'):
+            # if there are no unreachable hosts, the play
+            # statistics won't contain this section, so
+            # we can simply look for it to signal failure
+            status = FAILURE_PREFIX
+        else:
+            # if there are no task failures, however, the
+            # play statistics will nevertheless contain a
+            # failures section, so we need to check that
+            # tasks actually failed on a host
+            for host in stats.failures:
+                if stats.failures[host]:
+                    status = FAILURE_PREFIX
+                    break
+
 
         self.finalize_playbook(status)
         # we need to manually trigger this queue update
