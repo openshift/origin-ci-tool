@@ -4,11 +4,36 @@ from __future__ import (absolute_import, division, print_function)
 from datetime import datetime
 from shutil import rmtree
 from tempfile import mkdtemp
+from traceback import format_exc
 
 from ansible.plugins.callback import CallbackBase
 from os import environ, makedirs
 from os.path import exists, join, sep
 from yaml import dump
+
+
+def log_exceptions(func):
+    """
+    Instead of allowing exceptions from the method
+    this decorates, log the exception to disk and
+    instead fail silently. I know this is insane.
+    We want to:
+        a) get the full exception output
+        b) not pollute std{out,err}
+    Ansible does not allow us these simple things.
+    So we work around it in a crazy way.
+
+    :param func: function to decorate
+    :return: decorated function
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception:
+            with open(join(args[0].log_root_dir, 'internal.log'), 'a') as log_file:
+                log_file.write('{} | Exception:\n{}\n'.format(datetime.now(), format_exc()))
+
+    return wrapper
 
 
 class CallbackModule(CallbackBase):
@@ -148,6 +173,7 @@ class CallbackModule(CallbackBase):
 
         return 'unknown', 'unknown'
 
+    @log_exceptions
     def v2_playbook_on_start(self, playbook):
         """
         Implementation of the callback endpoint to be
@@ -169,6 +195,7 @@ class CallbackModule(CallbackBase):
         self.current_playbook_log_path = join(playbook_log_dir, 'log')
         self.write_log('Starting execution for playbook at {}'.format(playbook._file_name))
 
+    @log_exceptions
     def v2_playbook_on_import_for_host(self, result, imported_file):
         """
         Implementation of the callback endpoint to be
@@ -182,6 +209,7 @@ class CallbackModule(CallbackBase):
         self.write_log('Imported file at "{}" on host "{}"'.format(imported_file, host))
         self.write_log(dump(result, default_flow_style=False, explicit_start=True))
 
+    @log_exceptions
     def v2_playbook_on_not_import_for_host(self, result, missing_file):
         """
         Implementation of the callback endpoint to be
@@ -195,6 +223,7 @@ class CallbackModule(CallbackBase):
         self.write_log('Failed to import file at "{}" on host "{}"'.format(missing_file, host))
         self.write_log(dump(result, default_flow_style=False, explicit_start=True))
 
+    @log_exceptions
     def v2_playbook_on_include(self, included_file):
         """
         Implementation of the callback endpoint to be
@@ -204,6 +233,7 @@ class CallbackModule(CallbackBase):
         """
         self.write_log('Included file at "{}"'.format(included_file))
 
+    @log_exceptions
     def v2_playbook_on_setup(self):
         """
         Implementation of the callback endpoint to be
@@ -214,6 +244,7 @@ class CallbackModule(CallbackBase):
         """
         self.write_log('Running setup for playbook.')
 
+    @log_exceptions
     def v2_playbook_on_play_start(self, play):
         """
         Implementation of the callback endpoint to be
@@ -225,6 +256,7 @@ class CallbackModule(CallbackBase):
         play_file, play_line = self.determine_location_for_workload(play)
         self.write_log('Starting execution for play with name "play_{}" from "{}:{}".'.format(play._uuid, play_file, play_line))
 
+    @log_exceptions
     def v2_playbook_on_task_start(self, task, is_conditional):
         """
         Implementation of the callback endpoint to be
@@ -236,6 +268,7 @@ class CallbackModule(CallbackBase):
         makedirs(self.log_dir_for_task(task))
         self.log_message_for_task(task, 'Starting')
 
+    @log_exceptions
     def v2_runner_on_failed(self, result, ignore_errors=False):
         """
         Implementation of the callback endpoint to be
@@ -246,6 +279,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_task_result('failed', result)
 
+    @log_exceptions
     def v2_runner_on_ok(self, result):
         """
         Implementation of the callback endpoint to be
@@ -255,6 +289,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_task_result('ok', result)
 
+    @log_exceptions
     def v2_runner_on_skipped(self, result):
         """
         Implementation of the callback endpoint to be
@@ -264,6 +299,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_task_result('skipped', result)
 
+    @log_exceptions
     def v2_runner_on_unreachable(self, result):
         """
         Implementation of the callback endpoint to be
@@ -273,6 +309,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_task_result('unreachable', result)
 
+    @log_exceptions
     def v2_runner_on_no_hosts(self, task):
         """
         Implementation of the callback endpoint to be
@@ -282,6 +319,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_message_for_task(task, 'No hosts found for')
 
+    @log_exceptions
     def v2_runner_on_async_ok(self, result):
         """
         Implementation of the callback endpoint to be
@@ -292,6 +330,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_task_result('async ok', result)
 
+    @log_exceptions
     def v2_runner_on_async_failed(self, result):
         """
         Implementation of the callback endpoint to be
@@ -302,6 +341,7 @@ class CallbackModule(CallbackBase):
         """
         self.log_task_result('async failed', result)
 
+    @log_exceptions
     def v2_playbook_on_no_hosts_matched(self):
         """
         Implementation of the callback endpoint to be
@@ -309,6 +349,7 @@ class CallbackModule(CallbackBase):
         """
         self.write_log('No hosts matched.')
 
+    @log_exceptions
     def v2_playbook_on_no_hosts_remaining(self):
         """
         Implementation of the callback endpoint to be
