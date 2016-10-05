@@ -52,6 +52,13 @@ class CallbackModule(CallbackBase):
             playbook_log.write('{} | {}\n'.format(datetime.now(), message))
             if logfile and data:
                 playbook_log.write('\tFull output at:{}\n'.format(logfile))
+                # sanitize the data to remove Ansible
+                # internal fields that the user doesn't
+                # need in their output files
+                for key in data.keys():
+                    if key.startswith('_ansible'):
+                        del data[key]
+
                 with open(logfile, 'wb') as log_file:
                     log_file.write(dump(data, default_flow_style=False, explicit_start=True))
 
@@ -86,7 +93,9 @@ class CallbackModule(CallbackBase):
         :param play: play to inspect
         :return: absolute path to the play log directory
         """
-        return join(self.log_dir_for_playbook(play._attributes['name']._data_source), 'play_{}'.format(play._uuid))
+        # the location of the play must be in the playbook
+        playbook_file, _ = self.determine_location_for_workload(play)
+        return join(self.log_dir_for_playbook(playbook_file), 'play_{}'.format(play._uuid))
 
     def log_dir_for_playbook(self, playbook_source):
         """
@@ -107,9 +116,28 @@ class CallbackModule(CallbackBase):
         :param task: task to log for
         :param message_prefix: message prefix to write
         """
-        task_file = task._attributes['name']._data_source
-        task_line = task._attributes['name']._line_number
+        task_file, task_line = self.determine_location_for_workload(task)
         self.write_log('{} task with name "task_{}" from "{}:{}".'.format(message_prefix, task._uuid, task_file, task_line))
+
+    def determine_location_for_workload(self, workload):
+        """
+        Determine the file location and line number where
+        the Ansible workload is defined. Not every workload
+        has a consistent set of entries in `_attributes`, so
+        we need to take a more dynamic approach to find one
+        that we can (ab)use for this information.
+
+        :param workload: Ansible workload to inspect
+        :return: file path, line number
+        """
+        if not hasattr(workload, '_attributes'):
+            return 'unknown', 'unknown'
+
+        for attribute in workload._attributes.values():
+            if hasattr(attribute, '_data_source'):
+                return attribute._data_source, attribute._line_number
+
+        return 'unknown', 'unknown'
 
     def v2_playbook_on_start(self, playbook):
         """
@@ -185,8 +213,7 @@ class CallbackModule(CallbackBase):
         :param play: play which began execution
         """
         makedirs(self.log_dir_for_play(play))
-        play_file = play._attributes['name']._data_source
-        play_line = play._attributes['name']._line_number
+        play_file, play_line = self.determine_location_for_workload(play)
         self.write_log('Starting execution for play with name "play_{}" from "{}:{}".'.format(play._uuid, play_file, play_line))
 
     def v2_playbook_on_task_start(self, task, is_conditional):
@@ -198,13 +225,7 @@ class CallbackModule(CallbackBase):
         :param is_conditional: whether or not this task is conditional
         """
         makedirs(self.log_dir_for_task(task))
-        if task._attributes['action'] != 'setup':
-            # setup "tasks" aren't really tasks and don't
-            # have all of the fields we need to describe
-            # them nicely, so they don't get a task start
-            # message and instead get one from the above
-            # `playbook_on_setup` callback
-            self.log_message_for_task(task, 'Starting')
+        self.log_message_for_task(task, 'Starting')
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
         """
