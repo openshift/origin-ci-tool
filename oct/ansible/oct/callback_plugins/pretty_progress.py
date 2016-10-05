@@ -25,9 +25,22 @@ SKIPPED_PREFIX = 'SKIPPED'
 
 # poll at 20 Hz
 POLL_DURATION = 0.05
+
 # we need a reasonable amount of width but we do not
 # want to take up more than the width of a single line
+# a line will look like:
+# PREFIX | IDENT [DETAILS DETAILS ...] ------ [TIMESTAMP]
 OUTPUT_WIDTH = min(get_terminal_size().columns, 150)
+prefix_width = 7  # e.g. `SUCCESS`
+prefix_separator_width = 3  # e.g. ` | `
+name_padding_width = 1  # e.g. ` ` after name
+time_padding_width = 2  # `- ` before time
+time_width = 11  # e.g. `[00:00.000]`
+IDENTIFIER_WIDTH = OUTPUT_WIDTH - \
+                   prefix_width - prefix_separator_width - \
+                   name_padding_width - \
+                   time_padding_width - time_width
+
 
 # TODO: determine if there is a better way
 MOVE_UP_ONE_LINE = '\033[F'
@@ -96,15 +109,14 @@ class CallbackModule(CallbackBase):
 
         super(CallbackModule, self).__init__(*args, **kwargs)
 
-    def update_last_workload(self, status, ignore_errors=False):
+    def update_last_workload(self, status):
         """
         Update the last workload to complete and send
         the updated list of workloads to the consumer.
 
         :param status: status to update to
-        :param ignore_errors: whether or not to ignore errors
         """
-        self._workloads[-1].complete(status, ignore_errors)
+        self._workloads[-1].complete(status)
 
     def finalize_last_play(self, status):
         """
@@ -212,7 +224,7 @@ class CallbackModule(CallbackBase):
         :param ignore_errors: if we should consider this a failure
         """
         status = IGNORED_PREFIX if ignore_errors else FAILURE_PREFIX
-        self.update_last_workload(status, ignore_errors)
+        self.update_last_workload(status)
 
         if not ignore_errors:
             self._workloads.append(Failure(result))
@@ -334,6 +346,25 @@ def format_identifier(workload):
         return 'UNKNOWN'
 
 
+def format_status(status):
+    """
+    Format the status of a workload, with
+    colors where appropriate.
+
+    :param status: status prefix
+    :return: formatted status
+    """
+    color = 'normal'
+    if status == SUCCESS_PREFIX:
+        color = COLOR_OK
+    elif status == FAILURE_PREFIX or status == ERRORED_PREFIX:
+        color = COLOR_ERROR
+    elif status == IGNORED_PREFIX or status == SKIPPED_PREFIX:
+        color = COLOR_SKIP
+
+    return colorize(status, color=color)
+
+
 class Workload(object):
     """
     A wrapper for an Ansible workload like a play,
@@ -352,23 +383,19 @@ class Workload(object):
         self.start_time = timer()
 
         # to be set when we finish this workload
-        self.ignore_errors = None
-        self.end_time = None
+        self.elapsed_time = None
 
     def __str__(self):
         return self.format()
 
-    def complete(self, status, ignore_errors=False):
+    def complete(self, status):
         """
         Mark the workload as having been completed.
 
         :param status: new status to update to
-        :param ignore_errors: whether or not an errored
-                              state is to be tolerated
         """
-        self.status = status
-        self.ignore_errors = ignore_errors
-        self.end_time = timer()
+        self.status = format_status(status)
+        self.elapsed_time = self.format_runtime()
 
     def render(self):
         """
@@ -382,7 +409,7 @@ class Workload(object):
 
     def format(self):
         """
-        Format an 80-char wide string containing:
+        Format a string containing:
         PREFIX | NAME -------------------- [TIME]
 
         Where PREFIX is one of the above constants,
@@ -396,45 +423,17 @@ class Workload(object):
 
         :return: formatted self-representation
         """
-        total_width = OUTPUT_WIDTH
-        prefix_width = 7  # e.g. `SUCCESS`
-        prefix_separator_width = 3  # e.g. ` | `
-        name_padding_width = 1  # e.g. ` ` after name
-        time_padding_width = 2  # `- ` before time
-        time_width = 11  # e.g. `[00:00.000]`
-        identifier_width = total_width - \
-                           prefix_width - prefix_separator_width - \
-                           name_padding_width - \
-                           time_padding_width - time_width
+        if len(self.identifier) > IDENTIFIER_WIDTH:
+            self.identifier = '{}...'.format(self.identifier[:IDENTIFIER_WIDTH - 3])
 
-        if len(self.identifier) > identifier_width:
-            self.identifier = '{}...'.format(self.identifier[:identifier_width - 3])
-
-        fill_width = identifier_width - len(self.identifier)
+        fill_width = IDENTIFIER_WIDTH - len(self.identifier)
 
         return '{} | {} -{} [{}]\n'.format(
-            self.format_status(),
+            self.status,
             self.identifier,
             '-' * fill_width,
             self.format_runtime()
         )
-
-    def format_status(self):
-        """
-        Format the status of this workload, with
-        colors where appropriate.
-
-        :return: formatted status
-        """
-        color = 'normal'
-        if self.status == SUCCESS_PREFIX:
-            color = COLOR_OK
-        elif self.status == FAILURE_PREFIX or self.status == ERRORED_PREFIX:
-            color = COLOR_ERROR
-        elif self.status == IGNORED_PREFIX or self.status == SKIPPED_PREFIX:
-            color = COLOR_SKIP
-
-        return colorize(self.status, color=color)
 
     def format_runtime(self):
         """
@@ -443,8 +442,10 @@ class Workload(object):
 
         :return: formatted time
         """
-        end = self.end_time if self.end_time is not None else timer()
-        return '{:02.0f}:{:06.3f}'.format(*divmod(end - self.start_time, 60))
+        if self.elapsed_time:
+            return self.elapsed_time
+        else:
+            return '{:02.0f}:{:06.3f}'.format(*divmod(timer() - self.start_time, 60))
 
 
 def format_result(result):
