@@ -26,12 +26,33 @@ def log_exceptions(func):
     :param func: function to decorate
     :return: decorated function
     """
+
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception:
             with open(join(args[0].log_root_dir, 'internal.log'), 'a') as log_file:
-                log_file.write('{} | Exception:\n{}\n'.format(datetime.now(), format_exc()))
+                log_file.write('{} | Exception on func {} with args self, {} and kwargs {}:\n{}\n'.format(
+                    datetime.now(), func.__name__, args[1:], kwargs, format_exc()
+                ))
+
+    return wrapper
+
+def log_exceptions_v2_playbook_on_start(func):
+    """
+    The Ansible TaskQueueManager inspects the
+    declared argument names, but only for the
+    `v2_playbook_on_start` method, and if the
+    method does not explicitly list `playbook`
+    as an argument, it mangles the call. This
+    wrapper, therefore, exposes `playbook` as
+    an argument.
+
+    :param func: wrapped v2_playbook_on_start
+    :return: better wrapper
+    """
+    def wrapper(self, playbook):
+        return func(self, playbook)
 
     return wrapper
 
@@ -173,6 +194,7 @@ class CallbackModule(CallbackBase):
 
         return 'unknown', 'unknown'
 
+    @log_exceptions_v2_playbook_on_start
     @log_exceptions
     def v2_playbook_on_start(self, playbook):
         """
