@@ -59,6 +59,15 @@ class CallbackModule(CallbackBase):
                     if key.startswith('_ansible'):
                         del data[key]
 
+                # remove `stdout_lines` if `stdout` is
+                # present -- we can let people load the
+                # data and format it however they want,
+                # but we don't want to store it twice
+                if 'results' in data:
+                    for result in data['results']:
+                        if 'stdout' in result and 'stdout_lines' in result:
+                            del result['stdout_lines']
+
                 with open(logfile, 'wb') as log_file:
                     log_file.write(dump(data, default_flow_style=False, explicit_start=True))
 
