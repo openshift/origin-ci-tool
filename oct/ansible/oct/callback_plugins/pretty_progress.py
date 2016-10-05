@@ -460,7 +460,7 @@ def format_result(result):
     full_message += format_item_failures(result)
     full_message += format_terminal_output(result)
     # detect internal module failures
-    full_message += format_terminal_output(result, stdout_key='module_stdout', stderr_key='module_stdout')
+    full_message += format_terminal_output(result, stdout_key='module_stdout', stderr_key='module_stderr')
     return full_message
 
 
