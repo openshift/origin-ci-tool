@@ -103,6 +103,13 @@ class VagrantVMMetadata(object):
                 extra_args.append('-o {}={}'.format(flag, ssh_configuration[flag]))
         self.extra_ssh_args = ' '.join(extra_args)
 
+        # in order to support long-running Ansible actions,
+        # we need to ensure that the SSH client doesn't
+        # give up on the connection and that we keep the
+        # server happy by pinging it every once in a while
+        self.extra_ssh_args += ' -o ConnectTimeout=0'
+        self.extra_ssh_args += ' -o ServerAliveInterval=30'
+
     def load(self, variable_file):
         """
         Initialize the VM metadata using a variables file.
