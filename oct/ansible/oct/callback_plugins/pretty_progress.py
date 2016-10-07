@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from Queue import Empty
 from multiprocessing import Process, Queue
@@ -43,8 +43,8 @@ IDENTIFIER_WIDTH = OUTPUT_WIDTH - \
 
 
 # TODO: determine if there is a better way
-MOVE_UP_ONE_LINE = '\033[F'
-CLEAR_LINE = '\033[K'
+MOVE_UP_ONE_LINE = b'\033[F'
+CLEAR_LINE = b'\033[K'
 
 
 def display_workload(queue):
@@ -474,9 +474,10 @@ def format_failure_message(result):
     """
     if 'msg' in result:
         # this is most likely a module failure
-        error_message = str(result['msg'])
-        if type(result['msg']) == list:
-            error_message = '\n'.join([str(item) for item in result['msg']])
+        if isinstance(result['msg'], list):
+            error_message = '\n'.join(result['msg'])
+        else:
+            error_message = result['msg']
 
         return '{}\n'.format(error_message)
 
@@ -592,16 +593,16 @@ class Failure(object):
 # http://nezzen.net/2008/06/23/colored-text-in-python-using-ansi-escape-sequences/
 
 codeCodes = {
-    'black': u'0;30', 'bright gray': u'0;37',
-    'blue': u'0;34', 'white': u'1;37',
-    'green': u'0;32', 'bright blue': u'1;34',
-    'cyan': u'0;36', 'bright green': u'1;32',
-    'red': u'0;31', 'bright cyan': u'1;36',
-    'purple': u'0;35', 'bright red': u'1;31',
-    'yellow': u'0;33', 'bright purple': u'1;35',
-    'dark gray': u'1;30', 'bright yellow': u'1;33',
-    'magenta': u'0;35', 'bright magenta': u'1;35',
-    'normal': u'0',
+    'black': '0;30', 'bright gray': '0;37',
+    'blue': '0;34', 'white': '1;37',
+    'green': '0;32', 'bright blue': '1;34',
+    'cyan': '0;36', 'bright green': '1;32',
+    'red': '0;31', 'bright cyan': '1;36',
+    'purple': '0;35', 'bright red': '1;31',
+    'yellow': '0;33', 'bright purple': '1;35',
+    'dark gray': '1;30', 'bright yellow': '1;33',
+    'magenta': '0;35', 'bright magenta': '1;35',
+    'normal': '0',
 }
 
 

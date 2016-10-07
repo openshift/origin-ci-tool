@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from datetime import datetime
 from shutil import rmtree
@@ -10,6 +10,7 @@ from ansible.plugins.callback import CallbackBase
 from os import environ, makedirs
 from os.path import exists, join, sep
 from yaml import dump
+from codecs import open
 
 
 def log_exceptions(func):
@@ -31,12 +32,13 @@ def log_exceptions(func):
         try:
             return func(*args, **kwargs)
         except Exception:
-            with open(join(args[0].log_root_dir, 'internal.log'), 'a') as log_file:
+            with open(join(args[0].log_root_dir, 'internal.log'), 'a', encoding='utf-8') as log_file:
                 log_file.write('{} | Exception on func {} with args self, {} and kwargs {}:\n{}\n'.format(
                     datetime.now(), func.__name__, args[1:], kwargs, format_exc()
                 ))
 
     return wrapper
+
 
 def log_exceptions_v2_playbook_on_start(func):
     """
@@ -51,6 +53,7 @@ def log_exceptions_v2_playbook_on_start(func):
     :param func: wrapped v2_playbook_on_start
     :return: better wrapper
     """
+
     def wrapper(self, playbook):
         return func(self, playbook)
 
@@ -94,7 +97,7 @@ class CallbackModule(CallbackBase):
         :param logfile: path to extra log file
         :param data: data for extra log file
         """
-        with open(self.current_playbook_log_path, 'a') as playbook_log:
+        with open(self.current_playbook_log_path, 'a', encoding='utf-8') as playbook_log:
             playbook_log.write('{} | {}\n'.format(datetime.now(), message))
             if logfile and data:
                 playbook_log.write('\tFull output at:{}\n'.format(logfile))
@@ -114,7 +117,7 @@ class CallbackModule(CallbackBase):
                         if 'stdout' in result and 'stdout_lines' in result:
                             del result['stdout_lines']
 
-                with open(logfile, 'wb') as log_file:
+                with open(logfile, 'wb', encoding='utf-8') as log_file:
                     log_file.write(dump(data, default_flow_style=False, explicit_start=True))
 
     def log_task_result(self, status, result):
