@@ -35,6 +35,7 @@
    - kernel-devel
    - libselinux-devel
    - libnetfilter_queue-devel
+   - lsof
    - make
    - mlocate
    - npm
@@ -45,13 +46,16 @@
    - screen
    - socat
    - sqlite-devel
+   - strace
    - sysstat
+   - tcpdump
    - tig
    - tmux
    - unzip
    - vim
    - wget
    - xfsprogs
+   - xorg-x11-utils
    - Xvfb
    - yum-utils
 
@@ -90,8 +94,13 @@
     exclude: 'kernel*'
     state: latest
 
+- name: determine installed npm version
+  command: "repoquery --pkgnarrow=installed --queryformat '%{version}' npm"
+  register: origin_ci_installed_npm_version
+
 - name: update npm to v3.7.3
   command: '/usr/bin/npm install npm@3.7.3 --global'
+  when: origin_ci_installed_npm_version.stdout | version_compare('3.7.3', '<')
 
 - name: document all the installed packages for the build logs
   command: '{{ ansible_pkg_mgr }} list installed'
