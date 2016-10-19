@@ -1,4 +1,4 @@
 ---
 origin_ci_vagrant_hostname: 'openshiftdevel'
 origin_ci_vagrant_cpus: 2
-origin_ci_vagrant_memory: 4092
+origin_ci_vagrant_memory: 8184
