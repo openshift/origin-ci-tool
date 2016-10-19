@@ -88,7 +88,10 @@
       fail:
         msg: Unexpected result from fdisk! Expected failure re-reading partition table.
       when: "( origin_ci_fdisk | succeeded ) or
-             ( origin_ci_fdisk | failed and 'Re-reading the partition table failed.: Device or resource busy' not in origin_ci_fdisk.stdout )"
+             ( origin_ci_fdisk | failed and (
+                                    'Re-reading the partition table failed' not in origin_ci_fdisk.stdout or
+                                    'Device or resource busy' not in origin_ci_fdisk.stdout
+                                 ) )"
 
     - name: commit the new partition table
       command: '/usr/sbin/partprobe'
