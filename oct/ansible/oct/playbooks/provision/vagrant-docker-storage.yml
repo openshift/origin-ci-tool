@@ -96,8 +96,12 @@
     - name: commit the new partition table
       command: '/usr/sbin/partprobe'
 
+    - name: determine the partition with the largest index on the device # TODO: is there a better way to choose this?
+      shell: '/usr/bin/ls -1 /dev/vda* | tail -n 1'
+      register: origin_ci_device_partition
+
     - name: set up the volume group
       lvg:
         vg: '{{ origin_ci_docker_volume_group }}'
-        pvs: '/dev/vda2' # TODO: determine how to select the right partition
+        pvs: '{{ origin_ci_device_partition.stdout }}'
         state: present
