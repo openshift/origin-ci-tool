@@ -1,0 +1,50 @@
+---
+- name: ensure we have the parameters necessary to package the VM image
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_vagrant_stage
+        - origin_ci_vagrant_hostname
+        - origin_ci_vagrant_package_dir
+        - origin_ci_vagrant_package_ref
+        - origin_ci_vagrant_package_bump_version
+
+- name: package the VM image
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: percolate variables from the target host
+      set_fact:
+        '{{ item }}': '{{ hostvars[origin_ci_vagrant_hostname][item] }}'
+      with_items:
+        - origin_ci_vagrant_home_dir
+        - origin_ci_vagrant_hostname
+        - origin_ci_vagrant_os
+        - origin_ci_vagrant_provider
+
+  tasks:
+    - name: pause the VM so we can package it
+      command: '/usr/bin/vagrant halt --force'
+      args:
+        chdir: '{{ origin_ci_vagrant_home_dir }}'
+
+    - name: package the VM image
+      include: './tasks/package-{{ origin_ci_vagrant_provider }}.yml'
+      become: yes
+      become_user: root
+
+    - name: re-start the VM
+      command: '/usr/bin/vagrant up --no-provision'
+      args:
+        chdir: '{{ origin_ci_vagrant_home_dir }}'

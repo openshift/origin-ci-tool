@@ -1,0 +1,3 @@
+---
+- fail:
+    msg: Packaging VMWare Fusion VMs is not yet implemented.

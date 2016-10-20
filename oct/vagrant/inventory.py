@@ -166,7 +166,7 @@ def list_vagrant_directories():
     vagrant_directories = []
     for entry in listdir(base_directory):
         entry = join(base_directory, entry)
-        if isdir(entry):
+        if isdir(entry) and not entry.endswith('boxes'):
             vagrant_directories.append(entry)
 
     return vagrant_directories

@@ -55,54 +55,15 @@ def stage
   end
 end
 
-fedora_mirror    = "https://download.fedoraproject.org/pub/fedora/linux/releases/24/CloudImages/x86_64/images"
-centos_mirror    = "http://cloud.centos.org/centos/7/vagrant/x86_64/images"
-bento_mirror     = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/vmware"
-openshift_mirror = "https://mirror.openshift.com/pub/vagrant/boxes/openshift3"
-
-# The following box URLs define valid combinations of the
-# above parameters for `vagrant up`
-BOXES = {
-  :fedora => {
-    :libvirt => {
-      :bare    => "#{fedora_mirror}/Fedora-Cloud-Base-Vagrant-24-1.2.x86_64.vagrant-libvirt.box",
-      :base    => "#{openshift_mirror}/fedora_libvirt_base.box",
-      :install => "#{openshift_mirror}/fedora_libvirt_install.box"
-    },
-    :virtualbox => {
-      :bare    => "#{fedora_mirror}/Fedora-Cloud-Base-Vagrant-24-1.2.x86_64.vagrant-virtualbox.box",
-      :base    => "#{openshift_mirror}/fedora_virtualbox_base.box",
-      :install => "#{openshift_mirror}/fedora_virtualbox_install.box"
-    },
-    :vmware_fusion => {
-      # without a license to publish and distribute VMWare images,
-      # we can't provide any images other than the bare OS
-      :bare    => "#{bento_mirror}/opscode_fedora-24_chef-provisionerless.box"
-    }
-  },
-  :centos => {
-    :libvirt => {
-      :bare    => "#{centos_mirror}/CentOS-7-x86_64-Vagrant-1607_01.LibVirt.box",
-      :base    => "#{openshift_mirror}/centos_libvirt_base.box",
-      :install => "#{openshift_mirror}/centos_libvirt_install.box"
-    },
-    :virtualbox => {
-      :bare    => "#{centos_mirror}/CentOS-7-x86_64-Vagrant-1607_01.VirtualBox.box",
-      :base    => "#{openshift_mirror}/centos_virtualbox_base.box",
-      :install => "#{openshift_mirror}/centos_virtualbox_install.box"
-    },
-    :vmware_fusion => {
-      # without a license to publish and distribute VMWare images,
-      # we can't provide any images other than the bare OS
-      :bare    => "#{bento_mirror}/opscode_centos-7.2_chef-provisionerless.box"
-    }
-  }
-}
+def box_url
+  "https://mirror.openshift.com/pub/vagrant/boxes/openshift3/#{operating_system()}/#{stage()}/metadata.json"
+end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   name = ENV["OPENSHIFT_VAGRANT_BOX_NAME"] || "openshiftdevel"
   config.vm.define name
-  config.vm.box  = name
+  config.vm.box     = "openshiftdevel/#{operating_system()}/#{stage()}"
+  config.vm.box_url = ENV["OPENSHIFT_VAGRANT_BOX_URL"] || box_url()
 
   if ARGV.first == "up"
     puts "Starting a #{operating_system()} virtual machine at the #{stage()} stage with hostname #{name}."
@@ -112,13 +73,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puts "  OPENSHIFT_VAGRANT_BOX_NAME         to change the hostname"
     puts "  OPENSHIFT_VAGRANT_CPUS             to change the number of CPUs"
     puts "  OPENSHIFT_VAGRANT_MEMORY           to change the MB of RAM"
+    puts "  OPENSHIFT_VAGRANT_BOX_URL          to change the VM box used"
   end
 
   PROVIDERS.each do |provider_symbol|
-    config.vm.provider provider_symbol do |provider_config, config_override|
-      config_override.vm.box_url = BOXES[operating_system()][provider_symbol][stage()]
+    config.vm.provider provider_symbol do |provider_config, _|
       provider_config.cpus       = (ENV["OPENSHIFT_VAGRANT_CPUS"]   || 2).to_i
-      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 6 * 1024).to_i
+      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 8 * 1024).to_i
     end
   end
 
@@ -138,5 +99,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # switch to any user other than root -- this is problematic for Ansible
   # as we want to use other users during provisioning steps
   config.vm.provision "shell", inline: "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"
-  config.vm.provision "shell", inline: "rm /etc/sudoers.d/vagrant-nopasswd"
+  config.vm.provision "shell", inline: "rm -f /etc/sudoers.d/vagrant-nopasswd/etc/sudoers.d/vagrant-nopasswd"
 end

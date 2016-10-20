@@ -8,6 +8,7 @@ from .cli.build.group import build
 from .cli.config.group import configure
 from .cli.install.group import install
 from .cli.make.make import make
+from .cli.package.group import package
 from .cli.prepare.group import prepare
 from .cli.provision.group import provision
 from .cli.sync.group import sync
@@ -38,6 +39,7 @@ oct_command.add_command(configure)
 oct_command.add_command(install)
 oct_command.add_command(make)
 oct_command.add_command(prepare)
+oct_command.add_command(package)
 oct_command.add_command(provision)
 oct_command.add_command(sync)
 oct_command.add_command(test)

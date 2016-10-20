@@ -1,0 +1,3 @@
+---
+- fail:
+    msg: Packaging VirtualBox VMs is not yet implemented.
