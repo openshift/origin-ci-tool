@@ -31,11 +31,17 @@ class AnsibleCoreClient(object):
                  inventory_file=None,
                  verbosity=DEFAULT_VERBOSITY,
                  dry_run=False,
-                 log_directory=None):
+                 log_directory=None,
+                 custom_module_path=None):
         if inventory_file is None:
             # default to the dynamic Vagrant inventory
             from ..vagrant import __file__ as inventory_directory
             inventory_file = join(abspath(dirname(inventory_directory)), 'inventory.py')
+
+        if custom_module_path is None:
+            # default to the pre-packaged custom module path
+            from ..oct import __file__ as base_directory
+            custom_module_path = join(abspath(dirname(base_directory)), 'ansible', 'oct', 'library')
 
         # location of the inventory file to use
         self.host_list = inventory_file
@@ -45,6 +51,8 @@ class AnsibleCoreClient(object):
         self.check = dry_run
         # where to store logs for Ansible playbooks
         self.log_directory = log_directory
+        # from where to load custom Ansible modules
+        self.custom_module_path = custom_module_path
 
     def generate_playbook_options(self, playbook):
         """
@@ -66,6 +74,8 @@ class AnsibleCoreClient(object):
 
         playbook_cli = PlaybookCLI(args=playbook_args)
         playbook_cli.parse()
+
+        playbook_cli.options.module_path = self.custom_module_path
 
         return playbook_cli.options
 

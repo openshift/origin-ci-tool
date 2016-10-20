@@ -16,6 +16,9 @@ DEFAULT_HOSTNAME = 'openshiftdevel'
 
 _ANSIBLE_CLIENT_CONFIGURATION_FILE = 'ansible_client_configuration.yml'
 _ANSIBLE_VARIABLES_FILE = 'ansible_variables.yml'
+_VAGRANT_ROOT_DIRECTORY = 'vagrant'
+_VAGRANT_BOX_DIRECTORY = 'boxes'
+_LOG_DIRECTORY = 'logs'
 
 
 class Configuration(object):
@@ -152,7 +155,15 @@ class Configuration(object):
         Yield the root path for Vagrant VM locations.
         :return: absolute path to Vagrant VM containers directory
         """
-        return join(self._path, 'vagrant')
+        return join(self._path, _VAGRANT_ROOT_DIRECTORY)
+
+    @property
+    def vagrant_box_directory(self):
+        """
+        Yield the path for Vagrant box files and metadata.
+        :return: absolute path to Vagrant VM boxes directory
+        """
+        return join(self.vagrant_directory_root, _VAGRANT_BOX_DIRECTORY)
 
     def vagrant_home_directory(self, name):
         """
@@ -232,7 +243,7 @@ class Configuration(object):
         Yield the root path for Ansible log files.
         :return: absolute path to Ansible logging directory
         """
-        return join(self._path, 'logs')
+        return join(self._path, _LOG_DIRECTORY)
 
     def __getitem__(self, key):
         """
