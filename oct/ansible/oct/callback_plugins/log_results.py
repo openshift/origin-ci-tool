@@ -175,7 +175,15 @@ class CallbackModule(CallbackBase):
         :param message_prefix: message prefix to write
         """
         task_file, task_line = self.determine_location_for_workload(task)
-        self.write_log('{} task with name "task_{}" from "{}:{}".'.format(message_prefix, task._uuid, task_file, task_line))
+        self.write_log(
+            '{} task "{}" with name "task_{}" from "{}:{}".'.format(
+                message_prefix,
+                task.get_name(),
+                task._uuid,
+                task_file,
+                task_line
+            )
+        )
 
     def determine_location_for_workload(self, workload):
         """
@@ -279,7 +287,14 @@ class CallbackModule(CallbackBase):
         """
         makedirs(self.log_dir_for_play(play))
         play_file, play_line = self.determine_location_for_workload(play)
-        self.write_log('Starting execution for play with name "play_{}" from "{}:{}".'.format(play._uuid, play_file, play_line))
+        self.write_log(
+            'Starting execution for play "{}" with name "play_{}" from "{}:{}".'.format(
+                play.get_name(),
+                play._uuid,
+                play_file,
+                play_line
+            )
+        )
 
     @log_exceptions
     def v2_playbook_on_task_start(self, task, is_conditional):
