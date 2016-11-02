@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 from click import group, pass_context
 
 from .cli.bootstrap.group import bootstrap
-from .cli.build.group import build
+from .cli.build.build import build
 from .cli.config.group import configure
 from .cli.install.group import install
 from .cli.make.make import make

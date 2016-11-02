@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import ClickException, command, option, pass_context
+from click import command, option, pass_context
 
 from ..util.common_options import ansible_output_options
 from ..util.repository_options import Repository, repository_argument
@@ -53,7 +53,7 @@ def build(context, repository, follow_dependencies):
     if repository == Repository.origin:
         build_origin(ansible_client, follow_dependencies)
     elif repository == Repository.enterprise:
-        build_enterprise(ansible_client,follow_dependencies)
+        build_enterprise(ansible_client, follow_dependencies)
     elif repository == Repository.logging:
         build_logging(ansible_client)
     elif repository == Repository.metrics:
@@ -65,15 +65,21 @@ def build(context, repository, follow_dependencies):
 
 
 def build_origin(client, follow_dependencies):
-    run_make(client, Repository.origin, 'rpm-release')
-    if follow_dependencies:
-        build_source_to_image(client)
-        build_metrics(client)
-        build_logging(client)
+    build_openshift(client, Repository.origin, follow_dependencies)
 
 
 def build_enterprise(client, follow_dependencies):
-    run_make(client, Repository.enterprise, 'rpm-release')
+    build_openshift(client, Repository.enterprise, follow_dependencies)
+
+
+def build_openshift(client, repository, follow_dependencies):
+    run_make(client, repository, 'release-rpms')
+    client.run_playbook(
+        playbook_relative_path='prepare/local_rpm_repository',
+        playbook_variables={
+            'origin_ci_host_repository': repository
+        }
+    )
     if follow_dependencies:
         build_source_to_image(client)
         build_metrics(client)
@@ -81,15 +87,15 @@ def build_enterprise(client, follow_dependencies):
 
 
 def build_logging(client):
-    pass
+    run_make(client, Repository.logging, 'build-images')
 
 
 def build_metrics(client):
-    pass
+    run_make(client, Repository.metrics, 'build-images')
 
 
 def build_source_to_image(client):
-    pass
+    run_make(client, Repository.source_to_image, 'release')
 
 
 def build_web_console(client, follow_dependencies):
@@ -98,11 +104,12 @@ def build_web_console(client, follow_dependencies):
         run_make(client, Repository.origin, 'vendor-console')
         build_origin(client, follow_dependencies)
 
-def run_make(client, repostory, target):
+
+def run_make(client, repository, target):
     client.run_playbook(
         playbook_relative_path='make/main',
         playbook_variables={
-            'origin_ci_make_repository': repostory,
+            'origin_ci_make_repository': repository,
             'origin_ci_make_targets': [target]
         }
     )

@@ -1,0 +1,35 @@
+---
+- name: ensure we have the parameters necessary to install the Origin RPM repo
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+        - origin_ci_user
+        - origin_ci_host_repository
+
+- name: install the Origin RPM repository for local releases
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: create the Origin RPM repository
+      command: '/bin/createrepo {{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_host_repository }}/_output/local/releases'
+
+    - name: register the Origin RPM repository
+      yum_repository:
+        name: 'origin-local-releases'
+        state: present
+        description: 'OpenShift Origin Release from Local Source'
+        baseurl: 'file://{{ ansible_env.GOPATH }}/src/github.com/openshift/_output/local/releases'
+        gpgcheck: no
