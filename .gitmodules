@@ -1,0 +1,3 @@
+[submodule "oct/ansible/openshift-ansible"]
+	path = oct/ansible/openshift-ansible
+	url = git@github.com:openshift/openshift-ansible.git

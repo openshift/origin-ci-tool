@@ -6,6 +6,10 @@ from click import command, echo
 
 VERSION = '0.1.0'
 
+# auto-generated variables
+OPENSHIFT_ANSIBLE_VERSION = 'openshift-ansible-3.4.13-1-2-g52ab71a'
+OPENSHIFT_ANSIBLE_CHECKOUT = '52ab71a6f741f2477ab395d48dacfe609cf1411a'
+
 _short_help = 'Print version information for this tool.'
 
 
@@ -27,6 +31,7 @@ def version():
     echo('ansible version:')
     echo(''.join(['\t' + line + '\n' for line in CLI.version('ansible').splitlines()]))
     echo('openshift-ansible version:')
-    echo('\tTODO')
+    echo('\t{}'.format(OPENSHIFT_ANSIBLE_VERSION))
+    echo('\t  master/HEAD at {}\n'.format(OPENSHIFT_ANSIBLE_CHECKOUT))
     echo('openshift-ansible-contrib version:')
     echo('\tTODO')
