@@ -9,12 +9,14 @@
   with_items:
    - augeas
    - bridge-utils
+   - bsdtar
    - bzip2
    - bzr
    - bind
    - btrfs-progs-devel
    - bind-utils
    - ctags
+   - createrepo
    - deltarpm
    - device-mapper-devel
    - ethtool
@@ -33,6 +35,7 @@
    - jq
    - java-1.?.0-openjdk
    - kernel-devel
+   - krb5-devel
    - libselinux-devel
    - libnetfilter_queue-devel
    - lsof
@@ -50,7 +53,9 @@
    - sysstat
    - tcpdump
    - tig
+   - tito
    - tmux
+   - tree
    - unzip
    - vim
    - wget
@@ -58,6 +63,7 @@
    - xorg-x11-utils
    - Xvfb
    - yum-utils
+   - zip
 
 - name: install distribution-dependent dependencies
   package:

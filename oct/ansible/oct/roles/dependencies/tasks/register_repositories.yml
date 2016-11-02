@@ -42,3 +42,35 @@
     name: epel-release
     state: present
   when: ansible_distribution in ['Red Hat Enterprise Linux', 'CentOS']
+
+- name: install COPR to provide patched Tito
+  yum_repository:
+    name: dgoodwin-tito
+    state: present
+    description: 'Repository for Tito owned by Devon Goodwin'
+    baseurl: 'https://copr-be.cloud.fedoraproject.org/results/dgoodwin/tito/{{ item.name }}-$releasever-$basearch/'
+    gpgcheck: yes
+    gpgkey: 'https://copr-be.cloud.fedoraproject.org/results/dgoodwin/tito/pubkey.gpg'
+  when: ansible_distribution in item.distros
+  with_items:
+    - name: 'fedora'
+      distros: [ 'Fedora' ]
+    - name: 'epel'
+      distros: [ 'CentOS', 'Red Hat Enterprise Linux' ]
+
+- name: add the signing key for the CentOS PaaS SIG repository
+  rpm_key:
+    key: https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_repos/files/origin/gpg_keys/openshift-ansible-CentOS-SIG-PaaS
+    state: present
+
+- name: register the CentOS PaaS SIG repository
+  yum_repository:
+    name: 'centos-paas-sig-openshift-origin-rpms'
+    state: present
+    description: 'CentOS PaaS SIG Origin Repository'
+    baseurl: 'http://mirror.centos.org/centos/7/paas/x86_64/openshift-origin/'
+    gpgcheck: yes
+    sslverify: no
+    sslclientcert: /var/lib/yum/client-cert.pem
+    sslclientkey: /var/lib/yum/client-key.pem
+  when: ansible_distribution == 'CentOS'
