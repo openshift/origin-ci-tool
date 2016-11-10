@@ -9,6 +9,11 @@
     src: './../../../../../vagrant/Vagrantfile'
     dest: '{{ origin_ci_vagrant_home_dir }}/Vagrantfile'
 
+- name: add the static inventory to the base directory
+  copy:
+    src: './../../../../../vagrant/static_inventory.json'
+    dest: '{{ origin_ci_vagrant_home_dir }}/../static_inventory.json'
+
 - name: determine if we already have a VM running
   command: '/usr/bin/vagrant status {{ origin_ci_vagrant_hostname }}'
   args:

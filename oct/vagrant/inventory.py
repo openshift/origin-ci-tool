@@ -9,12 +9,16 @@ file for each host.
 
 Hosts will all be placed under the `vms' group
 and additionally into any groups as labelled in
-the host's var file with keys in the list
-`ansible_inventory_group:`.
+the host's group file, which should be a simple
+YAML serialized list.
 
 We expect to find Vagrant VMs under the Origin
 CI Tool configuration directory, often stored at:
    ~/.config/origin-ci-tool/vagrant
+
+A set of static groups will be loaded from the
+`static_inventory.json` file in the root of the
+configuration directory root.
 
 In each subdirectory, we expect to find:
  - a single Vagrant VM started from the canonical
@@ -152,17 +156,25 @@ def add_host_to_inventory(inventory, hostname, groups, variables):
     inventory['_meta']['hostvars'][hostname] = variables
 
 
+def determine_base_path():
+    """
+    Determine the user-based configuration path as per
+    the XDG basedir specification:
+    https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+    :return: base path for the configuration dir
+    """
+    config_dir = getenv('XDG_CONFIG_HOME', expanduser('~'))
+    return abspath(join(config_dir, '.config', 'origin-ci-tool', 'vagrant'))
+
+
 def list_vagrant_directories():
     """
     List all possible Vagrant VM directories.
-    Configuration will be placed in the user-based conf-
-    iguration path as per the XDG basedir specification:
-    https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
     :return: list of potential Vagrant VM directories
     """
-    config_dir = getenv('XDG_CONFIG_HOME', expanduser('~'))
-    base_directory = abspath(join(config_dir, '.config', 'origin-ci-tool', 'vagrant'))
+    base_directory = determine_base_path()
     vagrant_directories = []
     for entry in listdir(base_directory):
         entry = join(base_directory, entry)
@@ -182,6 +194,15 @@ if options.list:
             'vars': {}
         }
     }
+
+    # load static groups if they exist
+    static_groups_location = join(determine_base_path(), 'static_inventory.json')
+    if exists(static_groups_location):
+        with open(static_groups_location) as static_groups_file:
+            static_groups = load(static_groups_file)
+            full_inventory.update(static_groups)
+
+    # load VM hosts
     for directory in list_vagrant_directories():
         current_hostname, host_groups, host_variables = get_vagrant_info(directory)
         if current_hostname:
@@ -197,6 +218,7 @@ elif options.host:
         current_hostname, host_groups, host_variables = get_vagrant_info(directory)
         if current_hostname == options.host:
             print(dumps(host_variables))
+            exit(0)
 
     print(dumps({}))
 

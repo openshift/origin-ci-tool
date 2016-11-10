@@ -6,7 +6,7 @@ from copy import deepcopy
 from shutil import rmtree
 from subprocess import check_output
 
-from os.path import join
+from os.path import exists, join
 from paramiko import SSHConfig
 from yaml import dump, load
 
@@ -45,27 +45,27 @@ class VagrantVMMetadata(object):
     for Vagrant VM guests we have provisioned.
     """
 
-    def __init__(self, data=None, variable_file=None):
+    def __init__(self, data=None, variable_file=None, group_file=None):
         self.directory = None
         self.operating_system, self.provider, self.stage = None, None, None
         self.hostname, self.host, self.port = None, None, None
         self.private_key_file, self.remote_user, self.extra_ssh_args = None, None, None
-        self.extra = {}
+        self.extra, self.groups = {}, []
 
         # this is an overloaded constructor since we will
         # want to create metadata objects in one of two
         # distinct ways: either from the constituent data
-        # or from a file containing variables on disk
+        # or from files containing metadata on disk
         if data is not None and variable_file is not None:
             raise Exception('Vagrant VM Metadata should be initialized with a file or with data, not both!')
         elif data:
-            self.set_metadata(data['directory'], data['hostname'], data['provisioning_details'])
+            self.set_metadata(data['directory'], data['hostname'], data['provisioning_details'], data['groups'], data['extra'])
         elif file:
-            self.load(variable_file)
+            self.load(variable_file, group_file)
         else:
             raise Exception('Vagrant VM Metadata should be initialized with a file or with data, not neither!')
 
-    def set_metadata(self, directory, hostname, provisioning_details):
+    def set_metadata(self, directory, hostname, provisioning_details, groups, extra):
         """
         Initialize the VM metadata using explicit data.
 
@@ -110,11 +110,16 @@ class VagrantVMMetadata(object):
         self.extra_ssh_args += ' -o ConnectTimeout=0'
         self.extra_ssh_args += ' -o ServerAliveInterval=30'
 
-    def load(self, variable_file):
+        self.groups = groups
+        self.extra = extra
+
+    def load(self, variable_file, group_file=None):
         """
-        Initialize the VM metadata using a variables file.
+        Initialize the VM metadata using a variables file and
+        an optional groups file.
 
         :param variable_file: path to local file with VM data
+        :param group_file: optional path to local file with VM data
         """
         with open(variable_file) as variables:
             raw_data = load(variables)
@@ -123,6 +128,10 @@ class VagrantVMMetadata(object):
 
             for variable, field in _variable_name_to_metadata_field.items():
                 setattr(self, field, raw_data[variable])
+
+        if group_file is not None and exists(group_file):
+            with open(group_file) as groups:
+                self.groups = load(groups)
 
     def write(self):
         """
@@ -134,6 +143,9 @@ class VagrantVMMetadata(object):
 
         with open(join(self.directory, 'variables.yml'), 'w+') as variables_file:
             dump(raw_data, variables_file, default_flow_style=False, explicit_start=True)
+
+        with open(join(self.directory, 'groups.yml'), 'w+') as groups_file:
+            dump(self.groups, groups_file, default_flow_style=False, explicit_start=True)
 
     def remove(self):
         """
