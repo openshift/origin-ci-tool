@@ -73,6 +73,8 @@
                               -O qcow2                                               \
                               '{{ origin_ci_vagrant_volume_location.stdout }}'       \
                               '{{ origin_ci_vagrant_package_image_tmp }}'
+  environment:
+    LIBGUESTFS_BACKEND: 'direct'
 
 - name: ensure that the qemu user owns the output image so libvirt can fiddle with it
   file:
@@ -85,6 +87,8 @@
   command: >
     /usr/bin/virt-sysprep --format qcow2 --operation ssh-userdir \
                           --add '{{ origin_ci_vagrant_package_image_tmp }}'
+  environment:
+    LIBGUESTFS_BACKEND: 'direct'
 
 - name: add the stock insecure Vagrant public key and a root password
   command: >
@@ -93,6 +97,8 @@
                           --ssh-inject vagrant:string:'{{ lookup('file', origin_ci_vagrant_public_keyfile) }}' \
                           --selinux-relabel                                                                    \
                           --add '{{ origin_ci_vagrant_package_image_tmp }}'
+  environment:
+    LIBGUESTFS_BACKEND: 'direct'
 
 - name: inspect the storage volume for the guest domain
   command: '/usr/bin/virsh vol-dumpxml {{ origin_ci_vagrant_volume_location.stdout }}'
