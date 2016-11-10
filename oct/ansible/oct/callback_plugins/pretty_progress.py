@@ -461,6 +461,8 @@ def format_result(result):
     full_message += format_terminal_output(result)
     # detect internal module failures
     full_message += format_terminal_output(result, stdout_key='module_stdout', stderr_key='module_stderr')
+    # detect internal stacktrace crashes
+    full_message += format_internal_exception_output(result)
     return full_message
 
 
@@ -534,6 +536,12 @@ def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
         output_message = colorize('No output was written to stdout or stderr!', color=COLOR_ERROR)
 
     return output_message
+
+def format_internal_exception_output(result):
+    if 'exception' in result:
+        return 'An internal exception occurred:\n{}'.format(result['exception'])
+
+    return ''
 
 
 class Failure(object):
