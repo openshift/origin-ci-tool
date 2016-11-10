@@ -31,5 +31,5 @@
         name: 'origin-local-releases'
         state: present
         description: 'OpenShift Origin Release from Local Source'
-        baseurl: 'file://{{ ansible_env.GOPATH }}/src/github.com/openshift/_output/local/releases'
+        baseurl: 'file://{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_host_repository }}/_output/local/releases'
         gpgcheck: no
