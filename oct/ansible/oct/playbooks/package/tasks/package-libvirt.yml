@@ -140,13 +140,16 @@
     dest: '{{ origin_ci_vagrant_tmpdir.stdout }}/Vagrantfile'
 
 - name: package the image and metadata into a box
-  archive:
-    path:
-      - '{{ origin_ci_vagrant_package_metadata }}'
-      - '{{ origin_ci_vagrant_package_image_tmp }}'
-      - '{{ origin_ci_vagrant_tmpdir.stdout }}/Vagrantfile'
-    dest: '{{ origin_ci_vagrant_package_box }}'
-    format: 'gz'
+  command: '/usr/bin/tar -czf {{ origin_ci_vagrant_package_box }} {{ origin_ci_vagrant_package_metadata }} {{ origin_ci_vagrant_package_image_tmp }} {{ origin_ci_vagrant_tmpdir.stdout }}/Vagrantfile'
+
+# TODO: replace the above with the following once `archive` hits GA
+#  archive:
+#    path:
+#      - '{{ origin_ci_vagrant_package_metadata }}'
+#      - '{{ origin_ci_vagrant_package_image_tmp }}'
+#      - '{{ origin_ci_vagrant_tmpdir.stdout }}/Vagrantfile'
+#    dest: '{{ origin_ci_vagrant_package_box }}'
+#    format: 'gz'
 
 - name: move the image from it's temporary location to the final one
   command: '/usr/bin/mv {{ origin_ci_vagrant_package_image_tmp }} {{ origin_ci_vagrant_package_image }}'
