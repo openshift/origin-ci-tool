@@ -17,7 +17,7 @@
     origin_ci_vagrant_package_box: '{{ origin_ci_vagrant_package_directory }}/{{ origin_ci_vagrant_provider }}.box'
 
 - name: generate a location for temporary files
-  command: '/usr/bin/mktemp -d'
+  command: '/usr/bin/mktemp --directory --tmpdir={{ origin_ci_vagrant_package_directory }}'
   register: origin_ci_vagrant_tmpdir
 
 - name: allow users to interact with the temporary files
