@@ -79,7 +79,7 @@ class AnsibleCoreClient(object):
 
         return playbook_cli.options
 
-    def run_playbook(self, playbook_file, playbook_variables=None):
+    def run_playbook(self, playbook_file, playbook_variables=None, option_overrides=None):
         """
         Run a playbook from file with the variables provided.
 
@@ -121,6 +121,11 @@ class AnsibleCoreClient(object):
             # through a callback, so we need to ensure
             # that those raw calls don't go to stdout
             display.display = partial(display.display, log_only=True)
+
+        if option_overrides:
+            for key in option_overrides:
+                if hasattr(options, key):
+                    setattr(options, key, option_overrides[key])
 
         result = PlaybookExecutor(
             playbooks=[playbook_file],

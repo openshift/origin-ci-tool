@@ -59,7 +59,7 @@ class Configuration(object):
         self._vagrant_metadata = []
         self.load_vagrant_metadata()
 
-    def run_playbook(self, playbook_relative_path, playbook_variables=None):
+    def run_playbook(self, playbook_relative_path, playbook_variables=None, option_overrides=None):
         """
         Run a playbook from file with the variables provided. The
         playbook file should be specified as a relative path from
@@ -71,7 +71,8 @@ class Configuration(object):
         """
         self.ansible_client_configuration.run_playbook(
             playbook_file=playbook_path(playbook_relative_path),
-            playbook_variables=self.ansible_variables.default(playbook_variables)
+            playbook_variables=self.ansible_variables.default(playbook_variables),
+            option_overrides=option_overrides
         )
 
     @property
@@ -213,8 +214,9 @@ class Configuration(object):
         else:
             for content in listdir(self.vagrant_directory_root):
                 variables_file = join(self.vagrant_directory_root, content, 'variables.yml')
+                groups_file = join(self.vagrant_directory_root, content, 'groups.yml')
                 if exists(variables_file):
-                    self.register_vagrant_host(VagrantVMMetadata(variable_file=variables_file))
+                    self.register_vagrant_host(VagrantVMMetadata(variable_file=variables_file, group_file=groups_file))
 
     def registered_vagrant_machines(self):
         """
