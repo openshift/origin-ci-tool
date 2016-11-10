@@ -94,6 +94,12 @@ def vagrant(context, update_current_stage, serve_local_file, bump_version):
             }
         )
 
+        # now that this VM has been used to package an image
+        # for the `stage` stage, we should re-label it to be
+        # an instance of that stage as well
+        vm.stage = stage
+        vm.write()
+
 
 def next_stage(current_stage):
     """
