@@ -11,7 +11,7 @@
         msg: 'This playbook requires {{ item }} to be set.'
       when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
-        - origin_ci_vagrant_stage
+        - origin_ci_vagrant_target_stage
         - origin_ci_vagrant_hostname
         - origin_ci_vagrant_package_dir
         - origin_ci_vagrant_package_ref

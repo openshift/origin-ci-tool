@@ -79,14 +79,14 @@ def vagrant(context, update_current_stage, serve_local_file, bump_version):
     for vm in configuration.registered_vagrant_machines():
         current_stage = vm.stage
         if update_current_stage:
-            stage = next_stage(current_stage)
-        else:
             stage = current_stage
+        else:
+            stage = next_stage(current_stage)
 
         configuration.run_playbook(
             playbook_relative_path='package/vagrant',
             playbook_variables={
-                'origin_ci_vagrant_stage': stage,
+                'origin_ci_vagrant_target_stage': stage,
                 'origin_ci_vagrant_hostname': vm.hostname,
                 'origin_ci_vagrant_package_dir': configuration.vagrant_box_directory,
                 'origin_ci_vagrant_package_ref': 'local' if serve_local_file else 'remote',  # TODO: just pass bool?

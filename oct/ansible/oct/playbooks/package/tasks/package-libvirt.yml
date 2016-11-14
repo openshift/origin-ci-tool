@@ -1,7 +1,7 @@
 ---
 - name: determine the package files location
   set_fact:
-    origin_ci_vagrant_package_directory: '{{ origin_ci_vagrant_package_dir }}/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_stage }}'
+    origin_ci_vagrant_package_directory: '{{ origin_ci_vagrant_package_dir }}/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_target_stage }}'
 
 - name: ensure the package output directory exists
   file:
@@ -70,7 +70,7 @@
 - name: convert the volume image to qcow2 format
   command: >
     /usr/bin/qemu-img convert -f '{{ origin_ci_vagrant_volume_driver_type.stdout }}' \
-                              -O qcow2                                               \
+                              -O qcow2 -c                                            \
                               '{{ origin_ci_vagrant_volume_location.stdout }}'       \
                               '{{ origin_ci_vagrant_package_image_tmp }}'
   environment:
@@ -168,7 +168,7 @@
 
 - name: place the Vagrant box metadata file if we don't already have it
   get_url:
-    url: 'https://mirror.openshift.com/pub/vagrant/boxes/openshift3/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_stage }}/metadata.json'
+    url: 'https://mirror.openshift.com/pub/vagrant/boxes/openshift3/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_target_stage }}/metadata.json'
     dest: '{{ origin_ci_vagrant_package_directory }}/metadata.json'
 
 - name: update the Vagrant box metadata file
