@@ -5,7 +5,9 @@ from setuptools import find_packages, setup
 base_requires = [
     'Click',
     'ansible',
-    'backports.shutil_get_terminal_size'
+    'backports.shutil_get_terminal_size',
+    'structlog',
+    'semver'
 ]
 
 setup(
