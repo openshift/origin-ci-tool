@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  tasks:
+  - include_vars: ../../byo/openshift-cluster/cluster_hosts.yml
+  - add_host:
+      name: "{{ item }}"
+      groups: l_oo_all_hosts
+    with_items: "{{ g_all_hosts }}"
+
+- hosts: l_oo_all_hosts
+  become: yes
+  tasks:
+    - name: install NetworkManager on the OpenShift node
+      package:
+        name: 'NetworkManager'
+        state: present
+
+    - name: determine the default route
+      shell: "/sbin/ip route list match 0.0.0.0/0 | awk '{print $3 }'"
+      register: default_route
+
+    - name: determine the default interface
+      shell: "/sbin/ip route get to {{ default_route.stdout }} | awk '{print $3}'"
+      register: default_interface
+
+    - name: configure NetworkManager
+      lineinfile:
+        dest: '/etc/sysconfig/network-scripts/ifcfg-{{ default_interface.stdout }}'
+        regexp: '{{ item.regexp }}'
+        line: '{{ item.line }}'
+        state: present
+        create: yes
+      with_items:
+        - regexp: '^USE_PEERDNS='
+          line: 'USE_PEERDNS=yes'
+        - regexp: '^NM_CONTROLLED='
+          line: 'NM_CONTROLLED=yes'
+
+    - name: enable and start NetworkManager
+      service:
+        name: 'NetworkManager'
+        state: started
+        enabled: yes
