@@ -1,8 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import command
-from click import pass_context
+from click import command, pass_context
 
 from ..util.common_options import ansible_output_options
 

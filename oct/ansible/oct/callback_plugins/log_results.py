@@ -7,10 +7,10 @@ from tempfile import mkdtemp
 from traceback import format_exc
 
 from ansible.plugins.callback import CallbackBase
+from codecs import open
 from os import environ, makedirs
 from os.path import exists, join, sep
 from yaml import dump
-from codecs import open
 
 
 def log_exceptions(func):
@@ -176,7 +176,7 @@ class CallbackModule(CallbackBase):
         """
         task_file, task_line = self.determine_location_for_workload(task)
         self.write_log(
-            '{} task "{}" with name "task_{}" from "{}:{}".'.format(
+            '{} task "{}" with UUID "task_{}" from "{}:{}".'.format(
                 message_prefix,
                 task.get_name(),
                 task._uuid,
