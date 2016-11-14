@@ -6,7 +6,7 @@ from click import group, pass_context
 from .cli.bootstrap.group import bootstrap
 from .cli.build.build import build
 from .cli.config.group import configure
-from .cli.install.group import install
+from .cli.install.install import install
 from .cli.make.make import make
 from .cli.package.group import package
 from .cli.prepare.group import prepare
