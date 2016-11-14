@@ -7,7 +7,6 @@ from sys import stderr, stdout
 from time import sleep
 from timeit import default_timer as timer
 
-import yaml
 from ansible.constants import COLOR_ERROR, COLOR_OK, COLOR_SKIP
 from ansible.playbook import Playbook
 from ansible.playbook.play import Play
@@ -15,6 +14,8 @@ from ansible.playbook.task import Task
 from ansible.plugins.callback import CallbackBase
 from backports.shutil_get_terminal_size import get_terminal_size
 from os import environ
+from os.path import join
+from re import sub
 
 RUNNING_PREFIX = 'RUNNING'
 SUCCESS_PREFIX = 'SUCCESS'
@@ -40,7 +41,6 @@ IDENTIFIER_WIDTH = OUTPUT_WIDTH - \
                    prefix_width - prefix_separator_width - \
                    name_padding_width - \
                    time_padding_width - time_width
-
 
 # TODO: determine if there is a better way
 MOVE_UP_ONE_LINE = b'\033[F'
@@ -336,8 +336,12 @@ def format_identifier(workload):
     if isinstance(workload, Playbook):
         # unfortunately there is no nice way to self-
         # identify for a playbook, so we must access
-        # a protected member
-        return 'PLAYBOOK [{}]'.format(workload._file_name)
+        # a protected member. Furthermore, we do not
+        # necessarily need the full path to the play-
+        # book and we can live with the relative path
+        # from the origin-ci-tool root.
+        # TODO: do this with os.path?
+        return 'PLAYBOOK [{}]'.format('origin-ci-tool{}'.format(sub('^.*origin-ci-tool', '', workload._file_name)))
     elif isinstance(workload, Play):
         return 'PLAY [{}]'.format(workload.get_name())
     elif isinstance(workload, Task):
@@ -537,6 +541,7 @@ def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
 
     return output_message
 
+
 def format_internal_exception_output(result):
     if 'exception' in result:
         return 'An internal exception occurred:\n{}'.format(result['exception'])
@@ -583,7 +588,7 @@ class Failure(object):
             # messages from the result, so we should
             # tell the user to look at the logs
             # TODO: better OS-agnostic filesystem code for this
-            log_location = environ.get('ANSIBLE_LOG_ROOT_PATH', '/tmp/ansible/log') + '/' + self.host
+            log_location = join(environ.get('ANSIBLE_LOG_ROOT_PATH', join('tmp', 'ansible', 'log')), '/', '{}'.format(self.host))
             full_message += 'No useful error messages could be extracted, see full output at {}\n'.format(log_location)
 
         return full_message
