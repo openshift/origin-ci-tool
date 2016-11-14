@@ -13,6 +13,11 @@
     - virt_use_nfs
     - virt_sandbox_use_nfs
 
+- name: ensure we can set up sebooleans
+  package:
+    name: 'libsemanage-python'
+    state: present
+
 - name: Set seboolean to allow nfs storage plugin access from containers
   seboolean:
     name: "{{ item.item }}"

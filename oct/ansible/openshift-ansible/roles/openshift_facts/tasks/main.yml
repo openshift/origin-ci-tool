@@ -18,6 +18,10 @@
   action: "{{ ansible_pkg_mgr }} name=yum-utils state=present"
   when: not l_is_atomic | bool
 
+- name: Ensure python-dbus is installed
+  action: "{{ ansible_pkg_mgr }} name=python-dbus state=present"
+  when: not l_is_atomic | bool
+
 - name: Gather Cluster facts and set is_containerized if needed
   openshift_facts:
     role: common
