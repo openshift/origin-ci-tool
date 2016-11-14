@@ -64,49 +64,49 @@ def build(context, repository, follow_dependencies):
         build_web_console(ansible_client, follow_dependencies)
 
 
-def build_origin(client, follow_dependencies):
-    build_openshift(client, Repository.origin, follow_dependencies)
+def build_origin(ansible_client, follow_dependencies):
+    build_openshift(ansible_client, Repository.origin, follow_dependencies)
 
 
-def build_enterprise(client, follow_dependencies):
-    build_openshift(client, Repository.enterprise, follow_dependencies)
+def build_enterprise(ansible_client, follow_dependencies):
+    build_openshift(ansible_client, Repository.enterprise, follow_dependencies)
 
 
-def build_openshift(client, repository, follow_dependencies):
-    run_make(client, repository, 'release-rpms')
-    client.run_playbook(
+def build_openshift(ansible_client, repository, follow_dependencies):
+    run_make(ansible_client, repository, 'release-rpms')
+    ansible_client.run_playbook(
         playbook_relative_path='prepare/local_rpm_repository',
         playbook_variables={
             'origin_ci_host_repository': repository
         }
     )
     if follow_dependencies:
-        build_source_to_image(client)
-        build_metrics(client)
-        build_logging(client)
+        build_source_to_image(ansible_client)
+        build_metrics(ansible_client)
+        build_logging(ansible_client)
 
 
-def build_logging(client):
-    run_make(client, Repository.logging, 'build-images')
+def build_logging(ansible_client):
+    run_make(ansible_client, Repository.logging, 'build-images')
 
 
-def build_metrics(client):
-    run_make(client, Repository.metrics, 'build-images')
+def build_metrics(ansible_client):
+    run_make(ansible_client, Repository.metrics, 'build-images')
 
 
-def build_source_to_image(client):
-    run_make(client, Repository.source_to_image, 'release')
+def build_source_to_image(ansible_client):
+    run_make(ansible_client, Repository.source_to_image, 'release')
 
 
-def build_web_console(client, follow_dependencies):
-    run_make(client, Repository.web_console, 'build')
+def build_web_console(ansible_client, follow_dependencies):
+    run_make(ansible_client, Repository.web_console, 'build')
     if follow_dependencies:
-        run_make(client, Repository.origin, 'vendor-console')
-        build_origin(client, follow_dependencies)
+        run_make(ansible_client, Repository.origin, 'vendor-console')
+        build_origin(ansible_client, follow_dependencies)
 
 
-def run_make(client, repository, target):
-    client.run_playbook(
+def run_make(ansible_client, repository, target):
+    ansible_client.run_playbook(
         playbook_relative_path='make/main',
         playbook_variables={
             'origin_ci_make_repository': repository,
