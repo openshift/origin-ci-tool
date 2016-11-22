@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, ClickException, command, echo, option, pass_context
 
-from ..provision.vagrant import Stage
+from ..provision.allinone import Stage
 from ..util.common_options import ansible_output_options
 
 _short_help = 'Package a running Vagrant virtual machine.'

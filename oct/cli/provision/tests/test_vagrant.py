@@ -2,8 +2,8 @@
 from __future__ import absolute_import, division, print_function
 
 from mock import patch
-from oct.cli.provision import vagrant
-from oct.cli.provision.vagrant import DEFAULT_MASTER_IP, OperatingSystem, Provider, Stage
+from oct.cli.provision import allinone
+from oct.cli.provision.allinone import DEFAULT_MASTER_IP, OperatingSystem, Provider, Stage
 from oct.config import vagrant as vagrant_configuration
 from oct.config.configuration import Configuration, DEFAULT_HOSTNAME
 from oct.config.vagrant import VagrantVMMetadata
@@ -46,7 +46,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                 new=lambda _, __: False
             ),
             patch.object(
-                target=vagrant,
+                target=allinone,
                 attribute='register_host',
                 new=lambda _, __, ___, ____, _____, ______: None
             ),
@@ -68,7 +68,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
 
     def test_default(self):
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant'],
+            args=['provision', 'all-in-one'],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-up',
                 'playbook_variables': {
@@ -85,7 +85,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
     def test_os(self):
         os = OperatingSystem.centos
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--os', os],
+            args=['provision', 'all-in-one', '--os', os],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-up',
                 'playbook_variables': {
@@ -102,7 +102,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
     def test_provider(self):
         provider = Provider.virtualbox
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--provider', provider],
+            args=['provision', 'all-in-one', '--provider', provider],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-up',
                 'playbook_variables': {
@@ -119,7 +119,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
     def test_stage(self):
         stage = Stage.base
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--stage', stage],
+            args=['provision', 'all-in-one', '--stage', stage],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-up',
                 'playbook_variables': {
@@ -136,7 +136,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
     def test_ip(self):
         ip = '127.0.0.1'
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--master-ip', ip],
+            args=['provision', 'all-in-one', '--master-ip', ip],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-up',
                 'playbook_variables': {
@@ -155,7 +155,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
         stage = Stage.bare
         provider = Provider.vmware
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--os', os, '--stage', stage, '--provider', provider],
+            args=['provision', 'all-in-one', '--os', os, '--stage', stage, '--provider', provider],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-up',
                 'playbook_variables': {
@@ -178,7 +178,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
 
     def test_vmware_nonbare(self):
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--provider', 'vmware_fusion'],
+            args=['provision', 'all-in-one', '--provider', 'vmware_fusion'],
             expected_result=CLICK_RC_USAGE,
             expected_output='Only the bare stage is supported for the vmware_fusion provider.'
         ))
@@ -208,7 +208,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
         self.run_test(TestCaseParameters(
-            args=['provision', 'vagrant', '--destroy'],
+            args=['provision', 'all-in-one', '--destroy'],
             expected_calls=[{
                 'playbook_relative_path': 'provision/vagrant-down',
                 'playbook_variables': {

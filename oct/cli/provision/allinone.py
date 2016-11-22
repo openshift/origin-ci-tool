@@ -53,10 +53,11 @@ def destroy_callback(context, _, value):
     context.exit()
 
 
-_short_help = 'Provision local VMs using Vagrant.'
+_short_help = 'Provision a virtual host for an All-In-One deployment.'
 
 
 @command(
+    name='all-in-one',
     short_help=_short_help,
     help=_short_help + '''
 
@@ -74,16 +75,16 @@ Vagrant provider, you must build the other image stages yourself.
 \b
 Examples:
   Provision a VM with default parameters (fedora, libvirt, install)
-  $ oct provision vagrant
+  $ oct provision_with_vagrant all-in-one
 \b
   Provision a VM with custom parameters
-  $ oct provision vagrant --os=centos --provider=virtualbox --stage=base
+  $ oct provision_with_vagrant all-in-one --os=centos --provider=virtualbox --stage=base
 \b
   Tear down the currently running VMs
-  $ oct provision vagrant --destroy
+  $ oct provision_with_vagrant all-in-one --destroy
 \b
   Provision a VM with a specific IP address
-  $ oct provision vagrant --ip=10.245.2.2
+  $ oct provision_with_vagrant all-in-one --ip=10.245.2.2
 '''
 )
 @option(
@@ -139,9 +140,9 @@ Examples:
 )
 @ansible_output_options
 @pass_context
-def vagrant(context, operating_system, provider, stage, ip):
+def all_in_one(context, operating_system, provider, stage, ip):
     """
-    Provision a local VM using Vagrant.
+    Provision a virtual host for an All-In-One deployment.
 
     :param context: Click context
     :param operating_system: operating system to use for the VM
@@ -151,7 +152,8 @@ def vagrant(context, operating_system, provider, stage, ip):
     """
     configuration = context.obj
     validate(provider, stage)
-    provision(configuration, operating_system, provider, stage, ip)
+    if provider in [Provider.virtualbox, Provider.libvirt, Provider.vmware]:
+        provision_with_vagrant(configuration, operating_system, provider, stage, ip)
 
 
 def validate(provider, stage):
@@ -168,7 +170,7 @@ def validate(provider, stage):
         raise UsageError('Only the %s stage is supported for the %s provider.' % (Stage.bare, Provider.vmware))
 
 
-def provision(configuration, operating_system, provider, stage, ip):
+def provision_with_vagrant(configuration, operating_system, provider, stage, ip):
     """
     Provision a local VM using Vagrant.
 

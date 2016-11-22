@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import group
 
-from .vagrant import vagrant
+from .allinone import all_in_one
 
 _short_help = 'Provision a virtual machine for continuous integration tasks.'
 
@@ -40,4 +40,4 @@ def provision():
     pass
 
 
-provision.add_command(vagrant)
+provision.add_command(all_in_one)
