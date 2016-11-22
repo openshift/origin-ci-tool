@@ -467,6 +467,7 @@ def format_result(result):
     full_message += format_terminal_output(result, stdout_key='module_stdout', stderr_key='module_stderr')
     # detect internal stacktrace crashes
     full_message += format_internal_exception_output(result)
+    full_message += format_parsing_error(result)
     return full_message
 
 
@@ -543,8 +544,31 @@ def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
 
 
 def format_internal_exception_output(result):
+    """
+    Output a formatted version of any internal
+    errors that Ansible runs into when executing,
+    if any are present.
+
+    :param result: result to inspect
+    :return: formatted output message
+    """
     if 'exception' in result:
         return 'An internal exception occurred:\n{}'.format(result['exception'])
+
+    return ''
+
+
+def format_parsing_error(result):
+    """
+    Output a formatted version of any parsing
+    errors that Ansible runs into when looking
+    at a playbook, if any are present.
+
+    :param result: result to inspect
+    :return: formatted output message
+    """
+    if 'reason' in result:
+        return 'Parsing the playbook failed:\n{}'.format(result['reason'])
 
     return ''
 
