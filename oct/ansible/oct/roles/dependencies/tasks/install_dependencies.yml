@@ -7,63 +7,63 @@
     name: '{{ item }}'
     state: latest
   with_items:
-   - augeas
-   - bridge-utils
-   - bsdtar
-   - bzip2
-   - bzr
-   - bind
-   - btrfs-progs-devel
-   - bind-utils
-   - ctags
-   - createrepo
-   - deltarpm
-   - device-mapper-devel
-   - ethtool
-   - e2fsprogs
-   - firefox
-   - fontconfig
-   - git
-   - gcc
-   - gcc-c++
-   - glibc-static
-   - gnuplot
-   - google-chrome-stable
-   - httpie
-   - hg
-   - iscsi-initiator-utils
-   - jq
-   - java-1.?.0-openjdk
-   - kernel-devel
-   - krb5-devel
-   - libselinux-devel
-   - libnetfilter_queue-devel
-   - lsof
-   - make
-   - mlocate
-   - npm
-   - ntp
-   - openldap-clients
-   - openvswitch
-   - rubygems
-   - screen
-   - socat
-   - sqlite-devel
-   - strace
-   - sysstat
-   - tcpdump
-   - tig
-   - tito
-   - tmux
-   - tree
-   - unzip
-   - vim
-   - wget
-   - xfsprogs
-   - xorg-x11-utils
-   - Xvfb
-   - yum-utils
-   - zip
+   - augeas                   # developer UX
+   - bridge-utils             #
+   - bsdtar                   # Origin build/package
+   - bzip2                    #
+   - bzr                      #
+   - bind                     #
+   - bind-utils               #
+   - btrfs-progs-devel        #
+   - ctags                    #
+   - createrepo               # Origin build/package
+   - deltarpm                 # vagrant-openshift, should remove
+   - device-mapper-devel      #
+   - ethtool                  #
+   - e2fsprogs                #
+   - firefox                  # Origin Web Console tests
+   - fontconfig               #
+   - git                      # Interacting with repos
+   - gcc                      #
+   - gcc-c++                  #
+   - glibc-static             #
+   - gnuplot                  # Origin test logger
+   - google-chrome-stable     # Origin Web Console tests
+   - httpie                   # developer UX
+   - hg                       #
+   - iscsi-initiator-utils    #
+   - jq                       # Origin e2e test, but should use jsonpath instead
+   - java-1.?.0-openjdk       #
+   - kernel-devel             #
+   - krb5-devel               # Origin build/package | Origin GSSAPI tests
+   - libselinux-devel         #
+   - libnetfilter_queue-devel #
+   - lsof                     # developer UX
+   - make                     # Interacting with repos
+   - mlocate                  # vagrant-openshift, should remove
+   - npm                      # Origin Web Console tests
+   - ntp                      #
+   - openldap-clients         # Origin LDAP tests
+   - openvswitch              #
+   - rubygems                 #
+   - screen                   # developer UX
+   - socat                    # Origin `oc cluster up`
+   - sqlite-devel             #
+   - strace                   # developer UX
+   - sysstat                  # developer UX
+   - tcpdump                  # developer UX
+   - tig                      # developer UX
+   - tito                     # Origin build/package
+   - tmux                     # developer UX
+   - tree                     # developer UX
+   - unzip                    # Origin build/package
+   - vim                      # developer UX
+   - wget                     # developer UX
+   - xfsprogs                 #
+   - xorg-x11-utils           # Origin Web Console tests
+   - Xvfb                     # Origin Web Console tests
+   - yum-utils                #
+   - zip                      # Origin build/package
 
 - name: install distribution-dependent dependencies
   package:
