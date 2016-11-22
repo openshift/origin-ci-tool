@@ -13,31 +13,21 @@
 - hosts: l_oo_all_hosts
   become: yes
   tasks:
-    - name: install NetworkManager on the OpenShift node
+    - name: install NetworkManager
       package:
         name: 'NetworkManager'
         state: present
 
-    - name: determine the default route
-      shell: "/sbin/ip route list match 0.0.0.0/0 | awk '{print $3 }'"
-      register: default_route
-
-    - name: determine the default interface
-      shell: "/sbin/ip route get to {{ default_route.stdout }} | awk '{print $3}'"
-      register: default_interface
-
     - name: configure NetworkManager
       lineinfile:
-        dest: '/etc/sysconfig/network-scripts/ifcfg-{{ default_interface.stdout }}'
-        regexp: '{{ item.regexp }}'
-        line: '{{ item.line }}'
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4['interface'] }}"
+        regexp: '^{{ item }}='
+        line: '{{ item }}=yes'
         state: present
         create: yes
       with_items:
-        - regexp: '^USE_PEERDNS='
-          line: 'USE_PEERDNS=yes'
-        - regexp: '^NM_CONTROLLED='
-          line: 'NM_CONTROLLED=yes'
+        - 'USE_PEERDNS'
+        - 'NM_CONTROLLED'
 
     - name: enable and start NetworkManager
       service:

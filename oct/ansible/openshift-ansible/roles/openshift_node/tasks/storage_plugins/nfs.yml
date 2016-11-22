@@ -1,6 +1,6 @@
 ---
 - name: Install NFS storage plugin dependencies
-  action: "{{ ansible_pkg_mgr }} name=nfs-utils state=present"
+  package: name=nfs-utils state=present
   when: not openshift.common.is_atomic | bool
 
 - name: Check for existence of seboolean
@@ -12,11 +12,6 @@
   with_items:
     - virt_use_nfs
     - virt_sandbox_use_nfs
-
-- name: ensure we can set up sebooleans
-  package:
-    name: 'libsemanage-python'
-    state: present
 
 - name: Set seboolean to allow nfs storage plugin access from containers
   seboolean:

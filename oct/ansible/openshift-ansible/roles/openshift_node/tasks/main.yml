@@ -35,15 +35,25 @@
 # We have to add tuned-profiles in the same transaction otherwise we run into depsolving
 # problems because the rpms don't pin the version properly. This was fixed in 3.1 packaging.
 - name: Install Node package
-  action: "{{ ansible_pkg_mgr }} name={{ openshift.common.service_type }}-node{{ openshift_pkg_version | default('') | oo_image_tag_to_rpm_version(include_dash=True) }},tuned-profiles-{{ openshift.common.service_type }}-node{{ openshift_pkg_version | default('') | oo_image_tag_to_rpm_version(include_dash=True) }} state=present"
+  package:
+    name: "{{ openshift.common.service_type }}-node{{ openshift_pkg_version | default('') | oo_image_tag_to_rpm_version(include_dash=True) }},tuned-profiles-{{ openshift.common.service_type }}-node{{ openshift_pkg_version | default('') | oo_image_tag_to_rpm_version(include_dash=True) }}"
+    state: present
   when: not openshift.common.is_containerized | bool
+
+- name: Check for tuned package
+  command: rpm -q tuned
+  register: tuned_installed
+  changed_when: false
+  failed_when: false
 
 - name: Set atomic-guest tuned profile
   command: "tuned-adm profile atomic-guest"
-  when: openshift.common.is_atomic | bool
+  when: tuned_installed.rc == 0 and openshift.common.is_atomic | bool
 
 - name: Install sdn-ovs package
-  action: "{{ ansible_pkg_mgr }} name={{ openshift.common.service_type }}-sdn-ovs{{ openshift_pkg_version | oo_image_tag_to_rpm_version(include_dash=True) }} state=present"
+  package:
+    name: "{{ openshift.common.service_type }}-sdn-ovs{{ openshift_pkg_version | oo_image_tag_to_rpm_version(include_dash=True) }}"
+    state: present
   when: openshift.common.use_openshift_sdn and not openshift.common.is_containerized | bool
 
 - name: Pull node image
@@ -77,6 +87,11 @@
 - set_fact:
     ovs_service_status_changed: "{{ ovs_start_result | changed }}"
 
+- file:
+    dest: "{{ (openshift_node_kubelet_args|default({'config':None})).config}}"
+    state: directory
+  when: openshift_node_kubelet_args is defined and 'config' in openshift_node_kubelet_args
+
 # TODO: add the validate parameter when there is a validation command to run
 - name: Create the Node config
   template:
@@ -100,6 +115,7 @@
       line: "AWS_ACCESS_KEY_ID={{ openshift_cloudprovider_aws_access_key | default('') }}"
     - regex: '^AWS_SECRET_ACCESS_KEY='
       line: "AWS_SECRET_ACCESS_KEY={{ openshift_cloudprovider_aws_secret_key | default('') }}"
+  no_log: True
   when: "openshift_cloudprovider_kind is defined and openshift_cloudprovider_kind == 'aws' and openshift_cloudprovider_aws_access_key is defined and openshift_cloudprovider_aws_secret_key is defined"
   notify:
   - restart node

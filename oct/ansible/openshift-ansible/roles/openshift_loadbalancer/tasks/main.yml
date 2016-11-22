@@ -3,12 +3,22 @@
   when: openshift.common.is_containerized | bool
 
 - name: Install haproxy
-  action: "{{ ansible_pkg_mgr }} name=haproxy state=present"
+  package: name=haproxy state=present
 
 - name: Configure systemd service directory for haproxy
   file:
     path: /etc/systemd/system/haproxy.service.d
     state: directory
+
+# Work around ini_file create option in 2.2 which defaults to no
+- name: Create limits.conf file
+  file:
+    dest: /etc/systemd/system/haproxy.service.d/limits.conf
+    state: touch
+    mode: 0660
+    owner: root
+    group: root
+  changed_when: false
 
 - name: Configure the nofile limits for haproxy
   ini_file:

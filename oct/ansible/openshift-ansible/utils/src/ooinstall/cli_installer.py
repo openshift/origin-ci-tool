@@ -43,6 +43,16 @@ UPGRADE_MAPPINGS = {
         'major_playbook': 'v3_3/upgrade.yml',
         'major_version': '3.3',
     },
+    '3.3': {
+        'minor_version': '3.3',
+        'minor_playbook': 'v3_3/upgrade.yml',
+        'major_playbook': 'v3_4/upgrade.yml',
+        'major_version': '3.4',
+    },
+    '3.4': {
+        'minor_version': '3.4',
+        'minor_playbook': 'v3_4/upgrade.yml',
+    },
 }
 
 
@@ -108,11 +118,6 @@ a high-availability (HA) deployment. If you choose an HA deployment, then you
 are prompted to identify a *separate* system to act as the load balancer for
 your cluster once you define all masters and nodes.
 
-If only one master is specified, an etcd instance is embedded within the
-OpenShift master service to use as the datastore. This can be later replaced
-with a separate etcd instance, if required. If multiple masters are specified,
-then a separate etcd cluster is configured with each master serving as a member.
-
 Any masters configured as part of this installation process are also
 configured as nodes. This enables the master to proxy to pods
 from the API. By default, this node is unschedulable, but this can be changed
@@ -170,10 +175,13 @@ http://docs.openshift.com/enterprise/latest/architecture/infrastructure_componen
         if masters_set or num_masters != 2:
             more_hosts = click.confirm('Do you want to add additional hosts?')
 
-    master_lb = collect_master_lb(hosts)
-    if master_lb:
-        hosts.append(master_lb)
-        roles.add('master_lb')
+    if num_masters > 2:
+        master_lb = collect_master_lb(hosts)
+        if master_lb:
+            hosts.append(master_lb)
+            roles.add('master_lb')
+    else:
+        set_cluster_hostname(oo_cfg)
 
     if not existing_env:
         collect_storage_host(hosts)
@@ -253,11 +261,8 @@ def print_host_summary(all_hosts, host):
             click.echo("  - Load Balancer (Preconfigured)")
         else:
             click.echo("  - Load Balancer (HAProxy)")
-    if host.is_master():
-        if host.is_etcd_member(all_hosts):
-            click.echo("  - Etcd Member")
-        else:
-            click.echo("  - Etcd (Embedded)")
+    if host.is_etcd():
+        click.echo("  - Etcd")
     if host.is_storage():
         click.echo("  - Storage")
     if host.new_host:
@@ -300,8 +305,7 @@ hostname.
         return hostname
 
     lb_hostname = click.prompt('Enter hostname or IP address',
-                               value_proc=validate_prompt_lb,
-                               default='')
+                               value_proc=validate_prompt_lb)
     if lb_hostname:
         host_props['connect_to'] = lb_hostname
         install_haproxy = \
@@ -311,6 +315,24 @@ hostname.
         return Host(**host_props)
     else:
         return None
+
+
+def set_cluster_hostname(oo_cfg):
+    first_master = next((host for host in oo_cfg.deployment.hosts if host.is_master()), None)
+    message = """
+You have chosen to install a single master cluster (non-HA).
+
+In a single master cluster, the cluster host name (Ansible variable openshift_master_cluster_public_hostname) is set by default to the host name of the single master. In a multiple master (HA) cluster, the FQDN of a host must be provided that will be configured as a proxy. This could be either an existing load balancer configured to balance all masters on
+port 8443 or a new host that would have HAProxy installed on it.
+
+(Optional)
+If you want to override the cluster host name now to something other than the default (the host name of the single master), or if you think you might add masters later to become an HA cluster and want to future proof your cluster host name choice, please provide a FQDN. Otherwise, press ENTER to continue and accept the default.
+"""
+    click.echo(message)
+    cluster_hostname = click.prompt('Enter hostname or IP address',
+                                    default=str(first_master))
+    oo_cfg.deployment.variables['openshift_master_cluster_hostname'] = cluster_hostname
+    oo_cfg.deployment.variables['openshift_master_cluster_public_hostname'] = cluster_hostname
 
 
 def collect_storage_host(hosts):
@@ -683,8 +705,10 @@ def get_installed_hosts(hosts, callback_facts):
     for host in [h for h in hosts if h.is_master() or h.is_node()]:
         if host.connect_to in callback_facts.keys():
             if is_installed_host(host, callback_facts):
+                INSTALLER_LOG.debug("%s is already installed", str(host))
                 installed_hosts.append(host)
             else:
+                INSTALLER_LOG.debug("%s is not installed", str(host))
                 uninstalled_hosts.append(host)
     return installed_hosts, uninstalled_hosts
 
@@ -717,6 +741,17 @@ def get_hosts_to_run_on(oo_cfg, callback_facts, unattended, force):
     installed_hosts, uninstalled_hosts = get_installed_hosts(oo_cfg.deployment.hosts,
                                                              callback_facts)
     nodes = [host for host in oo_cfg.deployment.hosts if host.is_node()]
+    masters_and_nodes = [host for host in oo_cfg.deployment.hosts if host.is_master() or host.is_node()]
+
+    in_hosts = [str(h) for h in installed_hosts]
+    un_hosts = [str(h) for h in uninstalled_hosts]
+    all_hosts = [str(h) for h in oo_cfg.deployment.hosts]
+    m_and_n = [str(h) for h in masters_and_nodes]
+
+    INSTALLER_LOG.debug("installed hosts: %s", ", ".join(in_hosts))
+    INSTALLER_LOG.debug("uninstalled hosts: %s", ", ".join(un_hosts))
+    INSTALLER_LOG.debug("deployment hosts: %s", ", ".join(all_hosts))
+    INSTALLER_LOG.debug("masters and nodes: %s", ", ".join(m_and_n))
 
     # Case (1): All uninstalled hosts
     if len(uninstalled_hosts) == len(nodes):
@@ -724,7 +759,7 @@ def get_hosts_to_run_on(oo_cfg, callback_facts, unattended, force):
         hosts_to_run_on = list(oo_cfg.deployment.hosts)
     else:
         # Case (2): All installed hosts
-        if len(installed_hosts) == len(list(oo_cfg.deployment.hosts)):
+        if len(installed_hosts) == len(masters_and_nodes):
             message = """
 All specified hosts in specified environment are installed.
 """
@@ -735,6 +770,16 @@ A mix of installed and uninstalled hosts have been detected in your environment.
 Please make sure your environment was installed successfully before adding new nodes.
 """
 
+            # Still inside the case 2/3 else condition
+            mixed_msg = """
+\tInstalled hosts:
+\t\t{inst_hosts}
+
+\tUninstalled hosts:
+\t\t{uninst_hosts}""".format(inst_hosts=", ".join(in_hosts), uninst_hosts=", ".join(un_hosts))
+            click.echo(mixed_msg)
+
+        # Out of the case 2/3 if/else
         click.echo(message)
 
         if not unattended:

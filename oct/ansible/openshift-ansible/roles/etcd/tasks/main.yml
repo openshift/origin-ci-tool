@@ -7,7 +7,7 @@
     etcd_ip: "{{ etcd_ip }}"
 
 - name: Install etcd
-  action: "{{ ansible_pkg_mgr }} name=etcd state=present"
+  package: name=etcd state=present
   when: not etcd_is_containerized | bool
 
 - name: Pull etcd container
@@ -73,6 +73,9 @@
     state: started
     enabled: yes
   register: start_result
+
+- include: etcdctl.yml
+  when: openshift_etcd_etcdctl_profile | default(true) | bool
 
 - set_fact:
     etcd_service_status_changed: "{{ start_result | changed }}"

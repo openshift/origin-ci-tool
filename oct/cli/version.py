@@ -7,8 +7,8 @@ from click import command, echo
 VERSION = '0.1.0'
 
 # auto-generated variables
-OPENSHIFT_ANSIBLE_VERSION = 'openshift-ansible-3.4.13-1-2-g52ab71a'
-OPENSHIFT_ANSIBLE_CHECKOUT = '52ab71a6f741f2477ab395d48dacfe609cf1411a'
+OPENSHIFT_ANSIBLE_VERSION = 'openshift-ansible-3.4.17-1-148-g134c620'
+OPENSHIFT_ANSIBLE_CHECKOUT = '134c6200d1c24131da456808a7b8b7f59a14f91d'
 
 _short_help = 'Print version information for this tool.'
 

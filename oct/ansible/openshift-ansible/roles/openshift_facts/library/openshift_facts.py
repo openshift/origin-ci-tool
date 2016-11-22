@@ -7,7 +7,13 @@
 
 """Ansible module for retrieving and setting openshift related facts"""
 
-import ConfigParser
+try:
+    # python2
+    import ConfigParser
+except ImportError:
+    # python3
+    import configparser as ConfigParser
+
 import copy
 import io
 import os
@@ -55,7 +61,6 @@ def migrate_docker_facts(facts):
                     facts['docker'][param] = facts[role].pop(old_param)
 
     if 'node' in facts and 'portal_net' in facts['node']:
-        facts['docker']['hosted_registry_insecure'] = True
         facts['docker']['hosted_registry_network'] = facts['node'].pop('portal_net')
 
     # log_options was originally meant to be a comma separated string, but
@@ -203,9 +208,9 @@ def query_metadata(metadata_url, headers=None, expect_json=False):
     if info['status'] != 200:
         raise OpenShiftFactsMetadataUnavailableError("Metadata unavailable")
     if expect_json:
-        return module.from_json(result.read())
+        return module.from_json(to_native(result.read()))
     else:
-        return [line.strip() for line in result.readlines()]
+        return [to_native(line.strip()) for line in result.readlines()]
 
 
 def walk_metadata(metadata_url, headers=None, expect_json=False):
@@ -313,7 +318,7 @@ def normalize_aws_facts(metadata, facts):
     ):
         int_info = dict()
         var_map = {'ips': 'local-ipv4s', 'public_ips': 'public-ipv4s'}
-        for ips_var, int_var in var_map.iteritems():
+        for ips_var, int_var in iteritems(var_map):
             ips = interface.get(int_var)
             if isinstance(ips, basestring):
                 int_info[ips_var] = [ips]
@@ -833,23 +838,29 @@ def set_version_facts_if_unset(facts):
                 version_gte_3_1_1_or_1_1_1 = LooseVersion(version) >= LooseVersion('1.1.1')
                 version_gte_3_2_or_1_2 = LooseVersion(version) >= LooseVersion('1.2.0')
                 version_gte_3_3_or_1_3 = LooseVersion(version) >= LooseVersion('1.3.0')
+                version_gte_3_4_or_1_4 = LooseVersion(version) >= LooseVersion('1.4.0')
             else:
                 version_gte_3_1_or_1_1 = LooseVersion(version) >= LooseVersion('3.0.2.905')
                 version_gte_3_1_1_or_1_1_1 = LooseVersion(version) >= LooseVersion('3.1.1')
                 version_gte_3_2_or_1_2 = LooseVersion(version) >= LooseVersion('3.1.1.901')
                 version_gte_3_3_or_1_3 = LooseVersion(version) >= LooseVersion('3.3.0')
+                version_gte_3_4_or_1_4 = LooseVersion(version) >= LooseVersion('3.4.0')
         else:
             version_gte_3_1_or_1_1 = True
             version_gte_3_1_1_or_1_1_1 = True
             version_gte_3_2_or_1_2 = True
-            version_gte_3_3_or_1_3 = False
+            version_gte_3_3_or_1_3 = True
+            version_gte_3_4_or_1_4 = False
         facts['common']['version_gte_3_1_or_1_1'] = version_gte_3_1_or_1_1
         facts['common']['version_gte_3_1_1_or_1_1_1'] = version_gte_3_1_1_or_1_1_1
         facts['common']['version_gte_3_2_or_1_2'] = version_gte_3_2_or_1_2
         facts['common']['version_gte_3_3_or_1_3'] = version_gte_3_3_or_1_3
+        facts['common']['version_gte_3_4_or_1_4'] = version_gte_3_4_or_1_4
 
 
-        if version_gte_3_3_or_1_3:
+        if version_gte_3_4_or_1_4:
+            examples_content_version = 'v1.4'
+        elif version_gte_3_3_or_1_3:
             examples_content_version = 'v1.3'
         elif version_gte_3_2_or_1_2:
             examples_content_version = 'v1.2'
@@ -902,10 +913,29 @@ def set_sdn_facts_if_unset(facts, system_facts):
             facts['common']['sdn_network_plugin_name'] = plugin
 
     if 'master' in facts:
+        # set defaults for sdn_cluster_network_cidr and sdn_host_subnet_length
+        # these might be overridden if they exist in the master config file
+        sdn_cluster_network_cidr = '10.128.0.0/14'
+        sdn_host_subnet_length = '9'
+
+        master_cfg_path = os.path.join(facts['common']['config_base'],
+                                       'master/master-config.yaml')
+        if os.path.isfile(master_cfg_path):
+            with open(master_cfg_path, 'r') as master_cfg_f:
+                config = yaml.safe_load(master_cfg_f.read())
+
+            if 'networkConfig' in config:
+                if 'clusterNetworkCIDR' in config['networkConfig']:
+                    sdn_cluster_network_cidr = \
+                        config['networkConfig']['clusterNetworkCIDR']
+                if 'hostSubnetLength' in config['networkConfig']:
+                    sdn_host_subnet_length = \
+                        config['networkConfig']['hostSubnetLength']
+
         if 'sdn_cluster_network_cidr' not in facts['master']:
-            facts['master']['sdn_cluster_network_cidr'] = '10.1.0.0/16'
+            facts['master']['sdn_cluster_network_cidr'] = sdn_cluster_network_cidr
         if 'sdn_host_subnet_length' not in facts['master']:
-            facts['master']['sdn_host_subnet_length'] = '8'
+            facts['master']['sdn_host_subnet_length'] = sdn_host_subnet_length
 
     if 'node' in facts and 'sdn_mtu' not in facts['node']:
         node_ip = facts['common']['ip']
@@ -913,7 +943,7 @@ def set_sdn_facts_if_unset(facts, system_facts):
         # default MTU if interface MTU cannot be detected
         facts['node']['sdn_mtu'] = '1450'
 
-        for val in system_facts.itervalues():
+        for val in itervalues(system_facts):
             if isinstance(val, dict) and 'mtu' in val:
                 mtu = val['mtu']
 
@@ -1061,6 +1091,7 @@ values provided as a list. Hence the gratuitous use of ['foo'] below.
                     kubelet_args['cloud-config'] = [cloud_cfg_path + '/openstack.conf']
                 if facts['cloudprovider']['kind'] == 'gce':
                     kubelet_args['cloud-provider'] = ['gce']
+                    kubelet_args['cloud-config'] = [cloud_cfg_path + '/gce.conf']
 
         # Automatically add node-labels to the kubeletArguments
         # parameter. See BZ1359848 for additional details.
@@ -1103,6 +1134,7 @@ def build_controller_args(facts):
                     controller_args['cloud-config'] = [cloud_cfg_path + '/openstack.conf']
                 if facts['cloudprovider']['kind'] == 'gce':
                     controller_args['cloud-provider'] = ['gce']
+                    controller_args['cloud-config'] = [cloud_cfg_path + '/gce.conf']
         if controller_args != {}:
             facts = merge_facts({'master': {'controller_args': controller_args}}, facts, [], [])
     return facts
@@ -1123,6 +1155,7 @@ def build_api_server_args(facts):
                     api_server_args['cloud-config'] = [cloud_cfg_path + '/openstack.conf']
                 if facts['cloudprovider']['kind'] == 'gce':
                     api_server_args['cloud-provider'] = ['gce']
+                    api_server_args['cloud-config'] = [cloud_cfg_path + '/gce.conf']
         if api_server_args != {}:
             facts = merge_facts({'master': {'api_server_args': api_server_args}}, facts, [], [])
     return facts
@@ -1171,6 +1204,24 @@ def get_docker_version_info():
             }
     return result
 
+def get_hosted_registry_insecure():
+    """ Parses OPTIONS from /etc/sysconfig/docker to determine if the
+        registry is currently insecure.
+    """
+    hosted_registry_insecure = None
+    if os.path.exists('/etc/sysconfig/docker'):
+        try:
+            ini_str = unicode('[root]\n' + open('/etc/sysconfig/docker', 'r').read(), 'utf-8')
+            ini_fp = io.StringIO(ini_str)
+            config = ConfigParser.RawConfigParser()
+            config.readfp(ini_fp)
+            options = config.get('root', 'OPTIONS')
+            if 'insecure-registry' in options:
+                hosted_registry_insecure = True
+        except:
+            pass
+    return hosted_registry_insecure
+
 def get_openshift_version(facts):
     """ Get current version of openshift on the host.
 
@@ -1189,7 +1240,7 @@ def get_openshift_version(facts):
     # version
     if 'common' in facts:
         if 'version' in facts['common'] and facts['common']['version'] is not None:
-            return facts['common']['version']
+            return chomp_commit_offset(facts['common']['version'])
 
     if os.path.isfile('/usr/bin/openshift'):
         _, output, _ = module.run_command(['/usr/bin/openshift', 'version'])
@@ -1204,7 +1255,27 @@ def get_openshift_version(facts):
         _, output, _ = module.run_command(['/usr/local/bin/openshift', 'version'])
         version = parse_openshift_version(output)
 
-    return version
+    return chomp_commit_offset(version)
+
+
+def chomp_commit_offset(version):
+    """Chomp any "+git.foo" commit offset string from the given `version`
+    and return the modified version string.
+
+Ex:
+- chomp_commit_offset(None)                 => None
+- chomp_commit_offset(1337)                 => "1337"
+- chomp_commit_offset("v3.4.0.15+git.derp") => "v3.4.0.15"
+- chomp_commit_offset("v3.4.0.15")          => "v3.4.0.15"
+- chomp_commit_offset("v1.3.0+52492b4")     => "v1.3.0"
+    """
+    if version is None:
+        return version
+    else:
+        # Stringify, just in case it's a Number type. Split by '+' and
+        # return the first split. No concerns about strings without a
+        # '+', .split() returns an array of the original string.
+        return str(version).split('+')[0]
 
 
 def get_container_openshift_version(facts):
@@ -1299,7 +1370,7 @@ def merge_facts(orig, new, additive_facts_to_overwrite, protected_facts_to_overw
                             'image_policy_config']
 
     facts = dict()
-    for key, value in orig.iteritems():
+    for key, value in iteritems(orig):
         # Key exists in both old and new facts.
         if key in new:
             if key in inventory_json_facts:
@@ -1473,8 +1544,8 @@ def set_proxy_facts(facts):
                 safe_get_bool(common['generate_no_proxy_hosts']):
                 if 'no_proxy_internal_hostnames' in common:
                     common['no_proxy'].extend(common['no_proxy_internal_hostnames'].split(','))
-                common['no_proxy'].append('.' + common['dns_domain'])
-            # We always add ourselves no matter what
+            # We always add local dns domain and ourselves no matter what
+            common['no_proxy'].append('.' + common['dns_domain'])
             common['no_proxy'].append(common['hostname'])
             common['no_proxy'] = sort_unique(common['no_proxy'])
         facts['common'] = common
@@ -1524,7 +1595,7 @@ def set_container_facts_if_unset(facts):
         cli_image = master_image
         node_image = 'openshift3/node'
         ovs_image = 'openshift3/openvswitch'
-        etcd_image = 'registry.access.redhat.com/rhel7/etcd'
+        etcd_image = 'registry.access.redhat.com/rhel7/etcd3'
         pod_image = 'openshift3/ose-pod'
         router_image = 'openshift3/ose-haproxy-router'
         registry_image = 'openshift3/ose-docker-registry'
@@ -1534,7 +1605,7 @@ def set_container_facts_if_unset(facts):
         cli_image = master_image
         node_image = 'aep3_beta/node'
         ovs_image = 'aep3_beta/openvswitch'
-        etcd_image = 'registry.access.redhat.com/rhel7/etcd'
+        etcd_image = 'registry.access.redhat.com/rhel7/etcd3'
         pod_image = 'aep3_beta/aep-pod'
         router_image = 'aep3_beta/aep-haproxy-router'
         registry_image = 'aep3_beta/aep-docker-registry'
@@ -1544,7 +1615,7 @@ def set_container_facts_if_unset(facts):
         cli_image = master_image
         node_image = 'openshift/node'
         ovs_image = 'openshift/openvswitch'
-        etcd_image = 'registry.access.redhat.com/rhel7/etcd'
+        etcd_image = 'registry.access.redhat.com/rhel7/etcd3'
         pod_image = 'openshift/origin-pod'
         router_image = 'openshift/origin-haproxy-router'
         registry_image = 'openshift/origin-docker-registry'
@@ -1734,8 +1805,8 @@ class OpenShiftFacts(object):
         facts = set_node_schedulability(facts)
         facts = set_selectors(facts)
         facts = set_identity_providers_if_unset(facts)
-        facts = set_sdn_facts_if_unset(facts, self.system_facts)
         facts = set_deployment_facts_if_unset(facts)
+        facts = set_sdn_facts_if_unset(facts, self.system_facts)
         facts = set_container_facts_if_unset(facts)
         facts = build_kubelet_args(facts)
         facts = build_controller_args(facts)
@@ -1826,13 +1897,15 @@ class OpenShiftFacts(object):
 
         if 'docker' in roles:
             docker = dict(disable_push_dockerhub=False,
-                          hosted_registry_insecure=True,
                           options='--log-driver=json-file --log-opt max-size=50m')
             version_info = get_docker_version_info()
             if version_info is not None:
                 docker['api_version'] = version_info['api_version']
                 docker['version'] = version_info['version']
                 docker['gte_1_10'] = LooseVersion(version_info['version']) >= LooseVersion('1.10')
+            hosted_registry_insecure = get_hosted_registry_insecure()
+            if hosted_registry_insecure is not None:
+                docker['hosted_registry_insecure'] = hosted_registry_insecure
             defaults['docker'] = docker
 
         if 'clock' in roles:
@@ -2051,7 +2124,7 @@ class OpenShiftFacts(object):
             facts_to_set[self.role] = facts
 
         if openshift_env != {} and openshift_env != None:
-            for fact, value in openshift_env.iteritems():
+            for fact, value in iteritems(openshift_env):
                 oo_env_facts = dict()
                 current_level = oo_env_facts
                 keys = self.split_openshift_env_fact_keys(fact, openshift_env_structures)[1:]
@@ -2109,7 +2182,7 @@ class OpenShiftFacts(object):
                 facts (dict): facts to clean
         """
         facts_to_remove = []
-        for fact, value in facts.iteritems():
+        for fact, value in iteritems(facts):
             if isinstance(facts[fact], dict):
                 facts[fact] = self.remove_empty_facts(facts[fact])
             else:
@@ -2240,6 +2313,9 @@ def main():
 from ansible.module_utils.basic import *
 from ansible.module_utils.facts import *
 from ansible.module_utils.urls import *
+from ansible.module_utils.six import iteritems, itervalues
+from ansible.module_utils._text import to_native
+from ansible.module_utils.six import b
 
 if __name__ == '__main__':
     main()
