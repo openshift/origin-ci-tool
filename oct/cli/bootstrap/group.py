@@ -5,6 +5,7 @@ from click import group
 
 from .host import host
 from .node import node
+from .self import self
 
 
 @group(
@@ -26,3 +27,4 @@ def bootstrap():
 
 bootstrap.add_command(host)
 bootstrap.add_command(node)
+bootstrap.add_command(self)
