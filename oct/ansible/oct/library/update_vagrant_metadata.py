@@ -82,7 +82,8 @@ def main():
                 choices=[
                     'major',
                     'minor',
-                    'patch'
+                    'patch',
+                    'none'
                 ]
             ),
             provider=dict(
