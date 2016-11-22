@@ -36,6 +36,7 @@
    - java-1.?.0-openjdk       #
    - kernel-devel             #
    - krb5-devel               # Origin build/package | Origin GSSAPI tests
+   - libsemanage-python       # OpenShift-Ansible (upstream this)
    - libselinux-devel         #
    - libnetfilter_queue-devel #
    - lsof                     # developer UX
@@ -45,6 +46,7 @@
    - ntp                      #
    - openldap-clients         # Origin LDAP tests
    - openvswitch              #
+   - python-dbus              # OpenShift-Ansible (upstream this)
    - rubygems                 #
    - screen                   # developer UX
    - socat                    # Origin `oc cluster up`
