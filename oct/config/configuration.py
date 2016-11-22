@@ -38,14 +38,7 @@ class Configuration(object):
         # path to the local configuration directory
         self._path = abspath(join(base_dir, '.config', 'origin-ci-tool'))
 
-        directories = [
-            self._path,
-            self.ansible_log_path,
-            self.vagrant_directory_root
-        ]
-        for directory in directories:
-            if not exists(directory):
-                mkdir(directory)
+        self.initialize_directories()
 
         # configuration options for Ansible core
         self.ansible_client_configuration = None
@@ -58,6 +51,20 @@ class Configuration(object):
         # metadata about active Vagrant local VMs
         self._vagrant_metadata = []
         self.load_vagrant_metadata()
+
+    def initialize_directories(self):
+        """
+        Initialize directories on the filesystem that we will
+        expect to exist in the future.
+        """
+        directories = [
+            self._path,
+            self.ansible_log_path,
+            self.vagrant_directory_root
+        ]
+        for directory in directories:
+            if not exists(directory):
+                mkdir(directory)
 
     def run_playbook(self, playbook_relative_path, playbook_variables=None, option_overrides=None):
         """

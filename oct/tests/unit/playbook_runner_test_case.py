@@ -68,7 +68,7 @@ class PlaybookRunnerTestCase(TestCase):
             patch.object(
                 target=Configuration,
                 attribute='load_ansible_client_configuration',
-                new=lambda configuration: setattr(configuration, 'ansible_configuration', AnsibleCoreClient())
+                new=lambda configuration: setattr(configuration, 'ansible_client_configuration', AnsibleCoreClient())
             ),
             patch.object(
                 target=Configuration,
@@ -88,6 +88,11 @@ class PlaybookRunnerTestCase(TestCase):
             patch.object(
                 target=Configuration,
                 attribute='load_vagrant_metadata',
+                new=lambda _: None
+            ),
+            patch.object(
+                target=Configuration,
+                attribute='initialize_directories',
                 new=lambda _: None
             )
         ]

@@ -38,7 +38,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
             patch.object(
                 target=Configuration,
                 attribute='vagrant_directory_root',
-                new='/vagrant'
+                new=_vagrant_root
             ),
             patch.object(
                 target=Configuration,
@@ -201,7 +201,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                         'port': None,
                         'identityfile': None,
                         'user': None
-                    }
+                    },
+                    'groups': [],
+                    'extra': {}
                 })
             ]
         )
