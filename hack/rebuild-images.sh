@@ -31,7 +31,7 @@ for provider in "${providers[@]}"; do
         # to build a `base` image, we start with `bare`
         # and install dependencies
         echo "[INFO] Building ${operating_system} base stage on ${provider}"
-        oct provision vagrant --provider "${provider}" --os "${operating_system}" --stage bare
+        oct provision all-in-one --provider "${provider}" --os "${operating_system}" --stage bare
         oct bootstrap host
         if [[ "${provider}" == "virtualbox" ]]; then
             # currently doing Docker storage using our playbooks on a
@@ -64,7 +64,7 @@ for provider in "${providers[@]}"; do
         oct build origin
         oct install origin
         oct package vagrant --upgrade --serve-remote --bump-version "${bump}"
-        oct provision vagrant --destroy
+        oct provision all-in-one --destroy
     done
 
     # neither virtualization provider seems to clean up
