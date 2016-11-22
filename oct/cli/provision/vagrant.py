@@ -234,15 +234,16 @@ def register_host(configuration, home_dir, hostname, operating_system, provider,
         },
         # we are supporting an all-in-one deployment with the
         # VM, so this VM will be both a master and a node
-        'groups': {
+        'groups': [
             'masters',
             'nodes'
-        },
+        ],
         # no `infra` region exists as we need the same node to
         # host OpenShift infrastructure and be schedule-able
         'extra': {
+            'openshift_schedulable': True,
             'openshift_node_labels': {
-                'region': 'primary',
+                'region': 'infra',
                 'zone': 'default'
             }
         }
