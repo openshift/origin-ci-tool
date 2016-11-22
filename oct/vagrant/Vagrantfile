@@ -79,7 +79,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   PROVIDERS.each do |provider_symbol|
     config.vm.provider provider_symbol do |provider_config, _|
       provider_config.cpus       = (ENV["OPENSHIFT_VAGRANT_CPUS"]   || 2).to_i
-      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 8 * 1024).to_i
+      provider_config.memory     = (ENV["OPENSHIFT_VAGRANT_MEMORY"] || 6 * 1024).to_i
     end
   end
 
