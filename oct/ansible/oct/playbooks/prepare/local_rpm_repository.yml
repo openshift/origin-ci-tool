@@ -13,7 +13,6 @@
       with_items:
         - origin_ci_hosts
         - origin_ci_connection
-        - origin_ci_user
         - origin_ci_host_repository
 
 - name: install the Origin RPM repository for local releases
@@ -23,13 +22,5 @@
   become_user: root
 
   tasks:
-    - name: create the Origin RPM repository
-      command: '/bin/createrepo {{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_host_repository }}/_output/local/releases'
-
-    - name: register the Origin RPM repository
-      yum_repository:
-        name: 'origin-local-releases'
-        state: present
-        description: 'OpenShift Origin Release from Local Source'
-        baseurl: 'file://{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_host_repository }}/_output/local/releases'
-        gpgcheck: no
+    - name: move the repository file to the yum directory
+      command: '/usr/bin/mv {{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_host_repository }}/_output/local/releases/rpms/origin-local-release.repo /etc/yum.repos.d/'
