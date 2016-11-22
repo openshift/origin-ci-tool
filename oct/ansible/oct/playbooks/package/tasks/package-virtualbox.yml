@@ -1,3 +1,10 @@
 ---
-- fail:
-    msg: Packaging VirtualBox VMs is not yet implemented.
+- name: clean up a previous box if it exists:
+  file:
+    path: '{{ origin_ci_vagrant_package_box }}'
+    state: absent
+
+- name: package the Vagrant box
+  command: "/usr/bin/vagrant package --output '{{ origin_ci_vagrant_package_box }}'"
+  args:
+    chdir: '{{ origin_ci_vagrant_home_dir }}'

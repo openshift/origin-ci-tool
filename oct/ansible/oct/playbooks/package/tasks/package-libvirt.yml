@@ -1,20 +1,7 @@
 ---
-- name: determine the package files location
-  set_fact:
-    origin_ci_vagrant_package_directory: '{{ origin_ci_vagrant_package_dir }}/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_target_stage }}'
-
-- name: ensure the package output directory exists
-  file:
-    path: '{{ origin_ci_vagrant_package_directory }}'
-    state: directory
-
 - name: determine the location of the output image
   set_fact:
     origin_ci_vagrant_package_image: '{{ origin_ci_vagrant_package_directory }}/qemu_image.qcow2'
-
-- name: determine the location of the output box
-  set_fact:
-    origin_ci_vagrant_package_box: '{{ origin_ci_vagrant_package_directory }}/{{ origin_ci_vagrant_provider }}.box'
 
 - name: generate a location for temporary files
   command: '/usr/bin/mktemp --directory --tmpdir={{ origin_ci_vagrant_package_directory }}'
@@ -52,6 +39,8 @@
 
 - name: inspect the guest domain
   command: '/usr/bin/virsh dumpxml {{ origin_ci_vagrant_hostname }}_{{ origin_ci_vagrant_hostname }}'
+  become: yes
+  become_user: 'root'
   register: origin_ci_vagrant_domain_info
 
 - name: serialize guest domain information
@@ -75,13 +64,8 @@
                               '{{ origin_ci_vagrant_package_image_tmp }}'
   environment:
     LIBGUESTFS_BACKEND: 'direct'
-
-- name: ensure that the qemu user owns the output image so libvirt can fiddle with it
-  file:
-    path: '{{ origin_ci_vagrant_package_image_tmp }}'
-    owner: 'qemu'
-    group: 'qemu'
-    mode: 'u=rw,g=rw,o=r'
+  become: yes
+  become_user: 'root'
 
 - name: remove the currently present SSH keys in the image
   command: >
@@ -89,6 +73,8 @@
                           --add '{{ origin_ci_vagrant_package_image_tmp }}'
   environment:
     LIBGUESTFS_BACKEND: 'direct'
+  become: yes
+  become_user: 'root'
 
 - name: add the stock insecure Vagrant public key and a root password
   command: >
@@ -99,9 +85,13 @@
                           --add '{{ origin_ci_vagrant_package_image_tmp }}'
   environment:
     LIBGUESTFS_BACKEND: 'direct'
+  become: yes
+  become_user: 'root'
 
 - name: inspect the storage volume for the guest domain
   command: '/usr/bin/virsh vol-dumpxml {{ origin_ci_vagrant_volume_location.stdout }}'
+  become: yes
+  become_user: 'root'
   register: origin_ci_vagrant_volume_info
   
 - name: serialize volume information
@@ -153,31 +143,6 @@
 
 - name: move the image from it's temporary location to the final one
   command: '/usr/bin/mv {{ origin_ci_vagrant_package_image_tmp }} {{ origin_ci_vagrant_package_image }}'
-
-- name: generate a checksum for the packaged box
-  stat:
-    path: '{{ origin_ci_vagrant_package_box }}'
-    get_checksum: yes
-    checksum_algorithm: 'sha256'
-  register: origin_ci_vagrant_package_probe
-
-- name: determine where the box reference should point in the metadata
-  set_fact:
-    origin_ci_vagrant_package_url: '{{ origin_ci_vagrant_package_box }}'
-  when: origin_ci_vagrant_package_ref == 'local'
-
-- name: place the Vagrant box metadata file if we don't already have it
-  get_url:
-    url: 'https://mirror.openshift.com/pub/vagrant/boxes/openshift3/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_target_stage }}/metadata.json'
-    dest: '{{ origin_ci_vagrant_package_directory }}/metadata.json'
-
-- name: update the Vagrant box metadata file
-  update_vagrant_metadata:
-    dest: '{{ origin_ci_vagrant_package_directory }}/metadata.json'
-    version_increment: '{{ origin_ci_vagrant_package_bump_version }}'
-    provider: '{{ origin_ci_vagrant_provider }}'
-    checksum: '{{ origin_ci_vagrant_package_probe.stat.checksum }}'
-    serve_local: '{{ origin_ci_vagrant_package_url | default(omit) }}'
 
 - name: clean up guest domain XML file and packaged Vagrant metadata
   file:

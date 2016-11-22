@@ -22,10 +22,11 @@
   include: './../bootstrap/host.yml'
 
 - name: detect progress on guest to add idempotency to this playbook
-  hosts: '{{ origin_ci_hosts }}'
+  hosts: '{{ origin_ci_vagrant_hostname }}'
   connection: '{{ origin_ci_connection }}'
   become: yes
   become_user: root
+  gather_facts: no
 
   tasks:
     - name: probe for the Docker volume group
@@ -53,10 +54,8 @@
       args:
         chdir: '{{ origin_ci_vagrant_home_dir }}'
 
-    - name: set up Docker storage using virsh and virt-resize
+    - name: set up Docker storage using virtualization tools
       include: './tasks/docker-storage-{{ origin_ci_vagrant_provider }}.yml'
-      become: yes
-      become_user: root
 
     - name: re-start the VM
       command: '/usr/bin/vagrant up --no-provision'
@@ -64,7 +63,7 @@
         chdir: '{{ origin_ci_vagrant_home_dir }}'
 
 - name: partition the new space to be an LVM pool
-  hosts: '{{ origin_ci_hosts }}'
+  hosts: '{{ origin_ci_vagrant_hostname }}'
   connection: '{{ origin_ci_connection }}'
   become: yes
   become_user: root
@@ -79,8 +78,18 @@
         name: lvm2
         state: present
 
+    - name: determine the correct device to partition # TODO: determine how to select the right device
+      set_fact:
+        origin_ci_vagrant_device: '/dev/vda'
+      when: origin_ci_vagrant_provider == 'libvirt'
+
+    - name: determine the correct device to partition
+      set_fact:
+        origin_ci_vagrant_device: '/dev/sda'
+      when: origin_ci_vagrant_provider == 'virtualbox'
+
     - name: partition the new space
-      script: './../files/partition.sh /dev/vda' # TODO: determine how to select the right device
+      script: './../files/partition.sh {{ origin_ci_vagrant_device }}'
       register: origin_ci_fdisk
       ignore_errors: yes
 
@@ -97,7 +106,7 @@
       command: '/usr/sbin/partprobe'
 
     - name: determine the partition with the largest index on the device # TODO: is there a better way to choose this?
-      shell: '/usr/bin/ls -1 /dev/vda* | tail -n 1'
+      shell: '/usr/bin/ls -1 {{ origin_ci_vagrant_device }}* | tail -n 1'
       register: origin_ci_device_partition
 
     - name: set up the volume group

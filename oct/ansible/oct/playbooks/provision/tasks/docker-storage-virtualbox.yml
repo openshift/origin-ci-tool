@@ -1,3 +1,4 @@
 ---
-- fail:
-    msg: Docker storage provisioning using VirtualBox is not yet implemented.
+# TODO: reconfigure to use a Python API binding
+- name: expand the storage available for Docker
+  script: './../files/expand-storage-virtualbox.sh {{ origin_ci_vagrant_hostname }}_{{ origin_ci_vagrant_hostname }}'

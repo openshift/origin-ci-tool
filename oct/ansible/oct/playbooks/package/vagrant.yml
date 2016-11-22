@@ -39,10 +39,46 @@
       args:
         chdir: '{{ origin_ci_vagrant_home_dir }}'
 
+    - name: determine the package files location
+      set_fact:
+        origin_ci_vagrant_package_directory: '{{ origin_ci_vagrant_package_dir }}/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_target_stage }}'
+
+    - name: ensure the package output directory exists
+      file:
+        path: '{{ origin_ci_vagrant_package_directory }}'
+        state: directory
+
+    - name: determine the location of the output box
+      set_fact:
+        origin_ci_vagrant_package_box: '{{ origin_ci_vagrant_package_directory }}/{{ origin_ci_vagrant_provider }}.box'
+
     - name: package the VM image
       include: './tasks/package-{{ origin_ci_vagrant_provider }}.yml'
-      become: yes
-      become_user: root
+
+    - name: generate a checksum for the packaged box
+      stat:
+        path: '{{ origin_ci_vagrant_package_box }}'
+        get_checksum: yes
+        checksum_algorithm: 'sha256'
+      register: origin_ci_vagrant_package_probe
+
+    - name: determine where the box reference should point in the metadata
+      set_fact:
+        origin_ci_vagrant_package_url: '{{ origin_ci_vagrant_package_box }}'
+      when: origin_ci_vagrant_package_ref == 'local'
+
+    - name: place the Vagrant box metadata file if we don't already have it
+      get_url:
+        url: 'https://mirror.openshift.com/pub/vagrant/boxes/openshift3/{{ origin_ci_vagrant_os }}/{{ origin_ci_vagrant_target_stage }}/metadata.json'
+        dest: '{{ origin_ci_vagrant_package_directory }}/metadata.json'
+
+    - name: update the Vagrant box metadata file
+      update_vagrant_metadata:
+        dest: '{{ origin_ci_vagrant_package_directory }}/metadata.json'
+        version_increment: '{{ origin_ci_vagrant_package_bump_version }}'
+        provider: '{{ origin_ci_vagrant_provider }}'
+        checksum: '{{ origin_ci_vagrant_package_probe.stat.checksum }}'
+        serve_local: '{{ origin_ci_vagrant_package_url | default(omit) }}'
 
     - name: re-start the VM
       command: '/usr/bin/vagrant up --no-provision'
