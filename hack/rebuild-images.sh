@@ -4,6 +4,8 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
+oct_root="$( realpath "$( dirname "${BASH_SOURCE[0]}" )/.." )"
+
 providers=(
     libvirt
     virtualbox
@@ -30,8 +32,28 @@ for provider in "${providers[@]}"; do
         # and install dependencies
         echo "[INFO] Building ${operating_system} base stage on ${provider}"
         oct provision vagrant --provider "${provider}" --os "${operating_system}" --stage bare
+        oct bootstrap host
+        if [[ "${provider}" == "virtualbox" ]]; then
+            # currently doing Docker storage using our playbooks on a
+            # VirtualBox target host is broken, so we have to do this
+            # manually using shell
+            pushd ~/.config/origin-ci-tool/vagrant/openshiftdevel
+            vagrant halt
+            "${oct_root}/oct/ansible/oct/playbooks/provision/files/expand-storage-virtualbox.sh" 'openshiftdevel_openshiftdevel'
+            vagrant up --no-provision
+            scp "${oct_root}/oct/ansible/oct/playbooks/provision/files/partition.sh" openshiftdevel:/home/vagrant
+            ssh openshiftdevel -C 'sudo ./partition.sh /dev/sda' || true
+            ssh openshiftdevel -C 'sudo partprobe'
+            ssh openshiftdevel -C 'sudo yum install -y lvm2'
+            ssh openshiftdevel -C 'sudo vgcreate docker $( ls -1 /dev/sda* | tail -n 1 )'
+            popd
+        fi
         oct prepare all --for origin/master
 
+        # VirtualBox does not make sure that pending writes
+        # are finished before shutting down the system, unlike
+        # KVM. Therefore, we need to manually sync here
+        ssh openshiftdevel -C 'sudo sync'
 
         oct package vagrant --upgrade --serve-remote --bump-version "${bump}"
 

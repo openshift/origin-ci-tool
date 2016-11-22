@@ -196,11 +196,14 @@ def provision(configuration, operating_system, provider, stage, ip):
     # new host and need to update our metadata and records
     register_host(configuration, home_dir, hostname, operating_system, provider, stage)
 
-    if stage == Stage.bare:
+    if stage == Stage.bare and provider != Provider.virtualbox:
         # once we have the new host, we must partition the space on it
         # that was set aside for Docker storage, then power cycle it to
         # update the kernel partition tables, then set up the volume
         # group backed by the LVM pool
+        # TODO: doing this with VirtualBox breaks Ansible's SSH connection
+        # to the machine, re-enable this for the VirtualBox provider once
+        # we have figured out how to fix that
         configuration.run_playbook(
             playbook_relative_path='provision/vagrant-docker-storage',
             playbook_variables={
