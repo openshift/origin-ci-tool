@@ -1,5 +1,5 @@
 ---
-- name: clean up a previous box if it exists:
+- name: clean up a previous box if it exists
   file:
     path: '{{ origin_ci_vagrant_package_box }}'
     state: absent
