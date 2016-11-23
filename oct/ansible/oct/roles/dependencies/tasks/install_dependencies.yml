@@ -45,6 +45,7 @@
    - npm                      # Origin Web Console tests
    - ntp                      #
    - openldap-clients         # Origin LDAP tests
+   - openssl                  # Origin `test-cmd` tests
    - openvswitch              #
    - python-dbus              # OpenShift-Ansible (upstream this)
    - rubygems                 #
