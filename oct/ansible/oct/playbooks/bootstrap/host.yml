@@ -28,8 +28,7 @@
     - name: install bootstrap dependencies for Ansible target host
       raw: >
         if which dnf >/dev/null 2>&1; then
-            dnf group install -y ansible-node
-            dnf install -y libselinux-python
+            dnf group install -y ansible-node && dnf install -y libselinux-python
         else
             yum install -y python2 python2-dnf libselinux-python
         fi
