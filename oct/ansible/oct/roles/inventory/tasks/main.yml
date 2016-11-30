@@ -1,0 +1,20 @@
+---
+- name: initialize the inventory directory
+  file:
+    path: '{{ origin_ci_inventory_dir }}'
+    state: directory
+
+- name: add the nested group mapping
+  copy:
+    src: 'nested_group_mappings.ini'
+    dest: '{{ origin_ci_inventory_dir }}/nested_group_mappings'
+
+- name: initialize the OSEv3 group variables directory
+  file:
+    path: '{{ origin_ci_inventory_dir }}/group_vars/OSEv3'
+    state: directory
+
+- name: add the default Origin installation configuration
+  copy:
+    src: 'general.yml'
+    dest: '{{ origin_ci_inventory_dir }}/group_vars/OSEv3/general.yml'

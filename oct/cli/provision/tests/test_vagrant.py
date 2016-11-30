@@ -7,7 +7,8 @@ from oct.cli.provision.allinone import DEFAULT_MASTER_IP, OperatingSystem, Provi
 from oct.config import vagrant as vagrant_configuration
 from oct.config.configuration import Configuration, DEFAULT_HOSTNAME
 from oct.config.vagrant import VagrantVMMetadata
-from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace
+from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, DUMMY_INVENTORY_DIR, PlaybookRunnerTestCase, \
+    TestCaseParameters, show_stack_trace
 
 _vagrant_root = '/vagrant'
 _default_home_dir = _vagrant_root + '/' + DEFAULT_HOSTNAME
@@ -77,7 +78,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_provider': Provider.libvirt,
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
                 }
             }]
         ))
@@ -94,7 +96,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_provider': Provider.libvirt,
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
                 }
             }]
         ))
@@ -111,7 +114,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_provider': provider,
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
                 }
             }]
         ))
@@ -128,7 +132,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_provider': Provider.libvirt,
                     'origin_ci_vagrant_stage': stage,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
                 }
             }]
         ))
@@ -145,7 +150,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_provider': Provider.libvirt,
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': ip,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
                 }
             }]
         ))
@@ -164,7 +170,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_provider': provider,
                     'origin_ci_vagrant_stage': stage,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
                 }
             }, {
                 'playbook_relative_path': 'provision/vagrant-docker-storage',

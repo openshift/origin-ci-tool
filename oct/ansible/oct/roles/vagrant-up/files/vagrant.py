@@ -16,10 +16,6 @@ We expect to find Vagrant VMs under the Origin
 CI Tool configuration directory, often stored at:
    ~/.config/origin-ci-tool/vagrant
 
-A set of static groups will be loaded from the
-`static_inventory.json` file in the root of the
-configuration directory root.
-
 In each subdirectory, we expect to find:
  - a single Vagrant VM started from the canonical
    Vagrantfile
@@ -194,13 +190,6 @@ if options.list:
             'vars': {}
         }
     }
-
-    # load static groups if they exist
-    static_groups_location = join(determine_base_path(), 'static_inventory.json')
-    if exists(static_groups_location):
-        with open(static_groups_location) as static_groups_file:
-            static_groups = load(static_groups_file)
-            full_inventory.update(static_groups)
 
     # load VM hosts
     for directory in list_vagrant_directories():

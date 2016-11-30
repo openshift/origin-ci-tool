@@ -16,6 +16,7 @@ DEFAULT_HOSTNAME = 'openshiftdevel'
 
 _ANSIBLE_CLIENT_CONFIGURATION_FILE = 'ansible_client_configuration.yml'
 _ANSIBLE_VARIABLES_FILE = 'ansible_variables.yml'
+_ANSIBLE_INVENTORY_DIRECTORY = 'inventory'
 _VAGRANT_ROOT_DIRECTORY = 'vagrant'
 _VAGRANT_BOX_DIRECTORY = 'boxes'
 _LOG_DIRECTORY = 'logs'
@@ -83,6 +84,14 @@ class Configuration(object):
         )
 
     @property
+    def ansible_inventory_path(self):
+        """
+        Yield the path to the Ansible core inventory directory.
+        :return: absolute path to the Ansible core inventory directory
+        """
+        return join(self._path, _ANSIBLE_INVENTORY_DIRECTORY)
+
+    @property
     def ansible_client_configuration_path(self):
         """
         Yield the path to the Ansible core configuration file.
@@ -97,7 +106,10 @@ class Configuration(object):
         default values and write them for future callers.
         """
         if not exists(self.ansible_client_configuration_path):
-            self.ansible_client_configuration = AnsibleCoreClient(log_directory=self.ansible_log_path)
+            self.ansible_client_configuration = AnsibleCoreClient(
+                inventory_dir=self.ansible_inventory_path,
+                log_directory=self.ansible_log_path
+            )
             self.write_ansible_client_configuration()
         else:
             with open(self.ansible_client_configuration_path) as configuration_file:

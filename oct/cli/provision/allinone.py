@@ -190,7 +190,8 @@ def provision_with_vagrant(configuration, operating_system, provider, stage, ip)
             'origin_ci_vagrant_provider': provider,
             'origin_ci_vagrant_stage': stage,
             'origin_ci_vagrant_ip': ip,
-            'origin_ci_vagrant_hostname': hostname
+            'origin_ci_vagrant_hostname': hostname,
+            'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list
         }
     )
 

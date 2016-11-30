@@ -1,5 +1,5 @@
 ---
-- name: ensure we have the parameters necessary to bring up the Vagrant VM
+- name: ensure we have the parameters necessary to initialize the inventory
   hosts: 'localhost'
   connection: 'local'
   become: no
@@ -11,18 +11,12 @@
         msg: 'This playbook requires {{ item }} to be set.'
       when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
-        - origin_ci_vagrant_home_dir
-        - origin_ci_vagrant_os
-        - origin_ci_vagrant_provider
-        - origin_ci_vagrant_stage
-        - origin_ci_vagrant_ip
         - origin_ci_inventory_dir
 
-- name: provision a local VM with Vagrant
+- name: set up the local inventory directory
   hosts: 'localhost'
   connection: 'local'
   become: no
 
   roles:
     - role: inventory
-    - role: vagrant-up

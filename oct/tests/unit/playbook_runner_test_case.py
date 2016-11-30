@@ -23,6 +23,7 @@ CLICK_RC_OK = 0
 CLICK_RC_EXCEPTION = 1
 CLICK_RC_USAGE = 2
 
+DUMMY_INVENTORY_DIR = 'dummy-inventory-dir'
 
 class TestCaseParameters(object):
     def __init__(self, args, expected_result=CLICK_RC_OK, expected_calls=None, expected_output=None):
@@ -68,7 +69,7 @@ class PlaybookRunnerTestCase(TestCase):
             patch.object(
                 target=Configuration,
                 attribute='load_ansible_client_configuration',
-                new=lambda configuration: setattr(configuration, 'ansible_client_configuration', AnsibleCoreClient())
+                new=lambda configuration: setattr(configuration, 'ansible_client_configuration', AnsibleCoreClient(inventory_dir=DUMMY_INVENTORY_DIR))
             ),
             patch.object(
                 target=Configuration,

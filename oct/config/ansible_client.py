@@ -14,8 +14,8 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.plugins import callback_loader
 from ansible.vars import VariableManager
 from click import ClickException
-from os import environ
-from os.path import abspath, dirname, join
+from os import environ, mkdir
+from os.path import abspath, dirname, exists, join
 
 DEFAULT_VERBOSITY = 1
 
@@ -28,23 +28,18 @@ class AnsibleCoreClient(object):
     """
 
     def __init__(self,
-                 inventory_file=None,
+                 inventory_dir,
                  verbosity=DEFAULT_VERBOSITY,
                  dry_run=False,
                  log_directory=None,
                  custom_module_path=None):
-        if inventory_file is None:
-            # default to the dynamic Vagrant inventory
-            from ..vagrant import __file__ as inventory_directory
-            inventory_file = join(abspath(dirname(inventory_directory)), 'inventory.py')
-
         if custom_module_path is None:
             # default to the pre-packaged custom module path
             from ..oct import __file__ as base_directory
             custom_module_path = join(abspath(dirname(base_directory)), 'ansible', 'oct', 'library')
 
-        # location of the inventory file to use
-        self.host_list = inventory_file
+        # location of the inventory directory to use
+        self.host_list = inventory_dir
         # verbosity level for Ansible output
         self.verbosity = verbosity
         # whether or not to make changes on the remote host
@@ -86,6 +81,13 @@ class AnsibleCoreClient(object):
         :param playbook_file: the location of the playbook
         :param playbook_variables: extra variables for the playbook
         """
+        # on the first run, the playbook that initializes the
+        # inventory will not have yet run, so we should ensure
+        # that the directory for it exists, at the least, so
+        # ansible doesn't complain
+        if not exists(self.host_list):
+            mkdir(self.host_list)
+
         variable_manager = VariableManager()
         data_loader = DataLoader()
         inventory = Inventory(
