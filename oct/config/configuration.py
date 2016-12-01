@@ -1,8 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from itertools import chain
-
 from os import getenv, listdir, mkdir
 from os.path import abspath, exists, expanduser, isdir, join
 from yaml import dump, load
@@ -162,13 +160,6 @@ class Configuration(object):
                 explicit_start=True
             )
 
-    def write_configuration(self):
-        """
-        Write the entire set of configuration options to disk.
-        """
-        self.write_ansible_client_configuration()
-        self.write_ansible_variables()
-
     @property
     def vagrant_directory_root(self):
         """
@@ -266,68 +257,12 @@ class Configuration(object):
         """
         return join(self._path, _LOG_DIRECTORY)
 
-    def __getitem__(self, key):
         """
-        Fetch the configuration key. Makes the inclusion
-        of variables and options as separate fields in this
-        meta-container transparent to users.
+        """
 
-        :param key: name of the item to fetch
-        :return: value of the item
         """
-        if hasattr(self.ansible_client_configuration, key):
-            return getattr(self.ansible_client_configuration, key)
-        elif hasattr(self.ansible_variables, key):
-            return getattr(self.ansible_variables, key)
+        """
         else:
-            raise KeyError('No such option `{}`.'.format(key))
-
-    def __setitem__(self, key, value):
-        """
-        Update the value of the configuration entry. Makes
-        the inclusion of variables and options as separate
-        fields in this meta-container transparent to users.
-
-        :param key: name of the item to update
-        :param value: value to update the item to
-        """
-        if hasattr(self.ansible_client_configuration, key):
-            setattr(self.ansible_client_configuration, key, value)
-        elif hasattr(self.ansible_variables, key):
-            setattr(self.ansible_variables, key, value)
-        else:
-            raise KeyError('No such option `{}`.'.format(key))
-
-    def __contains__(self, key):
-        """
-        Determine if the underlying containers in fact
-        contain the configuration item.
-
-        :param key: name of the item to search for
-        :return: whether or not we contain the item
-        """
-        return hasattr(self.ansible_client_configuration, key) or hasattr(self.ansible_variables, key)
-
-    def __iter__(self):
-        """
-        Return an iterator for contained properties.
-
-        :return: the iterator
-        """
-        return self
-
-    def next(self):
-        """
-        Implements the iterator functionality by yielding
-        the contents of the underlying containers.
 
         """
-        return chain(vars(self.ansible_variables), vars(self.ansible_client_configuration))
-
-    def items(self):
         """
-        Implements the items iterator functionality by
-        yielding the contents of the underlying containers'
-        keys and values.
-        """
-        return chain(vars(self.ansible_variables).items(), vars(self.ansible_client_configuration).items())

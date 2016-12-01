@@ -35,7 +35,7 @@ def update_ansible_verbosity(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    context.obj['verbosity'] = value
+    context.obj.ansible_client_configuration['verbosity'] = value
 
 
 def ansible_verbosity_option(func):
@@ -67,7 +67,7 @@ def update_ansible_dry_run(context, _, value):
     if not value or context.resilient_parsing:
         return
 
-    context.obj['check'] = value
+    context.obj.ansible_client_configuration['check'] = value
 
 
 def ansible_dry_run_option(func):
