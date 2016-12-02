@@ -3,8 +3,8 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, UsageError, command, option, pass_context
 
-from ..util.common_options import ansible_output_options
-from ...config.vagrant import VagrantVMMetadata
+from ...util.common_options import ansible_output_options
+from ....config.vagrant import VagrantVMMetadata
 
 DEFAULT_MASTER_IP = '10.245.2.2'
 
@@ -61,30 +61,23 @@ _short_help = 'Provision a virtual host for an All-In-One deployment.'
     short_help=_short_help,
     help=_short_help + '''
 
-Local VM provisioning is supported for a range of operating systems,
-virtualization providers, and image stages. The choice of operating
-system and virtualization provider allows for flexibility, but it is
-the intention that all combinations have parity, so the choice should
-not impact your workload.
-
-Note: without a license to publish and distribute VMWare Fusion box
-files, we cannot provide any image stage other than the most basic
-bare operating system stage. If you are using VMWare Fusion as your
-Vagrant provider, you must build the other image stages yourself.
+An All-In-One deployment of OpenShift uses one virtual host on which
+all cluster components are provisioned. These types of deployments are
+most useful for short-term development work-flows.
 
 \b
 Examples:
   Provision a VM with default parameters (fedora, libvirt, install)
-  $ oct provision_with_vagrant all-in-one
+  $ oct provision local all-in-one
 \b
   Provision a VM with custom parameters
-  $ oct provision_with_vagrant all-in-one --os=centos --provider=virtualbox --stage=base
+  $ oct provision local all-in-one --os=centos --provider=virtualbox --stage=base
 \b
   Tear down the currently running VMs
-  $ oct provision_with_vagrant all-in-one --destroy
+  $ oct provision local all-in-one --destroy
 \b
   Provision a VM with a specific IP address
-  $ oct provision_with_vagrant all-in-one --ip=10.245.2.2
+  $ oct provision local all-in-one --ip=10.245.2.2
 '''
 )
 @option(
@@ -140,7 +133,7 @@ Examples:
 )
 @ansible_output_options
 @pass_context
-def all_in_one(context, operating_system, provider, stage, ip):
+def all_in_one_command(context, operating_system, provider, stage, ip):
     """
     Provision a virtual host for an All-In-One deployment.
 
