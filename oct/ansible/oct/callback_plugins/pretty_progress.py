@@ -289,20 +289,21 @@ class CallbackModule(CallbackBase):
         # there isn't a good API for determining failures,
         # so we need to search for them ourselves
         status = SUCCESS_PREFIX
-        if hasattr(stats, 'unreachable'):
-            # if there are no unreachable hosts, the play
-            # statistics won't contain this section, so
-            # we can simply look for it to signal failure
-            status = FAILURE_PREFIX
-        else:
-            # if there are no task failures, however, the
-            # play statistics will nevertheless contain a
-            # failures section, so we need to check that
-            # tasks actually failed on a host
-            for host in stats.failures:
-                if stats.failures[host]:
-                    status = FAILURE_PREFIX
-                    break
+        # task failures are recorded per host per type of
+        # failure, so we need to check that any hosts in
+        # these sections have occurrences of the failure
+        # recorded
+        for host in stats.dark:
+            if stats.dark[host] > 0:
+                # tasks failed to reach their host
+                status = FAILURE_PREFIX
+                break
+
+        for host in stats.failures:
+            if stats.failures[host] > 0:
+                # tasks failed to execute
+                status = FAILURE_PREFIX
+                break
 
         self.finalize_playbook(status)
         # we need to manually trigger this queue update
