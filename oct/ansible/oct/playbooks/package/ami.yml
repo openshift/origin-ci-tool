@@ -11,6 +11,7 @@
         msg: 'This playbook requires {{ item }} to be set.'
       when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
+        - origin_ci_aws_ami_name_suffix
         - origin_ci_aws_stage_strategy
         - origin_ci_inventory_dir
         - origin_ci_aws_region
@@ -88,7 +89,7 @@
         instance_id: '{{ ansible_ec2_instance_id }}'
         region: '{{ origin_ci_aws_region }}'
         state: present
-        name: 'openshiftdevel_{{ origin_ci_aws_ami_os }}_{{ origin_ci_aws_ami_stage }}'
+        name: 'openshiftdevel_{{ origin_ci_aws_ami_os }}_{{ origin_ci_aws_ami_stage }}_{{ origin_ci_aws_ami_name_suffix }}'
         description: 'OpenShift Origin development AMI on {{ origin_ci_aws_ami_os }} at the {{ origin_ci_aws_ami_stage }} stage.'
         tags:
           operating_system: '{{ origin_ci_aws_ami_os }}'
