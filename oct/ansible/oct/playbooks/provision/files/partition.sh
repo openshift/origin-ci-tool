@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script interacts with `fdisk` in order to add a partition that uses up
-# all of the free space in the block device updated by `virsh vol-resize`.
+# all of the free space in the block device set aside for Docker storage.
 
 fdisk_commands=(
     # first, create a new partition
