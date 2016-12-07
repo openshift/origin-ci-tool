@@ -19,7 +19,7 @@ the intention that all combinations have parity, so the choice should
 not impact your workload.
 '''
 )
-def cloud():
+def remote():
     """
     Do nothing -- this group should never be called without a sub-command.
     """
@@ -27,4 +27,4 @@ def cloud():
     pass
 
 
-cloud.add_command(all_in_one_command)
+remote.add_command(all_in_one_command)

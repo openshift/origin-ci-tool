@@ -64,13 +64,13 @@ most useful for short-term development work-flows.
 \b
 Examples:
   Provision a VM with default parameters (fedora, aws, install)
-  $ oct provision_with_vagrant all-in-one
+  $ oct provision remote all-in-one
 \b
   Provision a VM with custom parameters
-  $ oct provision_with_vagrant all-in-one --os=centos --provider=aws --stage=base
+  $ oct provision remote all-in-one --os=centos --provider=aws --stage=base
 \b
   Tear down the currently running VMs
-  $ oct provision_with_vagrant all-in-one --destroy
+  $ oct provision remote all-in-one --destroy
 '''
 )
 @option(
