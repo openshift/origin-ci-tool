@@ -117,6 +117,7 @@
 - name: update group variables for the host
   copy:
     content:
+      origin_ci_aws_host: '{{ origin_ci_aws_host }}'
       origin_ci_aws_hostname: '{{ origin_ci_aws_hostname }}'
       origin_ci_aws_instance_id: '{{ ec2.instance_ids[0] }}'
       origin_ci_aws_ami_os: '{{ origin_ci_aws_ami_os }}'
