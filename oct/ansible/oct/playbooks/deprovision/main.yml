@@ -1,5 +1,5 @@
 ---
-- name: ensure we have the parameters necessary to execute a make target or targets
+- name: ensure we have the parameters necessary to deprovision virtual hosts
   hosts: 'localhost'
   connection: 'local'
   become: no
