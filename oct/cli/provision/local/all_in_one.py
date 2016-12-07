@@ -38,21 +38,6 @@ class Stage(object):
     install = 'install'
 
 
-def destroy_callback(context, _, value):
-    """
-    Tear down the currently running VM using `vagrant destroy`
-
-    :param context: Click context
-    :param _: command-line parameter
-    :param value: whether or not to tear down the VM
-    """
-    if not value or context.resilient_parsing:
-        return
-
-    destroy(context.obj)
-    context.exit()
-
-
 _short_help = 'Provision a virtual host for an All-In-One deployment.'
 
 
@@ -72,9 +57,6 @@ Examples:
 \b
   Provision a VM with custom parameters
   $ oct provision local all-in-one --os=centos --provider=virtualbox --stage=base
-\b
-  Tear down the currently running VMs
-  $ oct provision local all-in-one --destroy
 \b
   Provision a VM with a specific IP address
   $ oct provision local all-in-one --ip=10.245.2.2
@@ -123,13 +105,6 @@ Examples:
     show_default=True,
     metavar='ADDRESS',
     help='Desired IP of the VM.'
-)
-@option(
-    '--destroy', '-d',
-    is_flag=True,
-    expose_value=False,
-    help='Tear down the current VMs.',
-    callback=destroy_callback
 )
 @ansible_output_options
 @pass_context
@@ -194,9 +169,9 @@ def provision_with_vagrant(configuration, operating_system, provider, stage, ip)
 
     if stage == Stage.bare and provider != Provider.virtualbox:
         # once we have the new host, we must partition the space on it
-        # that was set aside for Docker storage, then power cycle it to
-        # update the kernel partition tables, then set up the volume
-        # group backed by the LVM pool
+        # that was set aside for Docker storage, then update the kernel
+        # partition tables and set up the volume group backed by the LVM
+        # pool
         # TODO: doing this with VirtualBox breaks Ansible's SSH connection
         # to the machine, re-enable this for the VirtualBox provider once
         # we have figured out how to fix that
@@ -247,22 +222,3 @@ def register_host(configuration, home_dir, hostname, operating_system, provider,
             }
         }
     }))
-
-
-def destroy(configuration):
-    """
-    Tear down the currently running Vagrant VMs.
-
-    :param configuration: Origin CI Tool configuration
-    """
-    for vm in configuration.registered_vagrant_machines():
-        configuration.run_playbook(
-            playbook_relative_path='provision/vagrant-down',
-            playbook_variables={
-                'origin_ci_vagrant_home_dir': vm.directory,
-                'origin_ci_vagrant_hostname': vm.hostname
-            }
-        )
-
-        # if we successfully executed the playbook, we have removed a host
-        vm.remove()

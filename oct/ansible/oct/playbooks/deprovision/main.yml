@@ -1,0 +1,66 @@
+---
+- name: ensure we have the parameters necessary to execute a make target or targets
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_inventory_dir
+        - origin_ci_aws_region
+
+- name: deprovision virtual hosts in EC2
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: yes
+
+  tasks:
+    - name: skip deprovisioning ec2 instances when there are none
+      meta: end_play
+      when: "'ec2' not in groups"
+
+    - name: deprovision a virtual EC2 host
+      include_role:
+        name: aws-down
+      vars:
+        origin_ci_aws_hostname: '{{ hostvars[item]["origin_ci_aws_hostname"] }}'
+        origin_ci_aws_host: '{{ hostvars[item]["origin_ci_aws_host"] }}'
+        origin_ci_aws_instance_id: '{{ hostvars[item]["origin_ci_aws_instance_id"] }}'
+      with_items: "{{ groups['ec2'] }}"
+
+- name: deprovision virtual hosts locally manged by Vagrant
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: yes
+
+  tasks:
+    - name: skip deprovisioning vagrant instances when there are none
+      meta: end_play
+      when: "'vagrant' not in groups"
+
+    - name: deprovision a virtual Vagrant host
+      include_role:
+        name: vagrant-down
+      vars:
+        origin_ci_vagrant_hostname: '{{ hostvars[item]["origin_ci_vagrant_hostname"] }}'
+        origin_ci_vagrant_home_dir: '{{ hostvars[item]["origin_ci_vagrant_home_dir"] }}'
+      with_items: "{{ groups['vagrant'] }}"
+
+- name: clean up local configuration for deprovisioned instances
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  tasks:
+    - name: remove inventory configuration directory
+      file:
+        path: '{{ origin_ci_inventory_dir }}'
+        state: absent

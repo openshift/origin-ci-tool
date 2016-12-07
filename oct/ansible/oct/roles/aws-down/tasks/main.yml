@@ -1,0 +1,23 @@
+---
+- name: update the SSH configuration to remove AWS EC2 specifics
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.ssh/config'
+    state: absent
+    marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_aws_hostname }}'
+
+- name: rename EC2 instance for termination reaper
+  ec2_tag:
+    resource: '{{ origin_ci_aws_instance_id }}'
+    tags:
+      Name: 'terminate'
+
+- name: tear down the EC2 instance
+  ec2:
+    region: '{{ origin_ci_aws_region }}'
+    instance_ids: [ '{{ origin_ci_aws_instance_id }}' ]
+    state: absent
+
+- name: remove the serialized host variables
+  file:
+    path: '{{ origin_ci_inventory_dir }}/host_vars/{{ origin_ci_aws_host }}.yml'
+    state: absent

@@ -1,9 +1,9 @@
 ---
-- name: ensure we have the parameters necessary to tear down the Vagrant VM
+- name: ensure we have the parameters necessary to tear down the AWS EC2 instance
   hosts: 'localhost'
   connection: 'local'
   become: no
-  gather_facts: no
+  gather_facts: yes
 
   pre_tasks:
     - name: ensure all required variables are set
@@ -11,13 +11,15 @@
         msg: 'This playbook requires {{ item }} to be set.'
       when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
-        - origin_ci_vagrant_home_dir
-        - origin_ci_vagrant_hostname
+        - origin_ci_aws_host
+        - origin_ci_aws_region
+        - origin_ci_aws_hostname
+        - origin_ci_aws_instance_id
 
-- name: tear down a local VM provisioned with Vagrant
+- name: tear down the AWS EC2 instance
   hosts: 'localhost'
   connection: 'local'
   become: no
 
   roles:
-    - role: vagrant-down
+    - role: aws-down

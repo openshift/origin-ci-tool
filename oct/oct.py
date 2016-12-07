@@ -6,6 +6,7 @@ from click import group, pass_context
 from .cli.bootstrap.group import bootstrap
 from .cli.build.build import build
 from .cli.config.group import configure
+from .cli.deprovision import deprovision
 from .cli.install.install import install
 from .cli.make.make import make
 from .cli.package.group import package
@@ -36,6 +37,7 @@ def oct_command(context):
 oct_command.add_command(bootstrap)
 oct_command.add_command(build)
 oct_command.add_command(configure)
+oct_command.add_command(deprovision)
 oct_command.add_command(install)
 oct_command.add_command(make)
 oct_command.add_command(prepare)

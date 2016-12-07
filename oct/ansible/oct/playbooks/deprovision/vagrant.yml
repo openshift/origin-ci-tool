@@ -1,0 +1,23 @@
+---
+- name: ensure we have the parameters necessary to tear down the Vagrant VM
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: yes
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_vagrant_home_dir
+        - origin_ci_vagrant_hostname
+
+- name: tear down a local VM provisioned with Vagrant
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+
+  roles:
+    - role: vagrant-down

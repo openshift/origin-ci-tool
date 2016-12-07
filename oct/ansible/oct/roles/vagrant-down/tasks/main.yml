@@ -9,3 +9,8 @@
   command: "/usr/bin/vagrant destroy --force"
   args:
     chdir: '{{ origin_ci_vagrant_home_dir }}'
+
+- name: remove the VM directory
+  file:
+    path: '{{ origin_ci_vagrant_home_dir }}'
+    state: absent
