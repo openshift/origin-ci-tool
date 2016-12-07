@@ -19,8 +19,9 @@ class CallbackModule(CallbackBase):
     along it is in the process.
     """
     CALLBACK_VERSION = 2.0
-    CALLBACK_TYPE = 'aggregate'
-    CALLBACK_NAME = 'junit_report'
+    CALLBACK_TYPE = 'notification'
+    CALLBACK_NAME = 'generate_junit'
+    CALLBACK_NEEDS_WHITELIST = True
 
     def __init__(self, *args, **kwargs):
         # track the currently executing task
