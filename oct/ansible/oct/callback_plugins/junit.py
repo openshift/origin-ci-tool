@@ -1,14 +1,14 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from os.path import join
-
-from os.path import abspath, expanduser
+from random import choice
+from string import ascii_letters
 from timeit import default_timer as timer
 
 from ansible.plugins.callback import CallbackBase
 from junit_xml import TestCase, TestSuite
-from os import getenv
+from os import getenv, mkdir
+from os.path import abspath, exists, expanduser, join
 
 
 class CallbackModule(CallbackBase):
@@ -135,8 +135,21 @@ class CallbackModule(CallbackBase):
         suite = TestSuite(self.playbook_name, self.test_cases)
 
         base_dir = getenv('OCT_CONFIG_HOME', abspath(join(expanduser('~'), '.config')))
-        with open(abspath(join(base_dir, 'origin-ci-tool', 'logs', 'result.xml')), 'w') as result_file:
+        log_dir = abspath(join(base_dir, 'origin-ci-tool', 'logs', 'junit'))
+        if not exists(log_dir):
+            mkdir(log_dir)
+
+        log_filename = ''
+        for _ in range(10):
+            log_basename = '{}.xml'.format(''.join(choice(ascii_letters) for i in range(10)))
+            log_filename = join(log_dir, log_basename)
+            if not exists(log_filename):
+                # TODO: determine a better way to do this
+                break
+
+        with open(log_filename, 'w') as result_file:
             TestSuite.to_file(result_file, [suite])
+
 
 def format_result(result):
     """
