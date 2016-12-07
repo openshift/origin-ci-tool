@@ -6,7 +6,6 @@ base_requires = [
     'Click',
     'ansible',
     'backports.shutil_get_terminal_size',
-    'structlog',
     'semver'
 ]
 
@@ -21,7 +20,8 @@ setup(
     install_requires=base_requires,
     tests_require=base_requires + [
         'mock',
-        'coverage'
+        'coverage',
+        'unittest'
     ],
     entry_points='''
         [console_scripts]
