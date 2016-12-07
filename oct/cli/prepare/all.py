@@ -27,7 +27,7 @@ def install_dependencies_for_preset(context, _, value):
     context.exit()
 
 
-_short_help = 'Install dependencies on remote hosts.'
+_short_help = 'Configure all dependencies on remote hosts.'
 
 
 @command(
