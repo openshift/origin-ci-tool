@@ -12,11 +12,11 @@
     state: present
     description: 'A repository of dependencies for Atomic OpenShift {{ item }}'
     baseurl: >
-    gpgcheck: yes
       https://mirror.ops.rhcloud.com/enterprise/enterprise-{{ item }}/latest/RH7-RHAOS-{{ item }}/x86_64/os/,
       https://use-mirror1.ops.rhcloud.com/enterprise/enterprise-{{ item }}/latest/RH7-RHAOS-{{ item }}/x86_64/os/,
       https://use-mirror2.ops.rhcloud.com/enterprise/enterprise-{{ item }}/latest/RH7-RHAOS-{{ item }}/x86_64/os/,
       https://euw-mirror1.ops.rhcloud.com/enterprise/enterprise-{{ item }}/latest/RH7-RHAOS-{{ item }}/x86_64/os/
+    gpgcheck: no
     gpgkey: >
       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,
       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,
