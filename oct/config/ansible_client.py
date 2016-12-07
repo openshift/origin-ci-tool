@@ -150,7 +150,7 @@ class AnsibleCoreClient(object):
         # to the pretty printer, if it's on
         from ..oct import __file__ as root_dir
         callback_loader.add_directory(join(dirname(root_dir), 'ansible', 'oct', 'callback_plugins'))
-        constants.DEFAULT_CALLBACK_WHITELIST = 'log_results,junit'
+        constants.DEFAULT_CALLBACK_WHITELIST = 'log_results,junit_report'
         environ['ANSIBLE_LOG_ROOT_PATH'] = self.log_directory
 
         if options.verbosity == 1:

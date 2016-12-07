@@ -19,8 +19,8 @@ class CallbackModule(CallbackBase):
     along it is in the process.
     """
     CALLBACK_VERSION = 2.0
-    CALLBACK_TYPE = 'notification'
-    CALLBACK_NAME = 'junit'
+    CALLBACK_TYPE = 'aggregate'
+    CALLBACK_NAME = 'junit_report'
 
     def __init__(self, *args, **kwargs):
         # track the currently executing task
@@ -39,8 +39,7 @@ class CallbackModule(CallbackBase):
 
     def test_case_for_result(self, result):
         return TestCase(
-            name='{}: {}'.format(result._host, self.current_task.get_name()),
-            classname=self.current_task._parent._play.get_name(),
+            name='[{}] {}: {}'.format(result._host, self.current_task._parent._play.get_name(), self.current_task.get_name()),
             elapsed_sec=timer() - self.current_task_start
         )
 

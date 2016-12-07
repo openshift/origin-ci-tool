@@ -114,7 +114,7 @@
     src: 'tag_to_group_mappings.ini'
     dest: '{{ origin_ci_inventory_dir }}/tag_to_group_mappings'
 
-- name: update group variables for the host
+- name: update variables for the host
   copy:
     content:
       origin_ci_aws_host: '{{ origin_ci_aws_host }}'
