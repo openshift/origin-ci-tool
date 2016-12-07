@@ -6,6 +6,8 @@ from os.path import abspath, exists, expanduser, isdir, join
 from yaml import dump, load
 
 from ..config.ansible_client import AnsibleCoreClient
+from ..config.aws_client import AWSClientConfiguration
+from ..config.aws_variables import AWSVariables
 from ..config.vagrant import VagrantVMMetadata
 from ..config.variables import PlaybookExtraVariables
 from ..util.playbook import playbook_path
@@ -18,6 +20,8 @@ _ANSIBLE_INVENTORY_DIRECTORY = 'inventory'
 _VAGRANT_ROOT_DIRECTORY = 'vagrant'
 _VAGRANT_BOX_DIRECTORY = 'boxes'
 _LOG_DIRECTORY = 'logs'
+_AWS_CLIENT_CONFIGURATION_FILE = 'aws_client_configuration.yml'
+_AWS_VARIABLES_FILE = 'aws_variables.yml'
 
 
 class Configuration(object):
@@ -51,6 +55,15 @@ class Configuration(object):
         self._vagrant_metadata = []
         self.load_vagrant_metadata()
 
+        # configuration options for AWS client
+        self.aws_client_configuration = None
+        self.load_aws_client_configuration()
+
+        # extra variables we want to send to Ansible playbooks
+        # that touch the AWS API
+        self.aws_variables = None
+        self.load_aws_variables()
+
     def initialize_directories(self):
         """
         Initialize directories on the filesystem that we will
@@ -75,9 +88,13 @@ class Configuration(object):
         :param playbook_relative_path: the location of the playbook
         :param playbook_variables: extra variables for the playbook
         """
+        playbook_variables = self.ansible_variables.default(
+            self.aws_variables.default(playbook_variables)
+        )
+
         self.ansible_client_configuration.run_playbook(
             playbook_file=playbook_path(playbook_relative_path),
-            playbook_variables=self.ansible_variables.default(playbook_variables),
+            playbook_variables=playbook_variables,
             option_overrides=option_overrides
         )
 
@@ -257,12 +274,70 @@ class Configuration(object):
         """
         return join(self._path, _LOG_DIRECTORY)
 
+    @property
+    def aws_client_configuration_path(self):
         """
+        Yield the path to the AWS client configuration file.
+        :return: absolute path to the AWS client configuration
         """
+        return join(self._path, _AWS_CLIENT_CONFIGURATION_FILE)
 
+    def load_aws_client_configuration(self):
         """
+        Load the AWS client configuration from disk, or if
+        they have not yet been written to disk, use the
+        default values and write them for future callers.
         """
+        if not exists(self.aws_client_configuration_path):
+            self.aws_client_configuration = AWSClientConfiguration()
+            self.write_aws_client_configuration()
         else:
+            with open(self.aws_client_configuration_path) as aws_client_configuration_file:
+                self.aws_client_configuration = load(aws_client_configuration_file)
 
+    def write_aws_client_configuration(self):
         """
+        Write the current set of AWS client configuration
+        variables to disk.
         """
+        with open(self.aws_client_configuration_path, 'w+') as aws_client_configuration_file:
+            dump(
+                self.aws_client_configuration,
+                aws_client_configuration_file,
+                default_flow_style=False,
+                explicit_start=True
+            )
+
+    @property
+    def aws_variables_path(self):
+        """
+        Yield the path to the AWS client configuration file.
+        :return: absolute path to the AWS client configuration
+        """
+        return join(self._path, _AWS_VARIABLES_FILE)
+
+    def load_aws_variables(self):
+        """
+        Load the AWS client configuration from disk, or if
+        they have not yet been written to disk, use the
+        default values and write them for future callers.
+        """
+        if not exists(self.aws_variables_path):
+            self.aws_variables = AWSVariables()
+            self.write_aws_variables()
+        else:
+            with open(self.aws_variables_path) as aws_variables_file:
+                self.aws_variables = load(aws_variables_file)
+
+    def write_aws_variables(self):
+        """
+        Write the current set of AWS client configuration
+        variables to disk.
+        """
+        with open(self.aws_variables_path, 'w+') as aws_variables_file:
+            dump(
+                self.aws_variables,
+                aws_variables_file,
+                default_flow_style=False,
+                explicit_start=True
+            )

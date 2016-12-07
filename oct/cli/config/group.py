@@ -5,8 +5,8 @@ from click import group
 
 from .ansible_client import ansible_client_command
 from .ansible_defaults import ansible_defaults_command
-from .aws import aws_client_command
-
+from .aws_client import aws_client_command
+from .aws_defaults import aws_defaults_command
 
 @group(
     short_help='View, update and append to the serialized configuration.',
@@ -28,3 +28,4 @@ def configure():
 configure.add_command(ansible_client_command)
 configure.add_command(ansible_defaults_command)
 configure.add_command(aws_client_command)
+configure.add_command(aws_defaults_command)

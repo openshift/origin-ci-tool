@@ -1,0 +1,47 @@
+---
+- name: ensure we have the parameters necessary to bring up the AWS EC2 instance
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_inventory_dir
+        - origin_ci_aws_keypair_name
+        - origin_ci_aws_private_key_path
+        - origin_ci_aws_region
+        - origin_ci_aws_ami_os
+        - origin_ci_aws_ami_stage
+        - origin_ci_aws_instance_name
+        - origin_ci_aws_master_instance_type
+        - origin_ci_aws_identifying_tag_key
+        - origin_ci_aws_hostname
+
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires either {{ item }}_ids or {{ item }}_tag_value to be set.'
+      when: "( item ~ '_ids' not in vars and item ~ '_ids' not in hostvars[inventory_hostname] ) and
+             ( item ~ '_tag_value' not in vars and item ~ '_tag_value' not in hostvars[inventory_hostname] )"
+      with_items:
+        - origin_ci_aws_master_subnet
+        - origin_ci_aws_etcd_security_group
+        - origin_ci_aws_node_security_group
+        - origin_ci_aws_master_security_group
+        - origin_ci_aws_master_external_elb_security_group
+        - origin_ci_aws_master_internal_elb_security_group
+        - origin_ci_aws_router_security_group
+        - origin_ci_aws_router_elb_security_group
+
+- name: provision an AWS EC2 instance
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+
+  roles:
+    - role: inventory
+    - role: aws-up

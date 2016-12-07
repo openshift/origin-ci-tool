@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function
 from click import group
 
 from .local.group import local
+from .cloud.group import cloud
 
 _short_help = 'Provision a virtual machine for continuous integration tasks.'
 
@@ -41,3 +42,4 @@ def provision():
 
 
 provision.add_command(local)
+provision.add_command(cloud)

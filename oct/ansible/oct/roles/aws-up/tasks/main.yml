@@ -1,0 +1,145 @@
+---
+- name: determine which AMI to use
+  ec2_ami_find:
+    region: '{{ origin_ci_aws_region }}'
+    ami_tags:
+      operating_system: '{{ origin_ci_aws_ami_os }}'
+      image_stage: '{{ origin_ci_aws_ami_stage }}'
+      ready: 'yes'
+    sort: 'creationDate'
+    sort_order: descending
+    sort_end: 1
+  register: ami_facts
+
+- name: determine which AMI to use
+  set_fact:
+    origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
+
+- name: determine which subnets are available
+  ec2_vpc_subnet_facts:
+    region: '{{ origin_ci_aws_region }}'
+    filters: "{ 'tag:{{ origin_ci_aws_identifying_tag_key }}': '{{ origin_ci_aws_master_subnet_tag_value }}' }"
+  register: subnet_facts
+  when: origin_ci_aws_master_subnet_ids is not defined
+
+- name: determine which subnets to use for the master
+  set_fact:
+    origin_ci_aws_master_subnet_ids: "{{ subnet_facts.subnets | map(attribute='id') | list }}"
+  when: origin_ci_aws_master_subnet_ids is not defined
+
+- name: determine which security groups are available
+  ec2_group_facts:
+    region: '{{ origin_ci_aws_region }}'
+    filters: "{ 'tag:{{ origin_ci_aws_identifying_tag_key }}': '{{ origin_ci_aws_master_security_group_tag_value }}' }"
+  register: security_group_facts
+  when: origin_ci_aws_master_security_group_ids is not defined
+
+- name: determine which security group to use
+  set_fact:
+    origin_ci_aws_master_security_group_ids: "{{ security_group_facts.security_groups | map(attribute='group_id') | list }}"
+  when: origin_ci_aws_master_security_group_ids is not defined
+
+- name: provision an AWS EC2 instance
+  ec2:
+    region: '{{ origin_ci_aws_region }}'
+    key_name: '{{ origin_ci_aws_keypair_name }}'
+    image: '{{ origin_ci_aws_ami_id }}'
+    group_id: '{{ origin_ci_aws_master_security_group_ids }}'
+    vpc_subnet_id: '{{ origin_ci_aws_master_subnet_ids[0] }}'
+    instance_type: '{{ origin_ci_aws_master_instance_type }}'
+    instance_tags:
+      Name: '{{ origin_ci_aws_instance_name }}'
+      openshift_master: ''
+      openshift_node: ''
+      openshift_etcd: ''
+    volumes:
+      - device_name: '/dev/sda1'
+        volume_type: 'gp2'
+        volume_size: '25'
+        delete_on_termination: yes
+      - device_name: '/dev/sdb'
+        volume_type: 'gp2'
+        volume_size: '25'
+        delete_on_termination: yes
+    wait: yes
+    wait_timeout: 600
+  register: ec2
+
+- name: determine if we are inside AWS EC2
+  command: 'curl -s http://instance-data.ec2.internal'
+  ignore_errors: yes
+  register: ec2_probe
+
+- name: configure EC2 parameters for inventory when controlling from inside EC2
+  set_fact:
+    origin_ci_aws_destination_variable: 'private_dns_name'
+    origin_ci_aws_vpc_destination_variable: 'private_ip_address'
+    origin_ci_aws_host_address_variable: 'private_ip'
+  when: ec2_probe | succeeded
+
+- name: determine the host address
+  set_fact:
+    origin_ci_aws_host: '{{ ec2.instances[0][origin_ci_aws_host_address_variable] }}'
+
+- name: wait for SSH to be available
+  wait_for:
+    host: '{{ origin_ci_aws_host }}'
+    port: 22
+    delay: 60
+    timeout: 320
+    state: 'started'
+
+- name: determine where to put the AWS API cache
+  set_fact:
+    origin_ci_aws_cache_dir: '{{ origin_ci_inventory_dir }}/.ec2_cache'
+
+- name: ensure we have a place to put the AWS API cache
+  file:
+    path: '{{ origin_ci_aws_cache_dir }}'
+    state: directory
+
+- name: place the EC2 dynamic inventory script
+  copy:
+    src: 'ec2.py'
+    dest: '{{ origin_ci_inventory_dir }}/ec2.py'
+    mode: 'a+rx'
+
+- name: place the EC2 dynamic inventory configuration
+  template:
+    src: 'ec2.j2'
+    dest: '{{ origin_ci_inventory_dir }}/ec2.ini'
+
+- name: place the EC2 tag to group mappings
+  copy:
+    src: 'tag_to_group_mappings.ini'
+    dest: '{{ origin_ci_inventory_dir }}/tag_to_group_mappings'
+
+- name: update group variables for the host
+  copy:
+    content:
+      origin_ci_aws_hostname: '{{ origin_ci_aws_hostname }}'
+      origin_ci_aws_instance_id: '{{ ec2.instance_ids[0] }}'
+      origin_ci_aws_ami_os: '{{ origin_ci_aws_ami_os }}'
+      origin_ci_aws_ami_stage: '{{ origin_ci_aws_ami_stage }}'
+      ansible_ssh_private_key_file: '{{ origin_ci_aws_private_key_path }}'
+      ansible_ssh_user: 'ec2-user'
+      ansible_ssh_extra_args: '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes -o ConnectTimeout=0 -o ServerAliveInterval=30'
+      ansible_timeout: 0
+    dest: '{{ origin_ci_inventory_dir }}/host_vars/{{ origin_ci_aws_host }}.yml'
+
+- name: update the SSH configuration to
+  blockinfile:
+    dest: '{{ ansible_env.HOME }}/.ssh/config'
+    block: >
+      Host {{ origin_ci_aws_hostname }} {{ origin_ci_aws_host }}
+        HostName {{ origin_ci_aws_host }}
+        User ec2-user
+        Port 22
+        UserKnownHostsFile /dev/null
+        StrictHostKeyChecking no
+        PasswordAuthentication no
+        IdentityFile {{ origin_ci_aws_private_key_path }}
+        IdentitiesOnly yes
+        LogLevel FATAL
+    state: present
+    marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_aws_hostname }}'
