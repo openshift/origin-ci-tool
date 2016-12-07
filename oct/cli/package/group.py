@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import group
 
+from .aws import ami
 from .vagrant import vagrant
 
 
@@ -26,3 +27,4 @@ def package():
 
 
 package.add_command(vagrant)
+package.add_command(ami)
