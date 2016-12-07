@@ -6,7 +6,8 @@ base_requires = [
     'Click',
     'ansible',
     'backports.shutil_get_terminal_size',
-    'semver'
+    'semver',
+    'junit_xml'
 ]
 
 setup(
