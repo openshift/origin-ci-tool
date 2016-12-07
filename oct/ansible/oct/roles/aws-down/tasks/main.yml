@@ -7,6 +7,7 @@
 
 - name: rename EC2 instance for termination reaper
   ec2_tag:
+    region: '{{ origin_ci_aws_region }}'
     resource: '{{ origin_ci_aws_instance_id }}'
     tags:
       Name: 'terminate'
