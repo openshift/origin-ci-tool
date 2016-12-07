@@ -7,7 +7,7 @@ directory and returns that inventory with SSH
 configuration and the contents of the hosts' var
 file for each host.
 
-Hosts will all be placed under the `vms' group
+Hosts will all be placed under the `vagrant' group
 and additionally into any groups as labelled in
 the host's group file, which should be a simple
 YAML serialized list.
@@ -133,8 +133,8 @@ def add_host_to_inventory(inventory, hostname, groups, variables):
     :param groups: groups the host belongs to
     :param variables: host variables for the new host
     """
-    # all hosts are in the `vms' group
-    inventory['vms']['hosts'].append(hostname)
+    # all hosts are in the `vagrant' group
+    inventory['vagrant']['hosts'].append(hostname)
 
     # additionally a host can be in other groups
     for group in groups:

@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 DEFAULT_ESCALATION_METHOD = 'sudo'
 DEFAULT_USER = 'origin'
-DEFAULT_TARGET_GROUP = 'vms'
+DEFAULT_TARGET_GROUP = 'OSEv3'
 DEFAULT_CONNECTION_METHOD = 'ssh'
 DEFAULT_DOCKER_VOLUME_GROUP = 'docker'
 
