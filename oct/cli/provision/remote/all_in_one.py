@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, ClickException, command, option, pass_context
 
+from ..common_options import discrete_ssh_config_option
 from ...util.common_options import ansible_output_options
 
 
@@ -121,9 +122,10 @@ Examples:
     help='Tear down the current VMs.',
     callback=destroy_callback
 )
+@discrete_ssh_config_option
 @ansible_output_options
 @pass_context
-def all_in_one_command(context, operating_system, provider, stage, name):
+def all_in_one_command(context, operating_system, provider, stage, name, discrete_ssh_config):
     """
     Provision a virtual host for an All-In-One deployment.
 
@@ -132,10 +134,11 @@ def all_in_one_command(context, operating_system, provider, stage, name):
     :param provider: provider to use with Vagrant
     :param stage: image stage to base the VM off of
     :param name: name to give to the VM instance
+    :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
     configuration = context.obj
     if provider == Provider.aws:
-        provision_with_aws(configuration, operating_system, stage, name)
+        provision_with_aws(configuration, operating_system, stage, name, discrete_ssh_config)
 
 
 def destroy(configuration):
@@ -149,7 +152,7 @@ def destroy(configuration):
     )
 
 
-def provision_with_aws(configuration, operating_system, stage, name):
+def provision_with_aws(configuration, operating_system, stage, name, discrete_ssh_config):
     """
     Provision a VM in the cloud using AWS EC2.
 
@@ -157,6 +160,7 @@ def provision_with_aws(configuration, operating_system, stage, name):
     :param operating_system: operating system used for the VM
     :param stage: image stage the VM was based off of
     :param name: name to give to the VM instance
+    :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
     if not configuration.aws_client_configuration.keypair_name:
         raise ClickException(
@@ -178,7 +182,8 @@ def provision_with_aws(configuration, operating_system, stage, name):
             'origin_ci_aws_instance_name': name,
             'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
             'origin_ci_aws_keypair_name': configuration.aws_client_configuration.keypair_name,
-            'origin_ci_aws_private_key_path': configuration.aws_client_configuration.private_key_path
+            'origin_ci_aws_private_key_path': configuration.aws_client_configuration.private_key_path,
+            'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update'
         }
     )
 

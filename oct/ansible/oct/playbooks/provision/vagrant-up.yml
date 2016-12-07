@@ -17,6 +17,7 @@
         - origin_ci_vagrant_stage
         - origin_ci_vagrant_ip
         - origin_ci_inventory_dir
+        - origin_ci_ssh_config_strategy
 
 - name: provision a local VM with Vagrant
   hosts: 'localhost'

@@ -41,9 +41,24 @@
     chdir: '{{ origin_ci_vagrant_home_dir }}'
   register: origin_ci_vagrant_ssh_config
 
-- name: update the SSH configuration to reflect Vagrant specifics
+- name: determine where updated SSH configuration should go
+  set_fact:
+    origin_ci_ssh_config_file: '{{ origin_ci_inventory_dir }}/.ssh_config'
+  when: origin_ci_ssh_config_strategy == 'discrete'
+
+- name: determine where updated SSH configuration should go
+  set_fact:
+    origin_ci_ssh_config_file: '{{ ansible_env.HOME }}/.ssh/config'
+  when: origin_ci_ssh_config_strategy == 'update'
+
+- name: ensure the targeted SSH configuration file exists
+  file:
+    path: '{{ origin_ci_ssh_config_file }}'
+    state: touch
+
+- name: update the SSH configuration
   blockinfile:
-    dest: '{{ ansible_env.HOME }}/.ssh/config'
+    dest: '{{ origin_ci_ssh_config_file }}'
     block: '{{ origin_ci_vagrant_ssh_config.stdout }}'
     state: present
     marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_vagrant_hostname }}'

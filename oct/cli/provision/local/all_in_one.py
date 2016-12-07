@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import Choice, UsageError, command, option, pass_context
 
+from ..common_options import discrete_ssh_config_option
 from ...util.common_options import ansible_output_options
 from ....config.vagrant import VagrantVMMetadata
 
@@ -106,9 +107,10 @@ Examples:
     metavar='ADDRESS',
     help='Desired IP of the VM.'
 )
+@discrete_ssh_config_option
 @ansible_output_options
 @pass_context
-def all_in_one_command(context, operating_system, provider, stage, ip):
+def all_in_one_command(context, operating_system, provider, stage, ip, discrete_ssh_config):
     """
     Provision a virtual host for an All-In-One deployment.
 
@@ -117,11 +119,12 @@ def all_in_one_command(context, operating_system, provider, stage, ip):
     :param provider: provider to use with Vagrant
     :param stage: image stage to base the VM off of
     :param ip: desired VM IP address
+    :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
     configuration = context.obj
     validate(provider, stage)
     if provider in [Provider.virtualbox, Provider.libvirt, Provider.vmware]:
-        provision_with_vagrant(configuration, operating_system, provider, stage, ip)
+        provision_with_vagrant(configuration, operating_system, provider, stage, ip, discrete_ssh_config)
 
 
 def validate(provider, stage):
@@ -138,7 +141,7 @@ def validate(provider, stage):
         raise UsageError('Only the %s stage is supported for the %s provider.' % (Stage.bare, Provider.vmware))
 
 
-def provision_with_vagrant(configuration, operating_system, provider, stage, ip):
+def provision_with_vagrant(configuration, operating_system, provider, stage, ip, discrete_ssh_config):
     """
     Provision a local VM using Vagrant.
 
@@ -147,6 +150,7 @@ def provision_with_vagrant(configuration, operating_system, provider, stage, ip)
     :param provider: provider to use with Vagrant
     :param stage: image stage to base the VM off of
     :param ip: desired VM IP address
+    :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
     hostname = configuration.next_available_vagrant_name
     home_dir = configuration.vagrant_home_directory(hostname)
@@ -159,7 +163,8 @@ def provision_with_vagrant(configuration, operating_system, provider, stage, ip)
             'origin_ci_vagrant_stage': stage,
             'origin_ci_vagrant_ip': ip,
             'origin_ci_vagrant_hostname': hostname,
-            'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list
+            'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
+            'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update'
         }
     )
 
