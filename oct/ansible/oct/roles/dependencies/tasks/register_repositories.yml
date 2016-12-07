@@ -62,6 +62,7 @@
   rpm_key:
     key: https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_repos/files/origin/gpg_keys/openshift-ansible-CentOS-SIG-PaaS
     state: present
+  when: ansible_distribution == 'CentOS'
 
 - name: register the CentOS PaaS SIG repository
   yum_repository:
