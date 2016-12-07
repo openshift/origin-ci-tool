@@ -1,9 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import Choice, ClickException, command, echo, option, pass_context
+from click import Choice, command, echo, option, pass_context
 
-from ..provision.allinone import Stage
+from .common_options import next_stage, package_options
 from ..util.common_options import ansible_output_options
 
 _short_help = 'Package a running Vagrant virtual machine.'
@@ -12,11 +12,6 @@ _short_help = 'Package a running Vagrant virtual machine.'
 @command(
     short_help=_short_help,
     help=_short_help + '''
-
-When a significant amount of time and effort has been used to
-change the environment inside of a local virtual machine, it is
-often desirable to package the current state of the machine so
-that subsequent usage will not need to re-do that work.
 
 This command allows for a local virtual machine to be packaged
 as an update for its current stage or as an instance of the next
@@ -37,18 +32,7 @@ Examples:
 '''
 )
 @ansible_output_options
-@option(
-    '--update/--upgrade', '-d/-g',
-    'update_current_stage',
-    default=False,
-    help='Update stage or upgrade to next stage.  [default: upgrade]'
-)
-@option(
-    '--serve-local/--serve-remote', '-l/-r',
-    'serve_local_file',
-    default=False,
-    help='Point metadata reference to local file.  [default: remote]'
-)
+@package_options
 @option(
     '--bump-version', '-b',
     'bump_version',
@@ -60,6 +44,12 @@ Examples:
     ]),
     required=True,
     help='Which version segment to bump.'
+)
+@option(
+    '--serve-local/--serve-remote', '-l/-r',
+    'serve_local_file',
+    default=False,
+    help='Point metadata reference to local file.  [default: remote]'
 )
 @pass_context
 def vagrant(context, update_current_stage, serve_local_file, bump_version):
@@ -99,21 +89,3 @@ def vagrant(context, update_current_stage, serve_local_file, bump_version):
         # an instance of that stage as well
         vm.stage = stage
         vm.write()
-
-
-def next_stage(current_stage):
-    """
-    Determine the VM stage that occurs after the given stage.
-
-    :param current_stage: current VM stage
-    :return: next VM stage
-    """
-    if current_stage == Stage.bare:
-        return Stage.base
-    elif current_stage == Stage.base:
-        return Stage.install
-    elif current_stage == Stage.install:
-        echo('Warning: No next stage exists past the "{}" stage. Overwriting current stage instead.'.format(Stage.install))
-        return Stage.install
-    else:
-        raise ClickException('The current stage of the VM, "{}", has no next stage specified.'.format(current_stage))
