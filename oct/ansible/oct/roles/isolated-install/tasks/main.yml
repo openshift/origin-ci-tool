@@ -37,13 +37,20 @@
 - name: 'register temporary repositories that we need to install {{ origin_ci_isolated_package }}'
   yum_repository:
     name: "{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
+    description: 'Temporary repository necessary to install {{ origin_ci_isolated_package }}'
     state: present
+    enabled: yes
     baseurl: '{{ item }}'
     gpgcheck: no
     sslverify: no
     sslclientcert: /var/lib/yum/client-cert.pem
     sslclientkey: /var/lib/yum/client-key.pem
     file: '{{ origin_ci_tmp_repofile }}'
+  with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
+
+- name: 'add temporary repositories to the whitelist for install'
+  set_fact:
+    origin_ci_isolated_enabledrepos: "{{ origin_ci_isolated_enabledrepos }},{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
   with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
 
 - name: 'install {{ origin_ci_isolated_package }} using default repos'
