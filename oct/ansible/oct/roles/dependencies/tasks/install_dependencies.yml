@@ -77,7 +77,7 @@
     - package: facter
       distros: [
         'CentOS',
-        'Red Hat Enterprise Linux'
+        'RedHat'
       ]
 
 - name: install ChromeDriver to enable headless UI testing
