@@ -41,21 +41,6 @@
   package:
     name: epel-release
     state: present
-
-- name: install COPR to provide patched Tito
-  yum_repository:
-    name: dgoodwin-tito
-    state: present
-    description: 'Repository for Tito owned by Devon Goodwin'
-    baseurl: 'https://copr-be.cloud.fedoraproject.org/results/dgoodwin/tito/{{ item.name }}-$releasever-$basearch/'
-    gpgcheck: yes
-    gpgkey: 'https://copr-be.cloud.fedoraproject.org/results/dgoodwin/tito/pubkey.gpg'
-  when: ansible_distribution in item.distros
-  with_items:
-    - name: 'fedora'
-      distros: [ 'Fedora' ]
-    - name: 'epel'
-      distros: [ 'CentOS', 'Red Hat Enterprise Linux' ]
   when: ansible_distribution in ['RedHat', 'CentOS']
 
 - name: add the signing key for the CentOS PaaS SIG repository
