@@ -40,3 +40,4 @@
         - libselinux-python
         - pyOpenSSL
         - ansible-2.2.0
+        - python-boto
