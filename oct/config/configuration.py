@@ -30,12 +30,12 @@ class Configuration(object):
 
     def __init__(self):
         # Configuration will be placed in the user-based conf-
-        # iguration path as per the XDG basedir specification:
-        # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-        base_dir = getenv('XDG_CONFIG_HOME', expanduser('~'))
+        # iguration path, preferring an explicit directory and
+        # otherwise using $HOME.
+        base_dir = getenv('OCT_CONFIG_HOME', abspath(join(expanduser('~'), '.config')))
 
         # path to the local configuration directory
-        self._path = abspath(join(base_dir, '.config', 'origin-ci-tool'))
+        self._path = abspath(join(base_dir, 'origin-ci-tool'))
 
         self.initialize_directories()
 

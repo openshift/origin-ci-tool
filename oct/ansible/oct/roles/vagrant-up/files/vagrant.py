@@ -154,14 +154,14 @@ def add_host_to_inventory(inventory, hostname, groups, variables):
 
 def determine_base_path():
     """
-    Determine the user-based configuration path as per
-    the XDG basedir specification:
-    https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+    Determine the user-based configuration path,
+    preferring an explicit directory and otherwise
+    using $HOME.
 
     :return: base path for the configuration dir
     """
-    config_dir = getenv('XDG_CONFIG_HOME', expanduser('~'))
-    return abspath(join(config_dir, '.config', 'origin-ci-tool', 'vagrant'))
+    base_dir = getenv('OCT_CONFIG_HOME', abspath(join(expanduser('~'),'.config')))
+    return abspath(join(base_dir, 'origin-ci-tool', 'vagrant'))
 
 
 def list_vagrant_directories():
