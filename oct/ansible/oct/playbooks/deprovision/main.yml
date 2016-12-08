@@ -26,8 +26,7 @@
       when: "'ec2' not in groups"
 
     - name: deprovision a virtual EC2 host
-      include_role:
-        name: aws-down
+      include: './roles/aws-down/tasks/main.yml'
       vars:
         origin_ci_aws_hostname: '{{ hostvars[item]["origin_ci_aws_hostname"] }}'
         origin_ci_aws_host: '{{ hostvars[item]["origin_ci_aws_host"] }}'
@@ -46,8 +45,7 @@
       when: "'vagrant' not in groups"
 
     - name: deprovision a virtual Vagrant host
-      include_role:
-        name: vagrant-down
+      include: './roles/vagrant-down/tasks/main.yml'
       vars:
         origin_ci_vagrant_hostname: '{{ hostvars[item]["origin_ci_vagrant_hostname"] }}'
         origin_ci_vagrant_home_dir: '{{ hostvars[item]["origin_ci_vagrant_home_dir"] }}'
