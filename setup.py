@@ -1,5 +1,5 @@
 # coding=utf-8
-from oct.cli.version import VERSION
+from oct.__version__ import VERSION
 from setuptools import find_packages, setup
 
 base_requires = [

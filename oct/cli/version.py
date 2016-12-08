@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 from ansible.cli import CLI
 from click import command, echo
 
-VERSION = '0.1.0'
+from ..__version__ import VERSION
 
 # auto-generated variables
 OPENSHIFT_ANSIBLE_VERSION = 'openshift-ansible-3.4.17-1-148-g134c620'
