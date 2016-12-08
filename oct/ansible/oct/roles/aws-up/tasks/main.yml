@@ -1,4 +1,41 @@
 ---
+- name: determine if we are inside AWS EC2
+  command: 'curl -s http://instance-data.ec2.internal'
+  ignore_errors: yes
+  register: ec2_probe
+
+- name: configure EC2 parameters for inventory when controlling from inside EC2
+  set_fact:
+    origin_ci_aws_destination_variable: 'private_dns_name'
+    origin_ci_aws_vpc_destination_variable: 'private_ip_address'
+    origin_ci_aws_host_address_variable: 'private_ip'
+  when: ec2_probe | succeeded
+
+- name: determine where to put the AWS API cache
+  set_fact:
+    origin_ci_aws_cache_dir: '{{ origin_ci_inventory_dir }}/.ec2_cache'
+
+- name: ensure we have a place to put the AWS API cache
+  file:
+    path: '{{ origin_ci_aws_cache_dir }}'
+    state: directory
+
+- name: place the EC2 dynamic inventory script
+  copy:
+    src: 'ec2.py'
+    dest: '{{ origin_ci_inventory_dir }}/ec2.py'
+    mode: 'a+rx'
+
+- name: place the EC2 dynamic inventory configuration
+  template:
+    src: 'ec2.j2'
+    dest: '{{ origin_ci_inventory_dir }}/ec2.ini'
+
+- name: place the EC2 tag to group mappings
+  copy:
+    src: 'tag_to_group_mappings.ini'
+    dest: '{{ origin_ci_inventory_dir }}/tag_to_group_mappings'
+
 - name: determine which AMI to use
   ec2_ami_find:
     region: '{{ origin_ci_aws_region }}'
@@ -65,18 +102,6 @@
     wait_timeout: 600
   register: ec2
 
-- name: determine if we are inside AWS EC2
-  command: 'curl -s http://instance-data.ec2.internal'
-  ignore_errors: yes
-  register: ec2_probe
-
-- name: configure EC2 parameters for inventory when controlling from inside EC2
-  set_fact:
-    origin_ci_aws_destination_variable: 'private_dns_name'
-    origin_ci_aws_vpc_destination_variable: 'private_ip_address'
-    origin_ci_aws_host_address_variable: 'private_ip'
-  when: ec2_probe | succeeded
-
 - name: determine the host address
   set_fact:
     origin_ci_aws_host: '{{ ec2.instances[0][origin_ci_aws_host_address_variable] }}'
@@ -88,31 +113,6 @@
     delay: 10
     timeout: 600
     state: 'started'
-
-- name: determine where to put the AWS API cache
-  set_fact:
-    origin_ci_aws_cache_dir: '{{ origin_ci_inventory_dir }}/.ec2_cache'
-
-- name: ensure we have a place to put the AWS API cache
-  file:
-    path: '{{ origin_ci_aws_cache_dir }}'
-    state: directory
-
-- name: place the EC2 dynamic inventory script
-  copy:
-    src: 'ec2.py'
-    dest: '{{ origin_ci_inventory_dir }}/ec2.py'
-    mode: 'a+rx'
-
-- name: place the EC2 dynamic inventory configuration
-  template:
-    src: 'ec2.j2'
-    dest: '{{ origin_ci_inventory_dir }}/ec2.ini'
-
-- name: place the EC2 tag to group mappings
-  copy:
-    src: 'tag_to_group_mappings.ini'
-    dest: '{{ origin_ci_inventory_dir }}/tag_to_group_mappings'
 
 - name: update variables for the host
   copy:
