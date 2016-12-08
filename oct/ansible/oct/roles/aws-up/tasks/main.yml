@@ -62,7 +62,7 @@
         volume_size: '25'
         delete_on_termination: yes
     wait: yes
-    wait_timeout: 60
+    wait_timeout: 600
   register: ec2
 
 - name: determine if we are inside AWS EC2
@@ -86,7 +86,7 @@
     host: '{{ origin_ci_aws_host }}'
     port: 22
     delay: 10
-    timeout: 60
+    timeout: 600
     state: 'started'
 
 - name: determine where to put the AWS API cache
