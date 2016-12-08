@@ -24,27 +24,32 @@ Examples:
 '''
 )
 @option(
-    '--name-suffix', '-n',
-    'suffix',
-    required=True,
-    help='Suffix for AMI name for uniqueness.'
+    '--mark-ready', '-r',
+    'mark_ready',
+    is_flag=True,
+    help='Mark an AMI created previously as ready.'
 )
 @ansible_output_options
 @package_options
 @pass_context
-def ami(context, update_current_stage, suffix):
+def ami(context, update_current_stage, mark_ready):
     """
     Package a running AWS EC2 virtual machine.
 
     :param context: Click context
     :param update_current_stage: whether or not to update current stage
+    :param mark_ready: whether or not to mark a previous AMI from this instance ready
     """
     configuration = context.obj
-    configuration.run_playbook(
-        playbook_relative_path='package/ami',
-        playbook_variables={
-            'origin_ci_aws_stage_strategy': 'update' if update_current_stage else 'upgrade',
-            'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
-            'origin_ci_aws_ami_name_suffix': suffix
-        }
-    )
+    if mark_ready:
+        configuration.run_playbook(
+            playbook_relative_path='package/ami-mark-ready'
+        )
+    else:
+        configuration.run_playbook(
+            playbook_relative_path='package/ami',
+            playbook_variables={
+                'origin_ci_aws_stage_strategy': 'update' if update_current_stage else 'upgrade',
+                'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list
+            }
+        )

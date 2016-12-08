@@ -1,0 +1,57 @@
+---
+- name: ensure we have the parameters necessary to package the VM image
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_aws_region
+        - origin_ci_hosts
+
+    - name: ensure only one AWS instance is running
+      fail:
+        msg: 'Packaging AMIs with more than one AWS EC2 instance up is not supported.'
+      when: "groups['{{ origin_ci_hosts }}'] | length | int > 1"
+
+- name: package the VM image
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  tasks:
+    - name: determine the inventory hostname for the host we are packaging
+      set_fact:
+        origin_ci_aws_hostname: '{{ groups[origin_ci_hosts][0] }}'
+
+    - name: determine AWS EC2 AMI name
+      set_fact:
+        origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
+
+    - name: search for an AMI to update
+      ec2_ami_find:
+        region: '{{ origin_ci_aws_region }}'
+        ami_tags:
+          Name: '{{ origin_ci_aws_ami_name }}'
+        sort: 'creationDate'
+        sort_order: descending
+        sort_end: 1
+      register: ami_facts
+
+    - name: determine which AMI to update
+      set_fact:
+        origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
+
+    - name: mark the AMI ready
+      ec2_tag:
+        region: '{{ origin_ci_aws_region }}'
+        resource: '{{ origin_ci_aws_ami_id }}'
+        tags:
+          ready: 'yes'
+        state: present

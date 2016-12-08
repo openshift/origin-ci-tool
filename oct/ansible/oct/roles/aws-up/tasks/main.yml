@@ -62,7 +62,7 @@
         volume_size: '25'
         delete_on_termination: yes
     wait: yes
-    wait_timeout: 600
+    wait_timeout: 60
   register: ec2
 
 - name: determine if we are inside AWS EC2
@@ -85,8 +85,8 @@
   wait_for:
     host: '{{ origin_ci_aws_host }}'
     port: 22
-    delay: 60
-    timeout: 320
+    delay: 10
+    timeout: 60
     state: 'started'
 
 - name: determine where to put the AWS API cache
@@ -119,6 +119,7 @@
     content:
       origin_ci_aws_host: '{{ origin_ci_aws_host }}'
       origin_ci_aws_hostname: '{{ origin_ci_aws_hostname }}'
+      origin_ci_aws_instance_name: '{{ origin_ci_aws_instance_name }}'
       origin_ci_aws_instance_id: '{{ ec2.instance_ids[0] }}'
       origin_ci_aws_ami_os: '{{ origin_ci_aws_ami_os }}'
       origin_ci_aws_ami_stage: '{{ origin_ci_aws_ami_stage }}'

@@ -11,31 +11,15 @@
         msg: 'This playbook requires {{ item }} to be set.'
       when: item not in vars and item not in hostvars[inventory_hostname]
       with_items:
-        - origin_ci_aws_ami_name_suffix
         - origin_ci_aws_stage_strategy
         - origin_ci_inventory_dir
         - origin_ci_aws_region
         - origin_ci_hosts
-        - origin_ci_connection
 
     - name: ensure only one AWS instance is running
       fail:
         msg: 'Packaging AMIs with more than one AWS EC2 instance up is not supported.'
       when: "groups['{{ origin_ci_hosts }}'] | length | int > 1"
-
-- name: gather information about the instance we are about to package
-  hosts: '{{ origin_ci_hosts }}'
-  connection: '{{ origin_ci_connection }}'
-  become: yes
-  become_user: root
-
-  tasks:
-    - name: gather facts from the EC2 API
-      ec2_facts:
-
-    - name: tell the local host which remote host is being packaged
-      set_fact:
-        origin_ci_aws_instance:
 
 - name: package the VM image
   hosts: 'localhost'
@@ -43,35 +27,17 @@
   become: no
   gather_facts: no
 
-  pre_tasks:
-    - name: gather facts from the EC2 API
-      ec2_facts:
-      delegate_to: '{{ groups[origin_ci_hosts][0] }}'
-
   tasks:
-    - name: determine if we are inside AWS EC2
-      command: 'curl -s http://instance-data.ec2.internal'
-      ignore_errors: yes
-      register: ec2_probe
-
-    - name: determine hostname variable when controlling from inside EC2
+    - name: determine the inventory hostname for the host we are packaging
       set_fact:
-        origin_ci_aws_hostname_variable: 'ansible_ec2_local_ipv4'
-      when: ec2_probe | succeeded
-
-    - name: determine hostname variable when controlling from outside EC2
-      set_fact:
-        origin_ci_aws_hostname_variable: 'ansible_ec2_public_ipv4'
-      when: ec2_probe | failed
-
-    - name: determine AWS EC2 hostname
-      set_fact:
-        origin_ci_aws_hostname: '{{ hostvars[inventory_hostname][origin_ci_aws_hostname_variable] }}'
+        origin_ci_aws_hostname: '{{ groups[origin_ci_hosts][0] }}'
 
     - name: determine AWS EC2 image metadata
       set_fact:
         origin_ci_aws_ami_os: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_os'] }}"
         origin_ci_aws_ami_stage: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_stage'] }}"
+        origin_ci_aws_instance_id: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_id'] }}"
+        origin_ci_aws_instance_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
 
     - name: register stage upgrades
       set_fact:
@@ -86,12 +52,13 @@
 
     - name: package the Amazon machine image from the running instance
       ec2_ami:
-        instance_id: '{{ ansible_ec2_instance_id }}'
+        instance_id: '{{ origin_ci_aws_instance_id }}'
         region: '{{ origin_ci_aws_region }}'
         state: present
-        name: 'openshiftdevel_{{ origin_ci_aws_ami_os }}_{{ origin_ci_aws_ami_stage }}_{{ origin_ci_aws_ami_name_suffix }}'
+        name: '{{ origin_ci_aws_instance_name }}'
         description: 'OpenShift Origin development AMI on {{ origin_ci_aws_ami_os }} at the {{ origin_ci_aws_ami_stage }} stage.'
         tags:
+          Name: '{{ origin_ci_aws_instance_name }}'
           operating_system: '{{ origin_ci_aws_ami_os }}'
           image_stage: '{{ origin_ci_aws_ami_stage }}'
           ready: 'no'
