@@ -35,6 +35,10 @@ def update_ansible_verbosity(context, _, value):
     if not value or context.resilient_parsing:
         return
 
+    if value == 0:
+        # user hasn't actually used the flag, ignore
+        return
+
     context.obj.ansible_client_configuration['verbosity'] = value
 
 
@@ -47,7 +51,7 @@ def ansible_verbosity_option(func):
     """
     return option(
         '--verbose', '-v',
-        default=1,
+        default=0,
         count=True,
         expose_value=False,
         help='Ansible verbosity level. Repeat to increase.',

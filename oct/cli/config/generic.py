@@ -92,6 +92,14 @@ def update_configuration_option(container, option, value, write_func):
     if option not in container:
         raise ClickException(message='Option {} not found in configuration.'.format(option))
 
+    # try to interpret the most common values
+    if value.isdigit():
+        value = int(value)
+    elif value.lower() in ['true', 'yes']:
+        value = True
+    elif value.lower() in ['false', 'no']:
+        value = False
+
     setattr(container, option, value)
     write_func()
 
