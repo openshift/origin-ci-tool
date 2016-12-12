@@ -165,6 +165,11 @@ class AnsibleCoreClient(object):
             # through a callback, so we need to ensure
             # that those raw calls don't go to stdout
             display.display = partial(display.display, log_only=True)
+        else:
+            # if the user asks for verbose output, we want
+            # to give them nicer output than the default
+            # plugin, anyway
+            constants.DEFAULT_STDOUT_CALLBACK = 'default_with_output_lists'
 
         if option_overrides:
             for key in option_overrides:
