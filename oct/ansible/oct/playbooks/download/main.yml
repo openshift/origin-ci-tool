@@ -1,0 +1,63 @@
+---
+- name: ensure we have the parameters necessary to download artifacts from remote hosts
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+        - origin_ci_artifacts_destination_dir
+        - origin_ci_download_targets
+
+- name: download artifacts from remote hosts
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: register the list of system artifacts
+      set_fact:
+        origin_ci_system_artifacts:
+          - '/var/log/yum.log'
+          - '/var/log/secure'
+          - '/var/log/audit/aduit.log'
+
+    - name: determine if system artifacts exist on the remote host
+      stat:
+        path: '{{ item }}'
+      with_items: '{{ origin_ci_system_artifacts }}'
+      register: origin_ci_system_artifact_probes
+
+    - name: download system artifacts to the local host
+      synchronize:
+        src: '{{ item.0 }}'
+        dest: '{{ origin_ci_artifacts_destination_dir }}/{{ inventory_hostname }}/'
+        mode: pull
+      when: item.1.stat.exists
+      with_together:
+        - '{{ origin_ci_system_artifacts }}'
+        - '{{ origin_ci_system_artifact_probes.results }}'
+
+    - name: determine if specified artifacts exist on the remote host
+      stat:
+        path: '{{ item }}'
+      with_items: '{{ origin_ci_download_targets }}'
+      register: origin_ci_download_target_probes
+
+    - name: download system artifacts to the local host
+      synchronize:
+        src: '{{ item.0 }}'
+        dest: '{{ origin_ci_artifacts_destination_dir }}/{{ inventory_hostname }}/'
+        mode: pull
+      when: item.1.stat.exists
+      with_together:
+        - '{{ origin_ci_download_targets }}'
+        - '{{ origin_ci_download_target_probes.results }}'
