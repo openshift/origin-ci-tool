@@ -19,6 +19,20 @@
             yum install -y python2 python2-dnf libselinux-python
         fi
 
+- name: ensure we have the parameters necessary to bootstrap the host
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_bootstrap_image_dependencies
+
 - name: bootstrap the local host so that it can all of the `oct` functionality
   hosts: 'localhost'
   connection: 'local'
@@ -26,7 +40,17 @@
   become_user: root
 
   tasks:
-    - name: install requisite dependencies to enable full functionality
+    - name: install requisite dependencies to enable functionality
+      package:
+        name: '{{ item }}'
+        state: present
+      with_items:
+        - libselinux-python
+        - pyOpenSSL
+        - python-boto
+        - python-boto3
+
+    - name: install requisite dependencies to enable image building functionality
       package:
         name: '{{ item }}'
         state: present
@@ -37,8 +61,3 @@
         - ruby-devel
         - vagrant
         - libguestfs-tools
-        - libselinux-python
-        - pyOpenSSL
-        - ansible-2.2.0
-        - python-boto
-        - python-boto3

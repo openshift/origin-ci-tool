@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import command, pass_context
+from click import command, option, pass_context
 
 from ..util.common_options import ansible_output_options
 
@@ -22,14 +22,24 @@ Examples:
   $ oct bootstrap self
 '''
 )
+@option(
+    '--for-images', '-i',
+    'for_images',
+    is_flag=True,
+    help='Install dependencies for VM image building.'
+)
 @ansible_output_options
 @pass_context
-def self(context):
+def self(context, for_images):
     """
     Bootstrap the local host to support this CLI.
 
     :param context: Click context
+    :param for_images: whether or not to bootstrap image build dependencies
     """
     context.obj.run_playbook(
-        playbook_relative_path='bootstrap/self'
+        playbook_relative_path='bootstrap/self',
+        playbook_variables={
+            'origin_ci_bootstrap_image_dependencies': for_images
+        }
     )
