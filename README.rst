@@ -59,8 +59,9 @@ Today, full functionality of this tool requires a development version of Ansible
 4. `ec2_group_facts: Fail correctly when boto3 is not installed  <https://github.com/ansible/ansible/pull/18842>`_
 5. `Only read EC2 regions_exclude list if necessary <https://github.com/ansible/ansible/pull/18720>`_
 
-Due to this requirement, it is highly suggested that you install this tool inside of a virtual environment for Python. To do
-so, the ``virtualenv`` package will be necessary. Install it with:
+Due to this requirement, it is highly suggested that you install this tool inside of a virtual environment for Python as the
+installation requires source checkouts of Ansible and this tool. To create the virtual environtment, the ``virtualenv`` package
+will be necessary. Install it with:
 
 .. code-block:: shell
 
@@ -133,7 +134,9 @@ Configuration
 *************
 
 The ``origin-ci-tool`` will place a directory of configuration files and runtime metadata to persist state between CLI
-invocations. By default, this will be placed at ``~/.config/origin-ci-tool`` but can be configured to be at ``${
+invocations. By default, this will be placed at ``~/.config/origin-ci-tool`` but can be configured to be at
+``${OCT_CONFIG_HOME}/origin-ci-tool`` by setting that environment variable. Remember to add the
+``"${OCT_CONFIG_HOME}"`` environment variable to your ``~/.bashrc`` if you are using a custom setting.
 
 AWS Credentials and Configuration
 =================================
@@ -149,7 +152,7 @@ the AWS CLI installed, simply run:
 
 If not, you'll want to place a file at ``~/.aws/credentials`` with the following content:
 
-.. code-block:: ini
+.. code-block:: cfg
     :caption: ~/.aws/credentials
 
     [default]
