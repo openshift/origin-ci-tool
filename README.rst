@@ -153,7 +153,6 @@ the AWS CLI installed, simply run:
 If not, you'll want to place a file at ``~/.aws/credentials`` with the following content:
 
 .. code-block:: cfg
-    :caption: ~/.aws/credentials
 
     [default]
     aws_access_key_id=XXXXXXXXXXXXXXXXXXXX
