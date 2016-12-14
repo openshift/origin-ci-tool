@@ -21,6 +21,7 @@
     src: '/dev/{{ origin_ci_docker_volume_group }}/openshift-xfs-vol-dir'
     name: /mnt/openshift-xfs-vol-dir
     state: mounted
+    opts: gquota
     fstype: xfs
 
 - name: make the Origin CI user own the OpenShift XFS mount
