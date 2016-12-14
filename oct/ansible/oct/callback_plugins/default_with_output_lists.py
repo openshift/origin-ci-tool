@@ -22,20 +22,15 @@ class CallbackModule(default.CallbackModule):
     def _dump_results(self, original_result, indent=None, sort_keys=True, keep_invocation=False):
         result = deepcopy(original_result)
 
-        if 'stdout' in result:
-            result['stdout_lines'] = result['stdout'].splitlines()
-            del result['stdout']
+        for entry in ['stdout', 'stderr', 'module_stdout', 'module_stderr']:
+            split_entry = '{}_lines'.format(entry)
 
-        if 'stderr' in result:
-            result['stderr_lines'] = result['stderr'].splitlines()
-            del result['stderr']
+            if entry in result:
+                result[entry] = result[entry].splitlines()
+            elif split_entry in result:
+                result[entry] = result[split_entry]
 
-        if 'module_stdout' in result:
-            result['module_stdout_lines'] = result['module_stdout'].splitlines()
-            del result['module_stdout']
-
-        if 'module_stderr' in result:
-            result['module_stderr_lines'] = result['module_stderr'].splitlines()
-            del result['module_stderr']
+            if split_entry in result:
+                del (result[split_entry])
 
         return super(CallbackModule, self)._dump_results(result=result, indent=4)
