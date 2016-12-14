@@ -9,6 +9,11 @@ base_requires = [
     'junit_xml'
 ]
 
+test_requires = base_requires + [
+    'mock',
+    'coverage'
+]
+
 setup(
     name='oct',
     version='0.1.0',
@@ -21,11 +26,10 @@ setup(
         'git+https://github.com/stevekuznetsov/ansible.git@skuznets/oct-release#egg=ansible-3.0.0'
     ],
     install_requires=base_requires,
-    tests_require=base_requires + [
-        'mock',
-        'coverage',
-        'unittest'
-    ],
+    tests_require=test_requires,
+    extras_require={
+        'development': test_requires
+    },
     entry_points='''
         [console_scripts]
         oct=oct.oct:oct_command
