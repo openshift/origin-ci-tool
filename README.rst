@@ -30,7 +30,7 @@ Installation
 Prerequisites
 =============
 
-This project requires Python 2 and the ``pip`` package manager for installation. On RHEL, CentOS and Fedora, install them with:
+This project requires Python 2.7 and the ``pip`` package manager for installation. On RHEL, CentOS and Fedora, install them with:
 
 .. code-block:: shell
 
@@ -53,7 +53,7 @@ On Mac OS, the Python bindings for the AWS API are also necessary:
 Core Installation
 =================
 
-Today, full functionality of this tool requires a development version of Ansible benefit from the following patches:
+Today, full functionality of this tool requires a development version of Ansible to benefit from the following patches:
 
 1. `New ec2_group_facts module to be able to get facts from EC2 security groups <https://github.com/ansible/ansible-modules-extras/pull/2591>`_
 2. `Factored polling std{out,err} reads into a function <https://github.com/ansible/ansible/pull/19298>`_
@@ -67,7 +67,7 @@ will be necessary. Install it with:
 
 .. code-block:: shell
 
-    $ sudo pip install setuptools virtualenv
+    $ sudo pip install virtualenv
 
 Navigate to a directory where the source for this tool will live, and clone it using ``git``:
 
@@ -90,7 +90,7 @@ On Mac OS, the virtual environment can be created without this option:
     $ virtualenv venv
 
 Activate the virtual environment:
-
+.
 .. code-block:: shell
 
     $ source ./venv/bin/activate
@@ -133,17 +133,23 @@ Configuration
 *************
 
 The ``origin-ci-tool`` will place a directory of configuration files and runtime metadata to persist state between CLI
-invocations. By default, this will be placed at ``~/.config/origin-ci-tool`` but can be configured to be at
-``${OCT_CONFIG_HOME}/origin-ci-tool`` by setting that environment variable. Remember to add the
-``"${OCT_CONFIG_HOME}"`` environment variable to your ``~/.bashrc`` if you are using a custom setting.
+invocations. By default, this will be placed under ``~/.config`` but can be configured to be under a custom directory by setting
+the ``${OCT_CONFIG_HOME}`` environment variable. Remember to add the ``${OCT_CONFIG_HOME}`` environment variable to your ``~/
+.bashrc`` if you are using a custom setting.
 
 In general, configuration options for the ``origin-ci-tool`` can be accessed and changed with the following invocation, where
-``COMPONENT`` is a semantic grouping of configuration options like ``aws-client` or ``ansible-defaults`` and ``KEY`` and
+``COMPONENT`` is a semantic grouping of configuration options like ``aws-client`` or ``ansible-defaults`` and ``KEY`` and
 ``VALUE`` are the key-value pair to configure:
 
 .. code-block:: shell
 
     $ oct configure COMPONENT KEY VALUE
+
+Configuration for a component can be reviewed with:
+
+.. code-block:: shell
+
+    $ oct configure COMPONENT --view
 
 AWS Credentials and Configuration
 =================================
@@ -161,16 +167,16 @@ If not, you'll want to place a file at ``~/.aws/credentials`` with the following
 
 .. code-block:: cfg
 
-    [default] <1>
-    aws_access_key_id=XXXXXXXXXXXXXXXXXXXX <2>
-    aws_secret_access_key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX <3>
+    [default]                  #<1>
+    aws_access_key_id=XXXXXXXX #<2>
+    aws_secret_access_key=XXXX #<3>
 
-1. The name of the AWS credential profile. If this is not set to ``default``, ``${AWS_PROFILE}`` will need to be set to
-   correctly choose the profile to use.
-2. The AWS secret access key ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
-   for specifics.
-3. The AWS secret access ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
-   for specifics.
+    1. The name of the AWS credential profile. If this is not set to ``default``, ``${AWS_PROFILE}`` will need to be set to
+       choose the correct profile to use.
+    2. The AWS secret access key ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
+       for more details.
+    3. The AWS secret access ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
+       for more details.
 
 When setting up the SSH configuration for virtual machines provisioned in AWS EC2, the name and location of the private key used
 to reach the instance need to be known by the ``origin-ci-tool``. Configure them with:
@@ -179,12 +185,6 @@ to reach the instance need to be known by the ``origin-ci-tool``. Configure them
 
     $ oct configure aws-client keypair_name KEY_NAME
     $ oct configure aws-client private_key_path /path/to/KEY_NAME.pem
-
-You can review your configuration with:
-
-.. code-block:: shell
-
-    $ oct configure aws-client --view
 
 Complex AWS Configuration
 -------------------------
@@ -195,29 +195,30 @@ The region in which to provision the cluster can be configured with:
 
     $ oct configure aws-defaults region REGION_NAME
 
-The instance to use for a master can be configured with:
+The instance type to use for a master can be configured with:
 
 .. code-block:: shell
 
     $ oct configure aws-defaults master_instance_type TYPE
 
 When provisioning in AWS EC2, a number of high-level objects like virtual private clouds, subnets, security groups and elastic
-load-balancers are necessary. By default, the ``origin-ci-tool`` does not create the objects when provisioning instances in EC2.
-Instead, objects that are visible are used if they have the correct tag. By default, the ``origin_ci_aws_cluster_component``
-tag is used, but this can be changed with:
+load-balancers are necessary. By default, the ``origin-ci-tool`` does not create these objects when provisioning instances in EC2
+to reduce the minimum permission level necessary to provision a cluster. Instead, objects of the correct type that are visible
+are used if they have the correct tag. By default, the ``origin_ci_aws_cluster_component`` tag is used, but this can be changed
+with:
 
 .. code-block:: shell
 
     $ oct configure aws-defaults identifying_tag_key KEY_NAME
 
-The acceptable value for each component can also be configured. For instance, the default value for a subnet that can be used
-as a master subnet is ``master_subnet``. This configuration can be changed with:
+The acceptable value for this identifying tag for each component can also be configured. For instance, the default value for a
+subnet that can be used as a master subnet is ``master_subnet``. This configuration can be changed with:
 
 .. code-block:: shell
 
     $ oct configure aws-defaults master_subnet_tag_value KEY_VALUE
 
-Instead of searching for the correct cluster component by searching through tags, it is possible to provide a comma-delimited list
+Instead of determining the correct cluster component by searching through tags, it is possible to provide a comma-delimited list
 of literal identifiers to use:
 
 .. code-block:: shell
@@ -244,6 +245,16 @@ support the VM, then run:
 2. Choose the virtualization provider to use. LibVirt, VirtualBox and VMWare Fusion are supported.
 3. Determine the image stage to base the virtual machine on. Valid image stages are ``bare``, ``base`` and ``install``. Only the
    bare OS stage is supported for VMWare Fusion.
+
+By default, about five gigabytes of storage are necessary to start the machine; six gigabytes of RAM and two CPUs are
+made available to the virtual machine. Fewer resources can be provided to the machine by providing the ``--memory`` and/or
+``--cpus`` flags to ``oct provision local all-in-one``, but this is not recommended for workflows that compile the Origin
+repository.
+
++---------+----------------------------------------------------------------------------------------------------------------+
+| Warning | The implementation of user-configured virtual machine memory and CPU limits is not complete. The above section |
+|         | will be relevant once issue `#31 <https://github.com/stevekuznetsov/origin-ci-tool/issues/31>`_ is finished.   |
++---------+----------------------------------------------------------------------------------------------------------------+
 
 To access the machine, use SSH:
 
@@ -391,13 +402,14 @@ To package a remote virtual machine into a re-useable image, use:
 
 .. code-block:: shell
 
-    $ oct package ami --update <1>
+    $ oct package ami --update #<1>
 
 1. Update the current image stage, or ``--upgrade`` to create an image for the next stage.
 
 When a new image is created for the ``bare`` or ``base`` image stages, it is not known if the image will support the full
-OpenShift build and install. Therefore, it is possible to execute those actions on the virtual machine, then use the following
-command to mark the image previously created from the virtual machine as ready for consumption:
+OpenShift build and install. Therefore, it is possible to execute whatever build, installation or test actions are necessary on
+the virtual machine, then use the following command to mark the image previously created from the virtual machine as ready for
+consumption:
 
 .. code-block:: shell
 
@@ -415,16 +427,16 @@ Design Principles
 The core design principle behind the ``origin-ci-tool`` is that it should contain the smallest amount of logic possible. The
 largest lesson learned from the `Vagrant plugin for OpenShift <https://github.com/openshift/vagrant-openshift>`_ was that
 internalizing repository-specific logic led to a bloated code-base that could neither support all of the use-cases that the
-repositories wanted and was painful to update when repositories needed changes in behavior. For this reason, *all* of the
+repositories wanted nor could be update quickly when repositories needed changes in behavior. For this reason, *all* of the
 interaction that the ``origin-ci-tool`` has with repositories is through ``make`` targets. This allows the ``origin-ci-tool``
 to provide a low-level ``oct make REPO TARGET`` command that can be utilized to support whatever custom workflow any repository
 needs.
 
-A second but nontheless critical design principle is `dog-food <https://en.wikipedia.org/wiki/Eating_your_own_dog_food>`_. In
+A second but nonetheless critical design principle is `dog-food <https://en.wikipedia.org/wiki/Eating_your_own_dog_food>`_. In
 the past, a large proliferation of provisioning, installation and configuration solutions was created by members of the
 OpenShift community because no simple central utilities existed. The `OpenShift Productization team
 <https://trello.com/b/wJYDst6C/productization>`_ now supports a full-featured installation and configuration path using Ansible
-in their `OpenShift Ansible <https://github.com/openshift/openshift-ansible>`_ repository. Reference architectures and WIP
+in their `OpenShift Ansible <https://github.com/openshift/openshift-ansible>`_ repository. Reference architectures and
 implementations of provisioning solutions exist in the `OpenShift Ansible contributions
 <https://github.com/openshift/openshift-ansible>`_ repository. The ``origin-ci-tool`` utilizes these tools to ensure that we
 eat our own dog-food.
@@ -487,7 +499,15 @@ Running Tests
 =============
 
 The main means by which automated tests verify that the ``origin-ci-tool`` functions is by ensuring that a specific CLI
-invocation results in the correct Ansible playbook being called with the correct variables. All of the unit tests can be run with:
+invocation results in the correct Ansible playbook being called with the correct variables. In order to run the unit tests,
+install the test-specific dependencies first. To get the dependencies and a version of ``oct`` that tracks the source, run the
+following command from the ``origin-ci-tool`` source directory:
+
+.. code-block:: shell
+
+    $ pip install --editable .[development] --process-dependency-links
+
+All of the unit tests can be run with:
 
 .. code-block:: shell
 
