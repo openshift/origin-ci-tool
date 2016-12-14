@@ -99,6 +99,8 @@ def update_configuration_option(container, option, value, write_func):
         value = True
     elif value.lower() in ['false', 'no']:
         value = False
+    elif ',' in value:
+        value = value.split(',')
 
     setattr(container, option, value)
     write_func()
