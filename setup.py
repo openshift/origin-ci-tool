@@ -1,5 +1,4 @@
 # coding=utf-8
-from oct.__version__ import VERSION
 from setuptools import find_packages, setup
 
 base_requires = [
@@ -12,7 +11,7 @@ base_requires = [
 
 setup(
     name='oct',
-    version=VERSION,
+    version='0.1.0',
     url='https://www.github.com/stevekuznetsov/origin-ci-tool',
     maintainer='Steve Kuznetsov',
     maintainer_email='skuznets@redhat.com',
