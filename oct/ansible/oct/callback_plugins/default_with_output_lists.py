@@ -22,7 +22,7 @@ class CallbackModule(default.CallbackModule):
     def _dump_results(self, original_result, indent=None, sort_keys=True, keep_invocation=False):
         result = deepcopy(original_result)
 
-        for entry in ['stdout', 'stderr', 'module_stdout', 'module_stderr']:
+        for entry in ['stdout', 'stderr', 'module_stdout', 'module_stderr', 'results']:
             split_entry = '{}_lines'.format(entry)
 
             if entry in result:
