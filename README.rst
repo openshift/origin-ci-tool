@@ -260,7 +260,7 @@ To access the machine, use SSH:
 
 .. code-block:: shell
 
-    $ shh openshiftdevel
+    $ ssh openshiftdevel
 
 To remove the VM, use:
 
@@ -292,7 +292,7 @@ To access the machine, use SSH:
 
 .. code-block:: shell
 
-    $ shh openshiftdevel
+    $ ssh openshiftdevel
 
 To remove the VM, use:
 
