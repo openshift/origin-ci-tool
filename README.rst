@@ -511,4 +511,11 @@ All of the unit tests can be run with:
 
 .. code-block:: shell
 
-    $ python -m unittest discover --verbose
+    $ coverage run -m unittest discover --verbose
+
+The code coverage report can be seen with:
+
+.. code-block:: shell
+
+    $ coverage report -m
+    $ open htmlcov/index.html
