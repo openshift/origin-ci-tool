@@ -25,7 +25,7 @@ class CallbackModule(default.CallbackModule):
         for entry in ['stdout', 'stderr', 'module_stdout', 'module_stderr', 'results']:
             split_entry = '{}_lines'.format(entry)
 
-            if entry in result:
+            if entry in result and callable(getattr(result[entry], 'splitlines', None)):
                 result[entry] = result[entry].splitlines()
             elif split_entry in result:
                 result[entry] = result[split_entry]
