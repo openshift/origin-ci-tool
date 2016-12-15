@@ -42,6 +42,7 @@
         sort: 'creationDate'
         sort_order: descending
         sort_end: 1
+        no_result_action: fail
       register: ami_facts
 
     - name: determine which AMI to update
