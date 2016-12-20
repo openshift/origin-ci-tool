@@ -438,7 +438,7 @@ OpenShift community because no simple central utilities existed. The `OpenShift 
 <https://trello.com/b/wJYDst6C/productization>`_ now supports a full-featured installation and configuration path using Ansible
 in their `OpenShift Ansible <https://github.com/openshift/openshift-ansible>`_ repository. Reference architectures and
 implementations of provisioning solutions exist in the `OpenShift Ansible contributions
-<https://github.com/openshift/openshift-ansible>`_ repository. The ``origin-ci-tool`` utilizes these tools to ensure that we
+<https://github.com/openshift/openshift-ansible-contrib>`_ repository. The ``origin-ci-tool`` utilizes these tools to ensure that we
 eat our own dog-food.
 
 When adding to this project, therefore, it is necessary to ask:
