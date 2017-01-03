@@ -134,8 +134,8 @@ Configuration
 
 The ``origin-ci-tool`` will place a directory of configuration files and runtime metadata to persist state between CLI
 invocations. By default, this will be placed under ``~/.config`` but can be configured to be under a custom directory by setting
-the ``${OCT_CONFIG_HOME}`` environment variable. Remember to add the ``${OCT_CONFIG_HOME}`` environment variable to your ``~/
-.bashrc`` if you are using a custom setting.
+the ``${OCT_CONFIG_HOME}`` environment variable. Remember to add the ``${OCT_CONFIG_HOME}`` environment variable to your
+``~/.bashrc`` if you are using a custom setting.
 
 In general, configuration options for the ``origin-ci-tool`` can be accessed and changed with the following invocation, where
 ``COMPONENT`` is a semantic grouping of configuration options like ``aws-client`` or ``ansible-defaults`` and ``KEY`` and
@@ -175,7 +175,7 @@ If not, you'll want to place a file at ``~/.aws/credentials`` with the following
    correct profile to use.
 2. The AWS secret access key ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
    for more details.
-3. The AWS secret access ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
+3. The AWS secret access key. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
    for more details.
 
 When setting up the SSH configuration for virtual machines provisioned in AWS EC2, the name and location of the private key used
@@ -223,7 +223,7 @@ of literal identifiers to use:
 
 .. code-block:: shell
 
-    $ oct configure aws-defaults master_subnet_ids sg-XXXXXXXX,sg-XXXXXXXX,sg-XXXXXXXX
+    $ oct configure aws-defaults master_subnet_ids subnet-XXXXXXXX,subnet-XXXXXXXX,subnet-XXXXXXXX
 
 ****************
 Sample Use-Cases
@@ -282,11 +282,12 @@ To provision an All-in-One VM in the cloud, run:
     $ oct provision remote all-in-one --os OS         \ #<1>
                                       --provider NAME \ #<2>
                                       --stage STAGE   \ #<3>
-                                      --name            #<4>
+                                      --name VM-NAME    #<4>
 
 1. Select the operating system you would like to use with ``--os``. Fedora, CentOS and RHEL are supported.
 2. Choose the cloud provider to use. Only AWS is supported.
 3. Determine the image stage to base the virtual machine on. Valid image stages are ``bare``, ``base`` and ``install``.
+4. Provide the identifier to use when naming the virtual machine on the cloud platform.
 
 To access the machine, use SSH:
 
@@ -461,7 +462,7 @@ requires changes to the codebase. New repositories need to be added to the ``Rep
         supported as a part of the OpenShift ecosystem.
         """
 
-As the ``origin-ci-tool`` interacts with repositories using ``make``, you repository will need a ``Makefile`` in the repository
+As the ``origin-ci-tool`` interacts with repositories using ``make``, your repository will need a ``Makefile`` in the repository
 root with whatever targets are necessary. If you wish for the ``origin-ci-tool`` to support helpful commands like ``oct
 build``, ``oct install``, ``oct test``, and/or ``oct download``, you will need to place a ``.oct-config.yml`` file in your
 repository root. The file as described below contains four lists in normal `YAML syntax <http://www.yaml.org/start.html>`_. The
