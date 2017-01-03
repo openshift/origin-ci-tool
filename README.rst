@@ -171,12 +171,12 @@ If not, you'll want to place a file at ``~/.aws/credentials`` with the following
     aws_access_key_id=XXXXXXXX #<2>
     aws_secret_access_key=XXXX #<3>
 
-    1. The name of the AWS credential profile. If this is not set to ``default``, ``${AWS_PROFILE}`` will need to be set to
-       choose the correct profile to use.
-    2. The AWS secret access key ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
-       for more details.
-    3. The AWS secret access ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
-       for more details.
+1. The name of the AWS credential profile. If this is not set to ``default``, ``${AWS_PROFILE}`` will need to be set to choose the
+   correct profile to use.
+2. The AWS secret access key ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
+   for more details.
+3. The AWS secret access ID. Consult the `AWS documentation <http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys>`_
+   for more details.
 
 When setting up the SSH configuration for virtual machines provisioned in AWS EC2, the name and location of the private key used
 to reach the instance need to be known by the ``origin-ci-tool``. Configure them with:
