@@ -79,7 +79,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                    'origin_ci_ssh_config_strategy': 'update'
                 }
             }]
         ))
@@ -97,7 +98,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                    'origin_ci_ssh_config_strategy': 'update'
                 }
             }]
         ))
@@ -115,7 +117,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                    'origin_ci_ssh_config_strategy': 'update'
                 }
             }]
         ))
@@ -133,7 +136,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_stage': stage,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                    'origin_ci_ssh_config_strategy': 'update'
                 }
             }]
         ))
@@ -151,7 +155,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_stage': Stage.install,
                     'origin_ci_vagrant_ip': ip,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                    'origin_ci_ssh_config_strategy': 'update'
                 }
             }]
         ))
@@ -171,7 +176,8 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_stage': stage,
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR
+                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                    'origin_ci_ssh_config_strategy': 'update'
                 }
             }, {
                 'playbook_relative_path': 'provision/vagrant-docker-storage',
@@ -188,41 +194,4 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
             args=['provision', 'local', 'all-in-one', '--provider', 'vmware_fusion'],
             expected_result=CLICK_RC_USAGE,
             expected_output='Only the bare stage is supported for the vmware_fusion provider.'
-        ))
-
-    def test_destroy(self):
-        patcher = patch.object(
-            target=Configuration,
-            attribute='registered_vagrant_machines',
-            new=lambda _: [
-                VagrantVMMetadata(data={
-                    'directory': _default_home_dir,
-                    'hostname': DEFAULT_HOSTNAME,
-                    'provisioning_details': {
-                        'operating_system': None,
-                        'provider': None,
-                        'stage': None
-                    },
-                    'ssh_configuration': {
-                        'hostname': None,
-                        'port': None,
-                        'identityfile': None,
-                        'user': None
-                    },
-                    'groups': [],
-                    'extra': {}
-                })
-            ]
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--destroy'],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-down',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
-                }
-            }]
         ))
