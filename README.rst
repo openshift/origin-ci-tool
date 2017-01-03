@@ -90,7 +90,7 @@ On Mac OS, the virtual environment can be created without this option:
     $ virtualenv venv
 
 Activate the virtual environment:
-.
+
 .. code-block:: shell
 
     $ source ./venv/bin/activate
