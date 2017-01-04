@@ -33,6 +33,5 @@ def aws_client_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.aws_client_configuration,
         option=option,
-        value=value,
-        write_func=context.obj.write_aws_client_configuration
+        value=value
     )

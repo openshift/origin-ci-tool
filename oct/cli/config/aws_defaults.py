@@ -33,6 +33,5 @@ def aws_defaults_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.aws_variables,
         option=option,
-        value=value,
-        write_func=context.obj.write_aws_variables
+        value=value
     )

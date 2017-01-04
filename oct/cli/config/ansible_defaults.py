@@ -33,6 +33,5 @@ def ansible_defaults_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.ansible_variables,
         option=option,
-        value=value,
-        write_func=context.obj.write_ansible_variables
+        value=value
     )

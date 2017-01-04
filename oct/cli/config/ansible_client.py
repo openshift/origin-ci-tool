@@ -33,6 +33,5 @@ def ansible_client_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.ansible_client_configuration,
         option=option,
-        value=value,
-        write_func=context.obj.write_ansible_client_configuration
+        value=value
     )

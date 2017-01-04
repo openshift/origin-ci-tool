@@ -80,14 +80,13 @@ Examples:
     return configuration_options_decorator
 
 
-def update_configuration_option(container, option, value, write_func):
+def update_configuration_option(container, option, value):
     """
     Update an option in a configuration file.
 
     :param container: configuration file to work on
     :param option: name of the option to update
     :param value: value to update to
-    :param write_func: func to serialize the updated config
     """
     if option not in container:
         raise ClickException(message='Option {} not found in configuration.'.format(option))
@@ -103,6 +102,5 @@ def update_configuration_option(container, option, value, write_func):
         value = value.split(',')
 
     setattr(container, option, value)
-    write_func()
 
     echo('Option {} updated to be {}.'.format(option, value))
