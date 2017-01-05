@@ -4,8 +4,8 @@ from __future__ import absolute_import, division, print_function
 from atexit import register
 from errno import EEXIST
 
-from os import getenv, listdir, makedirs, mkdir
-from os.path import abspath, exists, expanduser, isdir, join, dirname
+from os import getenv, listdir, makedirs
+from os.path import abspath, dirname, exists, expanduser, isdir, join
 from yaml import dump, load
 
 from ..config.ansible_client import AnsibleCoreClient
@@ -27,7 +27,7 @@ _AWS_CLIENT_CONFIGURATION_FILE = 'aws_client_configuration.yml'
 _AWS_VARIABLES_FILE = 'aws_variables.yml'
 
 
-def load_configuration(class_type, path, *init_args, **init_kwargs):
+def load_configuration(path, default_func):
     """
     Load a configuration object, first attempting to do so from
     a path and falling back to creating a default instance. This
@@ -35,14 +35,12 @@ def load_configuration(class_type, path, *init_args, **init_kwargs):
     object on process exit, ensuring we always leave the file-
     system with the most up-to-date version of the data.
 
-    :param class_type: class of the object to load
     :param path: path to attempt to load from
-    :param init_args: optional arguments to __init__()
-    :param init_kwargs: optional arguments to __init__()
+    :param default_func: function to create a default instance
     :return: the loaded or defaulted instance of the class
     """
     if not exists(path):
-        loaded_object = class_type(*init_args, **init_kwargs)
+        loaded_object = default_func()
     else:
         with open(path) as configuration_file:
             loaded_object = load(configuration_file)
@@ -103,16 +101,17 @@ class Configuration(object):
 
         # configuration options for Ansible core
         self.ansible_client_configuration = load_configuration(
-            AnsibleCoreClient,
             self.ansible_client_configuration_path,
-            inventory_dir=self.ansible_inventory_path,
-            log_directory=self.ansible_log_path
+            lambda: AnsibleCoreClient(
+                inventory_dir=self.ansible_inventory_path,
+                log_directory=self.ansible_log_path
+            )
         )
 
         # extra variables we want to send to Ansible playbooks
         self.ansible_variables = load_configuration(
-            PlaybookExtraVariables,
-            self.variables_path
+            self.variables_path,
+            lambda: PlaybookExtraVariables()
         )
 
         # metadata about active Vagrant local VMs
@@ -120,15 +119,15 @@ class Configuration(object):
 
         # configuration options for AWS client
         self.aws_client_configuration = load_configuration(
-            AWSClientConfiguration,
-            self.aws_client_configuration_path
+            self.aws_client_configuration_path,
+            lambda: AWSClientConfiguration()
         )
 
         # extra variables we want to send to Ansible playbooks
         # that touch the AWS API
         self.aws_variables = load_configuration(
-            AWSVariables,
-            self.aws_variables_path
+            self.aws_variables_path,
+            lambda: AWSVariables()
         )
 
     def run_playbook(self, playbook_relative_path, playbook_variables=None, option_overrides=None):

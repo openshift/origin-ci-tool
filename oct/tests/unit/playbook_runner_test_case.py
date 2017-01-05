@@ -83,7 +83,7 @@ class PlaybookRunnerTestCase(TestCase):
             patch.object(
                 target=configuration_module,
                 attribute='load_configuration',
-                new=lambda class_type, _, *init_args, **init_kwargs: class_type(*init_args, **init_kwargs)
+                new=lambda _, default_func: default_func()
             )
         ]
         for patcher in patches:
