@@ -17,7 +17,7 @@ test_requires = base_requires + [
 setup(
     name='oct',
     version='0.1.0',
-    url='https://www.github.com/stevekuznetsov/origin-ci-tool',
+    url='https://www.github.com/openshift/origin-ci-tool',
     maintainer='Steve Kuznetsov',
     maintainer_email='skuznets@redhat.com',
     packages=find_packages(exclude=['tests']),
