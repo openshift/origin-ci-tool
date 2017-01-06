@@ -42,13 +42,7 @@ website <https://github.com/Homebrew/brew/blob/master/docs/Installation.md#insta
 
 .. code-block:: shell
 
-    $ sudo brew install python
-
-On Mac OS, the Python bindings for the AWS API are also necessary:
-
-.. code-block:: shell
-
-    $ sudo pip install boto boto3
+    $ brew install python
 
 Core Installation
 =================
@@ -113,6 +107,12 @@ If you want to exit the virtual environment in a shell, use the ``deactivate`` f
 .. code-block:: shell
 
     $ deactivate
+
+On Mac OS, the Python bindings for the AWS API are also necessary:
+
+.. code-block:: shell
+
+    $ pip install boto boto3
 
 On Linux, some system dependencies are furthermore necessary. Install them using:
 
