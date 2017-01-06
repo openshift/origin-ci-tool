@@ -1,3 +1,2 @@
 include README.rst
-include vagrant/Vagrantfile
 recursive-include oct/ansible *
