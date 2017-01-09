@@ -29,19 +29,20 @@ def raw_preset_option(help_action, callback):
     :return: the preset option
     """
     return option(
-        '--for', '-f',
+        '--for',
+        '-f',
         'preset',
         type=Choice([
             Preset.origin_master,
             Preset.ose_master,
             Preset.ose_32,
             Preset.ose_321,
-            Preset.ose_33
+            Preset.ose_33,
         ]),
         metavar='PRESET',
         expose_value=False,
         help=help_action + ' using a pre-set configuration for a specific version of OpenShift.',
-        callback=callback
+        callback=callback,
     )
 
 

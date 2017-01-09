@@ -15,6 +15,6 @@ class BootstrapHostTestCase(PlaybookRunnerTestCase):
                 expected_calls=[{
                     'playbook_relative_path': 'bootstrap/host',
                     'playbook_variables': None
-                }]
+                }],
             )
         )

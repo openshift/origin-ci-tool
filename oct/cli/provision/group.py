@@ -31,7 +31,7 @@ Your choice of stage is not final: it is always possible to use
 this tool to 'upgrade' your stage by running sync and install jobs
 yourself. Furthermore, an 'install' stage can be re-synced and then
 have all of the repositories re-installed to update it.
-'''
+''',
 )
 def provision():
     """

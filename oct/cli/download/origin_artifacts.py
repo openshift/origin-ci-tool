@@ -21,13 +21,14 @@ test artifacts generated on the remote host.
 Usage:
   Download Origin test artifacts
   $ oct download origin-artifacts --dest='./artifacts'
-'''
+''',
 )
 @option(
-    '--dest', '-d',
+    '--dest',
+    '-d',
     metavar='DIR',
     required=True,
-    help='Destination directory for artifacts.'
+    help='Destination directory for artifacts.',
 )
 @ansible_output_options
 @pass_context
@@ -43,6 +44,6 @@ def origin_artifacts(context, dest):
         playbook_relative_path='download/main',
         playbook_variables={
             'origin_ci_artifacts_destination_dir': dest,
-            'origin_ci_download_targets': ['/tmp/openshift']
-        }
+            'origin_ci_download_targets': ['/tmp/openshift'],
+        },
     )

@@ -24,7 +24,7 @@ allows for more specific control over actions on the remote host.
 Examples:
   Run only some Origin unit tests
   $ oct make origin test-unit --env WHAT=tools/junitreport/...
-'''
+''',
 )
 @repository_argument
 @make_options
@@ -42,7 +42,7 @@ def make(context, repository, target, parameters, make_destination):
     """
     playbook_variables = {
         'origin_ci_make_repository': repository,
-        'origin_ci_make_targets': list(target)
+        'origin_ci_make_targets': list(target),
     }
 
     if parameters:
@@ -60,5 +60,5 @@ def make(context, repository, target, parameters, make_destination):
 
     context.obj.run_playbook(
         playbook_relative_path='make/main',
-        playbook_variables=playbook_variables
+        playbook_variables=playbook_variables,
     )

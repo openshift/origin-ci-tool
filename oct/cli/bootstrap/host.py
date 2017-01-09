@@ -20,7 +20,7 @@ using the `raw` module, so these actions will not be idempotent.
 Examples:
   Bootstrap a machine
   $ oct bootstrap host
-'''
+''',
 )
 @ansible_output_options
 @pass_context
@@ -30,6 +30,4 @@ def host(context):
 
     :param context: Click context
     """
-    context.obj.run_playbook(
-        playbook_relative_path='bootstrap/host'
-    )
+    context.obj.run_playbook(playbook_relative_path='bootstrap/host', )

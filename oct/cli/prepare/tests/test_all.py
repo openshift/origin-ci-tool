@@ -12,25 +12,29 @@ if not show_stack_trace:
 
 class PrepareAllTestCase(PlaybookRunnerTestCase):
     def test_default(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'all'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/main',
-                'playbook_variables': {
-                    'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master),
-                    'origin_ci_golang_version': golang_version_for_preset(Preset.origin_master),
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'all'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/main',
+                    'playbook_variables': {
+                        'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master),
+                        'origin_ci_golang_version': golang_version_for_preset(Preset.origin_master),
+                    },
+                }],
+            )
+        )
 
     def test_preset(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'all', '--for', 'ose/master'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/main',
-                'playbook_variables': {
-                    'origin_ci_docker_version': docker_version_for_preset(Preset.ose_master),
-                    'origin_ci_golang_version': golang_version_for_preset(Preset.ose_master),
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'all', '--for', 'ose/master'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/main',
+                    'playbook_variables': {
+                        'origin_ci_docker_version': docker_version_for_preset(Preset.ose_master),
+                        'origin_ci_golang_version': golang_version_for_preset(Preset.ose_master),
+                    },
+                }],
+            )
+        )

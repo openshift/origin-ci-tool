@@ -29,27 +29,29 @@ Examples:
 \b
   Package a VM and let local files support the box
   $ oct package vagrant --serve-local --bump-version=none
-'''
+''',
 )
 @ansible_output_options
 @package_options
 @option(
-    '--bump-version', '-b',
+    '--bump-version',
+    '-b',
     'bump_version',
     type=Choice([
         'major',
         'minor',
         'patch',
-        'none'
+        'none',
     ]),
     required=True,
-    help='Which version segment to bump.'
+    help='Which version segment to bump.',
 )
 @option(
-    '--serve-local/--serve-remote', '-l/-r',
+    '--serve-local/--serve-remote',
+    '-l/-r',
     'serve_local_file',
     default=False,
-    help='Point metadata reference to local file.  [default: remote]'
+    help='Point metadata reference to local file.  [default: remote]',
 )
 @pass_context
 def vagrant(context, update_current_stage, serve_local_file, bump_version):
@@ -80,8 +82,8 @@ def vagrant(context, update_current_stage, serve_local_file, bump_version):
                 'origin_ci_vagrant_hostname': vm.hostname,
                 'origin_ci_vagrant_package_dir': configuration.vagrant_box_directory,
                 'origin_ci_vagrant_package_ref': 'local' if serve_local_file else 'remote',  # TODO: just pass bool?
-                'origin_ci_vagrant_package_bump_version': bump_version
-            }
+                'origin_ci_vagrant_package_bump_version': bump_version,
+            },
         )
 
         # now that this VM has been used to package an image

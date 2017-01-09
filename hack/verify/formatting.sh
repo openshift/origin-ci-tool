@@ -9,8 +9,10 @@ oct_root="$( dirname "${BASH_SOURCE[0]}" )/../.."
 pushd "${oct_root}" >/dev/null 2>&1
 
 for source_file in $( find oct/ -not -path 'oct/ansible/openshift-ansible/*' -not -path 'oct/ansible/oct/roles/aws-up/files/ec2.py' -name '*.py' ); do
-    echo "Checking ${source_file} for PEP8 compliance..."
-    if ! pep8 --show-source --show-pep8 --max-line-length 130 "${source_file}"; then
+    echo "Checking ${source_file} for code formatting compliance..."
+    difference="$( yapf --diff "${source_file}" 2>&1 )"
+    if [[ -n "${difference}" ]]; then
+        echo "${difference}"
         failed="true"
     fi
 done
@@ -18,9 +20,9 @@ done
 popd  >/dev/null 2>&1
 
 if [[ "${failed:-}" == "true" ]]; then
-    echo "Source files are not PEP8 compliant!"
+    echo "Source files are not code format compliant!"
     exit 1
 else
-    echo "Source files are PEP8 compliant!"
+    echo "Source files are code format compliant!"
     exit 0
 fi

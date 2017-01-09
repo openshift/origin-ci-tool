@@ -20,13 +20,14 @@ command will install them on the local host.
 Examples:
   Bootstrap the local host
   $ oct bootstrap self
-'''
+''',
 )
 @option(
-    '--for-images', '-i',
+    '--for-images',
+    '-i',
     'for_images',
     is_flag=True,
-    help='Install dependencies for VM image building.'
+    help='Install dependencies for VM image building.',
 )
 @ansible_output_options
 @pass_context
@@ -39,7 +40,5 @@ def self(context, for_images):
     """
     context.obj.run_playbook(
         playbook_relative_path='bootstrap/self',
-        playbook_variables={
-            'origin_ci_bootstrap_image_dependencies': for_images
-        }
+        playbook_variables={'origin_ci_bootstrap_image_dependencies': for_images, },
     )

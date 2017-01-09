@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-oct_root="$( realpath "$( dirname "${BASH_SOURCE[0]}" )/.." )"
+oct_root="$( dirname "${BASH_SOURCE[0]}" )/.."
 
 providers=(
     libvirt

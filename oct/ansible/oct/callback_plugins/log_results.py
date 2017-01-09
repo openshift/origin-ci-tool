@@ -33,9 +33,10 @@ def log_exceptions(func):
             return func(*args, **kwargs)
         except Exception:
             with open(join(args[0].log_root_dir, 'internal.log'), 'a', encoding='utf-8') as log_file:
-                log_file.write('{} | Exception on func {} with args self, {} and kwargs {}:\n{}\n'.format(
-                    datetime.now(), func.__name__, args[1:], kwargs, format_exc()
-                ))
+                log_file.write(
+                    '{} | Exception on func {} with args self, {} and kwargs {}:\n{}\n'.
+                    format(datetime.now(), func.__name__, args[1:], kwargs, format_exc())
+                )
 
     return wrapper
 
@@ -181,7 +182,7 @@ class CallbackModule(CallbackBase):
                 task.get_name(),
                 task._uuid,
                 task_file,
-                task_line
+                task_line,
             )
         )
 
@@ -292,7 +293,7 @@ class CallbackModule(CallbackBase):
                 play.get_name(),
                 play._uuid,
                 play_file,
-                play_line
+                play_line,
             )
         )
 

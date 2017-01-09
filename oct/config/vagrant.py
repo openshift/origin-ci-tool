@@ -20,7 +20,7 @@ _variable_name_to_metadata_field = {
     'ansible_ssh_port': 'port',
     'ansible_ssh_private_key_file': 'private_key_file',
     'ansible_ssh_user': 'remote_user',
-    'ansible_ssh_extra_args': 'extra_ssh_args'
+    'ansible_ssh_extra_args': 'extra_ssh_args',
 }
 
 
@@ -95,7 +95,7 @@ class VagrantVMMetadata(object):
             'stricthostkeychecking',
             'passwordauthentication',
             'identitiesonly',
-            'loglevel'
+            'loglevel',
         ]
         extra_args = []
         for flag in extra_ssh_flags:

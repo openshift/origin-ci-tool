@@ -43,7 +43,7 @@ Examples:
 \b
   Synchronize the Origin repo, resulting in a merged state of two branches
   $ oct sync local origin --branch=my-feature-branch --merge-into=master
-'''
+''',
 )
 @repository_argument
 @sync_options
@@ -75,9 +75,7 @@ def local(context, repository, sync_source, sync_destination, tag, refspec, bran
     if not (refspec or branch or commit or tag):
         branch = 'master'
 
-    playbook_variables = {
-        'origin_ci_sync_repository': repository
-    }
+    playbook_variables = {'origin_ci_sync_repository': repository, }
 
     if sync_source:
         playbook_variables['origin_ci_sync_source'] = sync_source
@@ -94,5 +92,5 @@ def local(context, repository, sync_source, sync_destination, tag, refspec, bran
 
     context.obj.run_playbook(
         playbook_relative_path='sync/local',
-        playbook_variables=playbook_variables
+        playbook_variables=playbook_variables,
     )

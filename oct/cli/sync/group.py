@@ -19,7 +19,7 @@ the remote machines managed by this tool in order to build,
 install, and test the changes. These commands allow for
 synchronization of the remote repositories with local sources
 or remote servers.
-'''
+''',
 )
 def sync():
     """

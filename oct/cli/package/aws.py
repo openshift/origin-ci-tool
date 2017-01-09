@@ -21,13 +21,14 @@ stage in the pipeline.
 Examples:
   Package a VM as a stage upgrade
   $ oct package ami --upgrade
-'''
+''',
 )
 @option(
-    '--mark-ready', '-r',
+    '--mark-ready',
+    '-r',
     'mark_ready',
     is_flag=True,
-    help='Mark an AMI created previously as ready.'
+    help='Mark an AMI created previously as ready.',
 )
 @ansible_output_options
 @package_options
@@ -42,14 +43,12 @@ def ami(context, update_current_stage, mark_ready):
     """
     configuration = context.obj
     if mark_ready:
-        configuration.run_playbook(
-            playbook_relative_path='package/ami-mark-ready'
-        )
+        configuration.run_playbook(playbook_relative_path='package/ami-mark-ready', )
     else:
         configuration.run_playbook(
             playbook_relative_path='package/ami',
             playbook_variables={
                 'origin_ci_aws_stage_strategy': 'update' if update_current_stage else 'upgrade',
-                'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list
-            }
+                'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
+            },
         )

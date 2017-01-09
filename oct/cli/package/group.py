@@ -16,7 +16,7 @@ that can be redistributed so others do not have to re-do the
 work. This command allows for packaging images from running
 remote hosts; however, it requires host dependencies for local
 virtual machine packaging.
-'''
+''',
 )
 def package():
     """

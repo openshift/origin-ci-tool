@@ -12,5 +12,5 @@ class VersionTestCase(PlaybookRunnerTestCase):
     def test_version(self):
         self.run_test(TestCaseParameters(
             args=['version'],
-            expected_output=VERSION
+            expected_output=VERSION,
         ))

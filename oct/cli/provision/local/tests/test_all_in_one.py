@@ -24,32 +24,32 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
             patch.object(
                 target=VagrantVMMetadata,
                 attribute='load',
-                new=lambda _, __: None
+                new=lambda _, __: None,
             ),
             patch.object(
                 target=VagrantVMMetadata,
                 attribute='write',
-                new=lambda _: None
+                new=lambda _: None,
             ),
             patch.object(
                 target=VagrantVMMetadata,
                 attribute='remove',
-                new=lambda _: None
+                new=lambda _: None,
             ),
             patch.object(
                 target=Configuration,
                 attribute='vagrant_directory_root',
-                new=_vagrant_root
+                new=_vagrant_root,
             ),
             patch.object(
                 target=Configuration,
                 attribute='_vagrant_hostname_taken',
-                new=lambda _, __: False
+                new=lambda _, __: False,
             ),
             patch.object(
                 target=all_in_one,
                 attribute='register_host',
-                new=lambda _, __, ___, ____, _____, ______: None
+                new=lambda _, __, ___, ____, _____, ______: None,
             ),
             patch.object(
                 target=vagrant_configuration,
@@ -59,139 +59,153 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'host': DEFAULT_MASTER_IP,
                     'port': 22,
                     'identityfile': 'unimportant',
-                    'user': 'vagrant'
-                }
-            )
+                    'user': 'vagrant',
+                },
+            ),
         ]
         for patcher in patches:
             patcher.start()
             self.addCleanup(patcher.stop)
 
     def test_default(self):
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one'],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-up',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_os': OperatingSystem.fedora,
-                    'origin_ci_vagrant_provider': Provider.libvirt,
-                    'origin_ci_vagrant_stage': Stage.install,
-                    'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one'],
+                expected_calls=[{
+                    'playbook_relative_path': 'provision/vagrant-up',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_os': OperatingSystem.fedora,
+                        'origin_ci_vagrant_provider': Provider.libvirt,
+                        'origin_ci_vagrant_stage': Stage.install,
+                        'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                        'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                        'origin_ci_ssh_config_strategy': 'update',
+                    },
+                }],
+            )
+        )
 
     def test_os(self):
         os = OperatingSystem.centos
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--os', os],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-up',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_os': os,
-                    'origin_ci_vagrant_provider': Provider.libvirt,
-                    'origin_ci_vagrant_stage': Stage.install,
-                    'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one', '--os', os],
+                expected_calls=[{
+                    'playbook_relative_path': 'provision/vagrant-up',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_os': os,
+                        'origin_ci_vagrant_provider': Provider.libvirt,
+                        'origin_ci_vagrant_stage': Stage.install,
+                        'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                        'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                        'origin_ci_ssh_config_strategy': 'update',
+                    },
+                }],
+            )
+        )
 
     def test_provider(self):
         provider = Provider.virtualbox
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--provider', provider],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-up',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_os': OperatingSystem.fedora,
-                    'origin_ci_vagrant_provider': provider,
-                    'origin_ci_vagrant_stage': Stage.install,
-                    'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one', '--provider', provider],
+                expected_calls=[{
+                    'playbook_relative_path': 'provision/vagrant-up',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_os': OperatingSystem.fedora,
+                        'origin_ci_vagrant_provider': provider,
+                        'origin_ci_vagrant_stage': Stage.install,
+                        'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                        'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                        'origin_ci_ssh_config_strategy': 'update',
+                    },
+                }],
+            )
+        )
 
     def test_stage(self):
         stage = Stage.base
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--stage', stage],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-up',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_os': OperatingSystem.fedora,
-                    'origin_ci_vagrant_provider': Provider.libvirt,
-                    'origin_ci_vagrant_stage': stage,
-                    'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one', '--stage', stage],
+                expected_calls=[{
+                    'playbook_relative_path': 'provision/vagrant-up',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_os': OperatingSystem.fedora,
+                        'origin_ci_vagrant_provider': Provider.libvirt,
+                        'origin_ci_vagrant_stage': stage,
+                        'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                        'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                        'origin_ci_ssh_config_strategy': 'update',
+                    },
+                }],
+            )
+        )
 
     def test_ip(self):
         ip = '127.0.0.1'
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--master-ip', ip],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-up',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_os': OperatingSystem.fedora,
-                    'origin_ci_vagrant_provider': Provider.libvirt,
-                    'origin_ci_vagrant_stage': Stage.install,
-                    'origin_ci_vagrant_ip': ip,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one', '--master-ip', ip],
+                expected_calls=[{
+                    'playbook_relative_path': 'provision/vagrant-up',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_os': OperatingSystem.fedora,
+                        'origin_ci_vagrant_provider': Provider.libvirt,
+                        'origin_ci_vagrant_stage': Stage.install,
+                        'origin_ci_vagrant_ip': ip,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                        'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                        'origin_ci_ssh_config_strategy': 'update',
+                    },
+                }],
+            )
+        )
 
     def test_custom(self):
         os = OperatingSystem.centos
         stage = Stage.bare
         provider = Provider.vmware
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--os', os, '--stage', stage, '--provider', provider],
-            expected_calls=[{
-                'playbook_relative_path': 'provision/vagrant-up',
-                'playbook_variables': {
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_os': os,
-                    'origin_ci_vagrant_provider': provider,
-                    'origin_ci_vagrant_stage': stage,
-                    'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
-                    'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }, {
-                'playbook_relative_path': 'provision/vagrant-docker-storage',
-                'playbook_variables': {
-                    'origin_ci_vagrant_provider': provider,
-                    'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
-                }
-            }]
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one', '--os', os, '--stage', stage, '--provider', provider],
+                expected_calls=[{
+                    'playbook_relative_path': 'provision/vagrant-up',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_os': os,
+                        'origin_ci_vagrant_provider': provider,
+                        'origin_ci_vagrant_stage': stage,
+                        'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                        'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
+                        'origin_ci_ssh_config_strategy': 'update',
+                    },
+                }, {
+                    'playbook_relative_path': 'provision/vagrant-docker-storage',
+                    'playbook_variables': {
+                        'origin_ci_vagrant_provider': provider,
+                        'origin_ci_vagrant_home_dir': _default_home_dir,
+                        'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                    },
+                }],
+            )
+        )
 
     def test_vmware_nonbare(self):
-        self.run_test(TestCaseParameters(
-            args=['provision', 'local', 'all-in-one', '--provider', 'vmware_fusion'],
-            expected_result=CLICK_RC_USAGE,
-            expected_output='Only the bare stage is supported for the vmware_fusion provider.'
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['provision', 'local', 'all-in-one', '--provider', 'vmware_fusion'],
+                expected_result=CLICK_RC_USAGE,
+                expected_output='Only the bare stage is supported for the vmware_fusion provider.',
+            )
+        )

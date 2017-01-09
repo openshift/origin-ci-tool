@@ -29,7 +29,7 @@ def git_options(func):
         git_branch_option,
         git_commit_option,
         git_tag_option,
-        git_destination_option
+        git_destination_option,
     ]
 
     for click_option in reversed(click_options):
@@ -46,9 +46,10 @@ def git_refspec_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--refspec', '-r',
+        '--refspec',
+        '-r',
         metavar='REF',
-        help='Git ref spec to checkout.'
+        help='Git ref spec to checkout.',
     )(func)
 
 
@@ -60,9 +61,10 @@ def git_branch_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--branch', '-b',
+        '--branch',
+        '-b',
         metavar='BRANCH',
-        help='Git branch to checkout.  [default: master]'
+        help='Git branch to checkout.  [default: master]',
     )(func)
 
 
@@ -74,9 +76,10 @@ def git_commit_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--commit', '-c',
+        '--commit',
+        '-c',
         metavar='SHA',
-        help='Git commit SHA to checkout.'
+        help='Git commit SHA to checkout.',
     )(func)
 
 
@@ -88,9 +91,10 @@ def git_tag_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--tag', '-t',
+        '--tag',
+        '-t',
         metavar='TAG',
-        help='Git tag to checkout.'
+        help='Git tag to checkout.',
     )(func)
 
 
@@ -102,10 +106,11 @@ def git_destination_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--merge-into', '-m',
+        '--merge-into',
+        '-m',
         'merge_target',
         metavar='BRANCH',
-        help='Git branch to merge synced state into.'
+        help='Git branch to merge synced state into.',
     )(func)
 
 
@@ -159,5 +164,5 @@ def git_version_specifier(refspec, branch, commit, tag):
     if branch and refspec:
         return {
             'origin_ci_sync_version': branch,
-            'origin_ci_sync_refspec': refspec + ':' + branch
+            'origin_ci_sync_refspec': refspec + ':' + branch,
         }

@@ -73,7 +73,7 @@ def main():
             dest=dict(
                 required=True,
                 default=None,
-                type='str'
+                type='str',
             ),
             version_increment=dict(
                 required=False,
@@ -83,8 +83,8 @@ def main():
                     'major',
                     'minor',
                     'patch',
-                    'none'
-                ]
+                    'none',
+                ],
             ),
             provider=dict(
                 required=True,
@@ -93,20 +93,20 @@ def main():
                 choices=[
                     'libvirt',
                     'virtualbox',
-                    'vmware_fusion'
-                ]
+                    'vmware_fusion',
+                ],
             ),
             checksum=dict(
                 required=True,
                 default=None,
-                type='str'
+                type='str',
             ),
             serve_local=dict(
                 required=False,
                 default=None,
-                type='str'
-            )
-        )
+                type='str',
+            ),
+        ),
     )
 
     metadata_path = module.params['dest']
@@ -132,7 +132,7 @@ def main():
         version_increment=version_increment,
         provider=provider,
         checksum=checksum,
-        serve_local=serve_local
+        serve_local=serve_local,
     )
 
 

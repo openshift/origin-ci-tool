@@ -46,22 +46,24 @@ Examples:
 \b
   Synchronize the Origin repo, resulting in a merged state of two branches
   $ oct sync remote origin --remote=myfork --branch=my-feature-branch --merge-into=master
-'''
+''',
 )
 @repository_argument
 @sync_destination_option
 @option(
-    '--remote', '-r',
+    '--remote',
+    '-r',
     'remote_name',
     metavar='NAME',
-    help='Named remote server to use.  [default: origin]'
+    help='Named remote server to use.  [default: origin]',
 )
 @option(
-    '--new-remote', '-n',
+    '--new-remote',
+    '-n',
     'new_remote',
     nargs=2,
     metavar='NAME URL',
-    help='Remote server to install and use.'
+    help='Remote server to install and use.',
 )
 @git_options
 @ansible_output_options
@@ -97,9 +99,7 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
     if not (remote_name or new_remote):
         remote_name = 'origin'
 
-    playbook_variables = {
-        'origin_ci_sync_repository': repository
-    }
+    playbook_variables = {'origin_ci_sync_repository': repository, }
 
     if sync_destination:
         playbook_variables['origin_ci_sync_destination'] = sync_destination
@@ -119,7 +119,7 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
 
     context.obj.run_playbook(
         playbook_relative_path='sync/remote',
-        playbook_variables=playbook_variables
+        playbook_variables=playbook_variables,
     )
 
 

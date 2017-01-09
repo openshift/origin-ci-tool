@@ -15,6 +15,6 @@ class BootstrapNodeTestCase(PlaybookRunnerTestCase):
                 expected_calls=[{
                     'playbook_relative_path': 'bootstrap/node',
                     'playbook_variables': None
-                }]
+                }],
             )
         )

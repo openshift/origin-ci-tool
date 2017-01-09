@@ -25,14 +25,12 @@ def repository_argument(func):
     :return: decorated CLI command
     """
     return argument(
-        'repository',
-        nargs=1,
-        type=Choice([
+        'repository', nargs=1, type=Choice([
             Repository.origin,
             Repository.enterprise,
             Repository.web_console,
             Repository.source_to_image,
             Repository.metrics,
-            Repository.logging
+            Repository.logging,
         ])
     )(func)

@@ -13,7 +13,7 @@ def sync_options(func):
     """
     all_options = [
         sync_source_option,
-        sync_destination_option
+        sync_destination_option,
     ]
 
     for sync_option in reversed(all_options):
@@ -30,14 +30,15 @@ def sync_source_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--src', '-s',
+        '--src',
+        '-s',
         'sync_source',
         type=Path(
             exists=True,
             file_okay=False,
-            resolve_path=True
+            resolve_path=True,
         ),
-        help='Local directory from which to sync. Optional.'
+        help='Local directory from which to sync. Optional.',
     )(func)
 
 
@@ -49,10 +50,11 @@ def sync_destination_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--dest', '-d',
+        '--dest',
+        '-d',
         'sync_destination',
         type=Path(
-            file_okay=False
+            file_okay=False,
         ),
-        help='Remote directory to sync to. Optional.'
+        help='Remote directory to sync to. Optional.',
     )(func)

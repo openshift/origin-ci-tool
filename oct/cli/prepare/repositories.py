@@ -23,7 +23,7 @@ exists for every repository.
 Examples:
   Initialize all source code repositories
   $ oct prepare repositories
-'''
+''',
 )
 @ansible_output_options
 @pass_context
@@ -33,6 +33,4 @@ def repositories(context):
 
     :param context: Click context
     """
-    context.obj.run_playbook(
-        playbook_relative_path='prepare/repositories'
-    )
+    context.obj.run_playbook(playbook_relative_path='prepare/repositories', )

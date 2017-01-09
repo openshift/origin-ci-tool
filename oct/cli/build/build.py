@@ -27,16 +27,17 @@ Examples:
 \b
   Build OpenShift Origin and everything that depends on it
   $ oct build origin --follow-dependencies
-'''
+''',
 )
 @repository_argument
 @option(
-    '--follow-dependencies', '-f',
+    '--follow-dependencies',
+    '-f',
     'follow_dependencies',
     is_flag=True,
     default=False,
     show_default=True,
-    help='Rebuild all child dependencies.'
+    help='Rebuild all child dependencies.',
 )
 @ansible_output_options
 @pass_context
@@ -76,9 +77,7 @@ def build_openshift(ansible_client, repository, follow_dependencies):
     run_make(ansible_client, repository, 'release-rpms')
     ansible_client.run_playbook(
         playbook_relative_path='prepare/local_rpm_repository',
-        playbook_variables={
-            'origin_ci_host_repository': repository
-        }
+        playbook_variables={'origin_ci_host_repository': repository, },
     )
     if follow_dependencies:
         build_source_to_image(ansible_client)
@@ -110,6 +109,6 @@ def run_make(ansible_client, repository, target):
         playbook_relative_path='make/main',
         playbook_variables={
             'origin_ci_make_repository': repository,
-            'origin_ci_make_targets': [target]
-        }
+            'origin_ci_make_targets': [target],
+        },
     )

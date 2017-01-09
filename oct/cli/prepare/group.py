@@ -22,7 +22,7 @@ OpenShift installation and all of the testing tasks.
 A full preparation will install all necessary dependencies, but
 dependencies that vary by OpenShift version can be changed after
 the fact.
-'''
+''',
 )
 def prepare():
     """
