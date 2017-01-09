@@ -164,13 +164,11 @@ def provision_with_aws(configuration, operating_system, stage, name, discrete_ss
     """
     if not configuration.aws_client_configuration.keypair_name:
         raise ClickException(
-            'No key-pair name found! Configure one using:\n' +
-            '  $ oct configure aws-client keypair_name NAME'
+            'No key-pair name found! Configure one using:\n  $ oct configure aws-client keypair_name NAME'
         )
     if not configuration.aws_client_configuration.private_key_path:
         raise ClickException(
-            'No private key path found! Configure one using:\n' +
-            '  $ oct configure aws-client private_key_path PATH'
+            'No private key path found! Configure one using:\n  $ oct configure aws-client private_key_path PATH'
         )
 
     configuration.run_playbook(
