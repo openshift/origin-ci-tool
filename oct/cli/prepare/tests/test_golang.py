@@ -63,7 +63,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {
-                    'origin_ci_golang_disabledrepos': '*',
+                    'origin_ci_golang_disabledrepos': 'test',
                     'origin_ci_golang_enabledrepos': ','.join(repos)
                 }
             }]
