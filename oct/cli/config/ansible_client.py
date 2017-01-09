@@ -20,7 +20,7 @@ def get_container_from_context(context):
     use='execute Ansible actions',
     example_key='custom_module_path',
     example_value='/some/path',
-    fetch_func=get_container_from_context
+    fetch_func=get_container_from_context,
 )
 def ansible_client_command(context, option, value, view):
     """
@@ -33,5 +33,5 @@ def ansible_client_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.ansible_client_configuration,
         option=option,
-        value=value
+        value=value,
     )

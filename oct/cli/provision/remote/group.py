@@ -17,7 +17,7 @@ virtualization providers, and image stages. The choice of operating
 system and virtualization provider allows for flexibility, but it is
 the intention that all combinations have parity, so the choice should
 not impact your workload.
-'''
+''',
 )
 def remote():
     """

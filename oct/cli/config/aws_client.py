@@ -20,7 +20,7 @@ def get_container_from_context(context):
     use='execute AWS EC2 actions',
     example_key='aws_keypair_name',
     example_value='id_rsa',
-    fetch_func=get_container_from_context
+    fetch_func=get_container_from_context,
 )
 def aws_client_command(context, option, value, view):
     """
@@ -33,5 +33,5 @@ def aws_client_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.aws_client_configuration,
         option=option,
-        value=value
+        value=value,
     )

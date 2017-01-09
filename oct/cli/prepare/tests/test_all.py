@@ -19,8 +19,8 @@ class PrepareAllTestCase(PlaybookRunnerTestCase):
                 'playbook_variables': {
                     'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master),
                     'origin_ci_golang_version': golang_version_for_preset(Preset.origin_master),
-                }
-            }]
+                },
+            }],
         ))
 
     def test_preset(self):
@@ -31,6 +31,6 @@ class PrepareAllTestCase(PlaybookRunnerTestCase):
                 'playbook_variables': {
                     'origin_ci_docker_version': docker_version_for_preset(Preset.ose_master),
                     'origin_ci_golang_version': golang_version_for_preset(Preset.ose_master),
-                }
-            }]
+                },
+            }],
         ))

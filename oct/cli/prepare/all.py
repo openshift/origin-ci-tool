@@ -45,11 +45,11 @@ Examples:
 \b
   Install dependencies for a specific version of OpenShift
   $ oct prepare all --for=ose/enterprise-3.3
-'''
+''',
 )
 @preset_option(
     help_action='Install dependencies',
-    callback=install_dependencies_for_preset
+    callback=install_dependencies_for_preset,
 )
 @ansible_output_options
 @pass_context
@@ -77,10 +77,10 @@ def prepare_all(client, preset):
 
     playbook_variables = {
         'origin_ci_docker_version': docker_version_for_preset(preset),
-        'origin_ci_golang_version': golang_version_for_preset(preset)
+        'origin_ci_golang_version': golang_version_for_preset(preset),
     }
 
     client.run_playbook(
         playbook_relative_path='prepare/main',
-        playbook_variables=playbook_variables
+        playbook_variables=playbook_variables,
     )

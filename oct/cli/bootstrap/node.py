@@ -21,7 +21,7 @@ itself.
 Examples:
   Bootstrap a machine
   $ oct bootstrap node
-'''
+''',
 )
 @ansible_output_options
 @pass_context
@@ -32,5 +32,5 @@ def node(context):
     :param context: Click context
     """
     context.obj.run_playbook(
-        playbook_relative_path='bootstrap/node'
+        playbook_relative_path='bootstrap/node',
     )

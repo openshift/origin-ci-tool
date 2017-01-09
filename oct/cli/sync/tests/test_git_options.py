@@ -61,19 +61,19 @@ class GitVersionSpecifierTestCase(TestCase):
     def test_commit(self):
         self.assertEqual(
             git_version_specifier(refspec=None, branch=None, commit='SHA', tag=None),
-            {'origin_ci_sync_version': 'SHA'}
+            {'origin_ci_sync_version': 'SHA'},
         )
 
     def test_tag(self):
         self.assertEqual(
             git_version_specifier(refspec=None, branch=None, commit=None, tag='v1.0.0'),
-            {'origin_ci_sync_version': 'v1.0.0'}
+            {'origin_ci_sync_version': 'v1.0.0'},
         )
 
     def test_branch(self):
         self.assertEqual(
             git_version_specifier(refspec=None, branch='master', commit=None, tag=None),
-            {'origin_ci_sync_version': 'master'}
+            {'origin_ci_sync_version': 'master'},
         )
 
     def test_refspec_branch(self):
@@ -81,6 +81,6 @@ class GitVersionSpecifierTestCase(TestCase):
             git_version_specifier(refspec='pulls/1/head', branch='myfeature', commit=None, tag=None),
             {
                 'origin_ci_sync_refspec': 'pulls/1/head:myfeature',
-                'origin_ci_sync_version': 'myfeature'
-            }
+                'origin_ci_sync_version': 'myfeature',
+            },
         )

@@ -437,7 +437,7 @@ class Workload(object):
             self.status,
             self.identifier,
             '-' * fill_width,
-            self.format_runtime()
+            self.format_runtime(),
         )
 
     def format_runtime(self):

@@ -33,6 +33,6 @@ def repository_argument(func):
             Repository.web_console,
             Repository.source_to_image,
             Repository.metrics,
-            Repository.logging
+            Repository.logging,
         ])
     )(func)

@@ -14,7 +14,7 @@ def make_options(func):
     makefile_options = [
         make_target_argument,
         make_parameter_option,
-        make_directory_override_option
+        make_directory_override_option,
     ]
 
     for make_option in reversed(makefile_options):
@@ -33,7 +33,7 @@ def make_target_argument(func):
     return argument(
         'target',
         nargs=-1,
-        required=True
+        required=True,
     )(func)
 
 
@@ -49,7 +49,7 @@ def make_parameter_option(func):
         'parameters',
         metavar='KEY=VAL',
         multiple=True,
-        help='Parameter key-value-pair.'
+        help='Parameter key-value-pair.',
     )(func)
 
 
@@ -64,7 +64,7 @@ def make_directory_override_option(func):
         '--dest', '-d',
         'make_destination',
         type=Path(
-            file_okay=False
+            file_okay=False,
         ),
-        help='Remote directory to run make in. Optional.'
+        help='Remote directory to run make in. Optional.',
     )(func)

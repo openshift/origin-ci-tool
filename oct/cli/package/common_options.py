@@ -17,7 +17,7 @@ def package_options(func):
         '--update/--upgrade', '-d/-g',
         'update_current_stage',
         default=False,
-        help='Update stage or upgrade to next stage.  [default: upgrade]'
+        help='Update stage or upgrade to next stage.  [default: upgrade]',
     )(func)
 
 

@@ -41,7 +41,7 @@ class CallbackModule(CallbackBase):
     def test_case_for_result(self, result):
         return TestCase(
             name='[{}] {}: {}'.format(result._host, self.current_task._parent._play.get_name(), self.current_task.get_name()),
-            elapsed_sec=timer() - self.current_task_start
+            elapsed_sec=timer() - self.current_task_start,
         )
 
     def v2_playbook_on_start(self, playbook):

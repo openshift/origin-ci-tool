@@ -19,7 +19,7 @@ _short_help = 'Print version information for this tool.'
 As this tool bundles a number of other tools to achieve
 its goals, the version of all of those tools is important
 to fully define the system.
-'''
+''',
 )
 def version():
     """

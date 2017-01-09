@@ -13,6 +13,6 @@ class PrepareRepositoriesTestCase(PlaybookRunnerTestCase):
             args=['prepare', 'repositories'],
             expected_calls=[{
                 'playbook_relative_path': 'prepare/repositories',
-                'playbook_variables': None
-            }]
+                'playbook_variables': None,
+            }],
         ))

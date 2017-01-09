@@ -181,7 +181,7 @@ class CallbackModule(CallbackBase):
                 task.get_name(),
                 task._uuid,
                 task_file,
-                task_line
+                task_line,
             )
         )
 
@@ -292,7 +292,7 @@ class CallbackModule(CallbackBase):
                 play.get_name(),
                 play._uuid,
                 play_file,
-                play_line
+                play_line,
             )
         )
 

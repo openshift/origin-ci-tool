@@ -71,11 +71,11 @@ Examples:
 \b
   Install a specific Docker version from an RPM repository available on the web
   $ oct prepare docker --version=1.11.0 --repourl=myrepo.com/docker/x86_64/
-'''
+''',
 )
 @isolated_install_options(
     package_name='Docker',
-    preset_callback=install_docker_for_preset
+    preset_callback=install_docker_for_preset,
 )
 @ansible_output_options
 @pass_context
@@ -114,5 +114,5 @@ def install_docker(client, version, repos=None, repourls=None):
 
     client.run_playbook(
         playbook_relative_path='prepare/docker',
-        playbook_variables=playbook_variables
+        playbook_variables=playbook_variables,
     )

@@ -32,7 +32,8 @@ class AnsibleCoreClient(object):
                  verbosity=DEFAULT_VERBOSITY,
                  dry_run=False,
                  log_directory=None,
-                 custom_module_path=None):
+                 custom_module_path=None,
+                 ):
         if custom_module_path is None:
             # default to the pre-packaged custom module path
             from ..oct import __file__ as base_directory
@@ -103,7 +104,7 @@ class AnsibleCoreClient(object):
         playbook_args = [
             'ansible-playbook',
             '-{}'.format('v' * self.verbosity),
-            playbook
+            playbook,
         ]
 
         if self.check:
@@ -135,7 +136,7 @@ class AnsibleCoreClient(object):
         inventory = Inventory(
             loader=data_loader,
             variable_manager=variable_manager,
-            host_list=self.host_list
+            host_list=self.host_list,
         )
         variable_manager.set_inventory(inventory)
         variable_manager.extra_vars = playbook_variables
@@ -182,7 +183,7 @@ class AnsibleCoreClient(object):
             variable_manager=variable_manager,
             loader=data_loader,
             options=options,
-            passwords=None
+            passwords=None,
         ).run()
 
         if result != TaskQueueManager.RUN_OK:

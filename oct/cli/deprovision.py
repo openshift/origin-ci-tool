@@ -21,7 +21,7 @@ with this tool.
 Examples:
   Clean up the development environment
   $ oct deprovision
-'''
+''',
 )
 @ansible_output_options
 @pass_context
@@ -34,6 +34,6 @@ def deprovision(context):
     context.obj.run_playbook(
         playbook_relative_path='deprovision/main',
         playbook_variables={
-            'origin_ci_inventory_dir': context.obj.ansible_client_configuration.host_list
-        }
+            'origin_ci_inventory_dir': context.obj.ansible_client_configuration.host_list,
+        },
     )

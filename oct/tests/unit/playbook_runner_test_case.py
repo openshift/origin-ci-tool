@@ -66,13 +66,13 @@ class PlaybookRunnerTestCase(TestCase):
                 new=lambda _, playbook_relative_path, playbook_variables=None:
                 self._call_metadata.append({
                     'playbook_relative_path': playbook_relative_path,
-                    'playbook_variables': playbook_variables
-                })
+                    'playbook_variables': playbook_variables,
+                }),
             ),
             patch.object(
                 target=Configuration,
                 attribute='load_vagrant_metadata',
-                new=lambda _: []
+                new=lambda _: [],
             ),
             patch.object(
                 target=Configuration,
@@ -82,7 +82,7 @@ class PlaybookRunnerTestCase(TestCase):
             patch.object(
                 target=configuration_module,
                 attribute='load_configuration',
-                new=lambda _, default_func: default_func()
+                new=lambda _, default_func: default_func(),
             )
         ]
         for patcher in patches:
@@ -105,7 +105,7 @@ class PlaybookRunnerTestCase(TestCase):
             format_assertion_failure(
                 message='Command did not exit with correct code.',
                 expectation=(parameters.expected_result, result.exit_code),
-                extra=extra
+                extra=extra,
             )
         )
         self.validate_call_metadata(parameters.expected_calls)
@@ -115,8 +115,8 @@ class PlaybookRunnerTestCase(TestCase):
                 result.output,
                 msg=format_assertion_failure(
                     message='Phrase `{}` not found in output.'.format(parameters.expected_output),
-                    extra=extra
-                )
+                    extra=extra,
+                ),
             )
 
     def validate_call_metadata(self, expected_calls):
@@ -140,7 +140,7 @@ class PlaybookRunnerTestCase(TestCase):
         self.make_equality_assertion(
             actual=len(self._call_metadata),
             expected=len(expected_calls),
-            message='Invalid number of playbook calls.'
+            message='Invalid number of playbook calls.',
         )
 
         for i, (actual, expected) in enumerate(zip(self._call_metadata, expected_calls)):
@@ -149,13 +149,13 @@ class PlaybookRunnerTestCase(TestCase):
             self.make_equality_assertion(
                 actual=actual['playbook_relative_path'],
                 expected=expected['playbook_relative_path'],
-                message='{}: Invalid source.'.format(prefix)
+                message='{}: Invalid source.'.format(prefix),
             )
 
             self.make_equality_assertion(
                 actual=actual['playbook_variables'],
                 expected=expected['playbook_variables'],
-                message='{}: Invalid variables.'.format(prefix)
+                message='{}: Invalid variables.'.format(prefix),
             )
 
     def make_equality_assertion(self, actual, expected, message):
@@ -177,8 +177,8 @@ class PlaybookRunnerTestCase(TestCase):
                 extra='Full Call Metadata Context:\n{}'.format(
                     format_expectation(
                         self._call_metadata,
-                        self._expected_calls
+                        self._expected_calls,
                     )
-                )
-            )
+                ),
+            ),
         )

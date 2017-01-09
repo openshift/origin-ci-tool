@@ -72,7 +72,7 @@ Examples:
 \b
   Tear down the currently running VMs
   $ oct provision remote all-in-one --destroy
-'''
+''',
 )
 @option(
     '--os', '-o',
@@ -80,47 +80,47 @@ Examples:
     type=Choice([
         OperatingSystem.fedora,
         OperatingSystem.centos,
-        OperatingSystem.rhel
+        OperatingSystem.rhel,
     ]),
     default=OperatingSystem.fedora,
     show_default=True,
     metavar='NAME',
-    help='VM operating system.'
+    help='VM operating system.',
 )
 @option(
     '--provider', '-p',
     type=Choice([
-        Provider.aws
+        Provider.aws,
     ]),
     default=Provider.aws,
     show_default=True,
     metavar='NAME',
-    help='Cloud provider.'
+    help='Cloud provider.',
 )
 @option(
     '--stage', '-s',
     type=Choice([
         Stage.bare,
         Stage.base,
-        Stage.install
+        Stage.install,
     ]),
     default=Stage.install,
     show_default=True,
     metavar='NAME',
-    help='VM image stage.'
+    help='VM image stage.',
 )
 @option(
     '--name', '-n',
     metavar='NAME',
     required=True,
-    help='VM instance name.'
+    help='VM instance name.',
 )
 @option(
     '--destroy', '-d',
     is_flag=True,
     expose_value=False,
     help='Tear down the current VMs.',
-    callback=destroy_callback
+    callback=destroy_callback,
 )
 @discrete_ssh_config_option
 @ansible_output_options
@@ -148,7 +148,7 @@ def destroy(configuration):
     :param configuration: Origin CI Tool configuration
     """
     configuration.run_playbook(
-        playbook_relative_path='provision/aws_all_in_one_down'
+        playbook_relative_path='provision/aws_all_in_one_down',
     )
 
 
@@ -181,8 +181,8 @@ def provision_with_aws(configuration, operating_system, stage, name, discrete_ss
             'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
             'origin_ci_aws_keypair_name': configuration.aws_client_configuration.keypair_name,
             'origin_ci_aws_private_key_path': configuration.aws_client_configuration.private_key_path,
-            'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update'
-        }
+            'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update',
+        },
     )
 
     if stage == Stage.bare:
@@ -191,5 +191,5 @@ def provision_with_aws(configuration, operating_system, stage, name, discrete_ss
         # partition tables and set up the volume group backed by the LVM
         # pool
         configuration.run_playbook(
-            playbook_relative_path='provision/aws-docker-storage'
+            playbook_relative_path='provision/aws-docker-storage',
         )

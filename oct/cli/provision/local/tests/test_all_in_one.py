@@ -24,32 +24,32 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
             patch.object(
                 target=VagrantVMMetadata,
                 attribute='load',
-                new=lambda _, __: None
+                new=lambda _, __: None,
             ),
             patch.object(
                 target=VagrantVMMetadata,
                 attribute='write',
-                new=lambda _: None
+                new=lambda _: None,
             ),
             patch.object(
                 target=VagrantVMMetadata,
                 attribute='remove',
-                new=lambda _: None
+                new=lambda _: None,
             ),
             patch.object(
                 target=Configuration,
                 attribute='vagrant_directory_root',
-                new=_vagrant_root
+                new=_vagrant_root,
             ),
             patch.object(
                 target=Configuration,
                 attribute='_vagrant_hostname_taken',
-                new=lambda _, __: False
+                new=lambda _, __: False,
             ),
             patch.object(
                 target=all_in_one,
                 attribute='register_host',
-                new=lambda _, __, ___, ____, _____, ______: None
+                new=lambda _, __, ___, ____, _____, ______: None,
             ),
             patch.object(
                 target=vagrant_configuration,
@@ -59,9 +59,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'host': DEFAULT_MASTER_IP,
                     'port': 22,
                     'identityfile': 'unimportant',
-                    'user': 'vagrant'
-                }
-            )
+                    'user': 'vagrant',
+                },
+            ),
         ]
         for patcher in patches:
             patcher.start()
@@ -80,9 +80,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
                     'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
+                    'origin_ci_ssh_config_strategy': 'update',
+                },
+            }],
         ))
 
     def test_os(self):
@@ -99,9 +99,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
                     'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
+                    'origin_ci_ssh_config_strategy': 'update',
+                },
+            }],
         ))
 
     def test_provider(self):
@@ -118,9 +118,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
                     'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
+                    'origin_ci_ssh_config_strategy': 'update',
+                },
+            }],
         ))
 
     def test_stage(self):
@@ -137,9 +137,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
                     'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
+                    'origin_ci_ssh_config_strategy': 'update',
+                },
+            }],
         ))
 
     def test_ip(self):
@@ -156,9 +156,9 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_ip': ip,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
                     'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
-            }]
+                    'origin_ci_ssh_config_strategy': 'update',
+                },
+            }],
         ))
 
     def test_custom(self):
@@ -177,21 +177,21 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                     'origin_ci_vagrant_ip': DEFAULT_MASTER_IP,
                     'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
                     'origin_ci_inventory_dir': DUMMY_INVENTORY_DIR,
-                    'origin_ci_ssh_config_strategy': 'update'
-                }
+                    'origin_ci_ssh_config_strategy': 'update',
+                },
             }, {
                 'playbook_relative_path': 'provision/vagrant-docker-storage',
                 'playbook_variables': {
                     'origin_ci_vagrant_provider': provider,
                     'origin_ci_vagrant_home_dir': _default_home_dir,
-                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME
-                }
-            }]
+                    'origin_ci_vagrant_hostname': DEFAULT_HOSTNAME,
+                },
+            }],
         ))
 
     def test_vmware_nonbare(self):
         self.run_test(TestCaseParameters(
             args=['provision', 'local', 'all-in-one', '--provider', 'vmware_fusion'],
             expected_result=CLICK_RC_USAGE,
-            expected_output='Only the bare stage is supported for the vmware_fusion provider.'
+            expected_output='Only the bare stage is supported for the vmware_fusion provider.',
         ))

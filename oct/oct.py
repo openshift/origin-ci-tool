@@ -23,7 +23,7 @@ from .config.configuration import Configuration
     name='oct',
     help='''
 A CLI tool for building, testing and composing OpenShift repositories.
-'''
+''',
 )
 @pass_context
 def oct_command(context):

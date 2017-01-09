@@ -44,13 +44,13 @@ parser.add_option(
     default=False,
     dest='list',
     action='store_true',
-    help='Emit a full inventory as a JSON mapping of groups to hostnames and variables.'
+    help='Emit a full inventory as a JSON mapping of groups to hostnames and variables.',
 )
 parser.add_option(
     '--host',
     default=None,
     dest='host',
-    help='Emit host metadata for a specific host as a JSON mapping of key-value pairs.'
+    help='Emit host metadata for a specific host as a JSON mapping of key-value pairs.',
 )
 (options, args) = parser.parse_args()
 
@@ -141,7 +141,7 @@ def add_host_to_inventory(inventory, hostname, groups, variables):
         if group not in inventory:
             inventory[group] = {
                 'hosts': [],
-                'vars': {}
+                'vars': {},
             }
 
         inventory[group]['hosts'].append(hostname)
@@ -183,12 +183,12 @@ def list_vagrant_directories():
 if options.list:
     full_inventory = {
         '_meta': {
-            'hostvars': {}
+            'hostvars': {},
         },
         'vms': {
             'hosts': [],
-            'vars': {}
-        }
+            'vars': {},
+        },
     }
 
     # load VM hosts

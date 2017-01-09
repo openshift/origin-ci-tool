@@ -104,14 +104,14 @@ class Configuration(object):
             self.ansible_client_configuration_path,
             lambda: AnsibleCoreClient(
                 inventory_dir=self.ansible_inventory_path,
-                log_directory=self.ansible_log_path
-            )
+                log_directory=self.ansible_log_path,
+            ),
         )
 
         # extra variables we want to send to Ansible playbooks
         self.ansible_variables = load_configuration(
             self.variables_path,
-            lambda: PlaybookExtraVariables()
+            lambda: PlaybookExtraVariables(),
         )
 
         # metadata about active Vagrant local VMs
@@ -120,14 +120,14 @@ class Configuration(object):
         # configuration options for AWS client
         self.aws_client_configuration = load_configuration(
             self.aws_client_configuration_path,
-            lambda: AWSClientConfiguration()
+            lambda: AWSClientConfiguration(),
         )
 
         # extra variables we want to send to Ansible playbooks
         # that touch the AWS API
         self.aws_variables = load_configuration(
             self.aws_variables_path,
-            lambda: AWSVariables()
+            lambda: AWSVariables(),
         )
 
     def run_playbook(self, playbook_relative_path, playbook_variables=None, option_overrides=None):
@@ -141,13 +141,13 @@ class Configuration(object):
         :param playbook_variables: extra variables for the playbook
         """
         playbook_variables = self.ansible_variables.default(
-            self.aws_variables.default(playbook_variables)
+            self.aws_variables.default(playbook_variables),
         )
 
         self.ansible_client_configuration.run_playbook(
             playbook_file=playbook_path(playbook_relative_path),
             playbook_variables=playbook_variables,
-            option_overrides=option_overrides
+            option_overrides=option_overrides,
         )
 
     @property

@@ -61,43 +61,43 @@ Examples:
 \b
   Provision a VM with a specific IP address
   $ oct provision local all-in-one --ip=10.245.2.2
-'''
+''',
 )
 @option(
     '--os', '-o',
     'operating_system',
     type=Choice([
         OperatingSystem.fedora,
-        OperatingSystem.centos
+        OperatingSystem.centos,
     ]),
     default=OperatingSystem.fedora,
     show_default=True,
     metavar='NAME',
-    help='VM operating system.'
+    help='VM operating system.',
 )
 @option(
     '--provider', '-p',
     type=Choice([
         Provider.libvirt,
         Provider.virtualbox,
-        Provider.vmware
+        Provider.vmware,
     ]),
     default=Provider.libvirt,
     show_default=True,
     metavar='NAME',
-    help='Virtualization provider.'
+    help='Virtualization provider.',
 )
 @option(
     '--stage', '-s',
     type=Choice([
         Stage.bare,
         Stage.base,
-        Stage.install
+        Stage.install,
     ]),
     default=Stage.install,
     show_default=True,
     metavar='NAME',
-    help='VM image stage.'
+    help='VM image stage.',
 )
 @option(
     '--master-ip', '-i',
@@ -105,7 +105,7 @@ Examples:
     default=DEFAULT_MASTER_IP,
     show_default=True,
     metavar='ADDRESS',
-    help='Desired IP of the VM.'
+    help='Desired IP of the VM.',
 )
 @discrete_ssh_config_option
 @ansible_output_options
@@ -164,8 +164,8 @@ def provision_with_vagrant(configuration, operating_system, provider, stage, ip,
             'origin_ci_vagrant_ip': ip,
             'origin_ci_vagrant_hostname': hostname,
             'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
-            'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update'
-        }
+            'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update',
+        },
     )
 
     # if we successfully executed the playbook, we have a
@@ -185,8 +185,8 @@ def provision_with_vagrant(configuration, operating_system, provider, stage, ip,
             playbook_variables={
                 'origin_ci_vagrant_provider': provider,
                 'origin_ci_vagrant_home_dir': home_dir,
-                'origin_ci_vagrant_hostname': hostname
-            }
+                'origin_ci_vagrant_hostname': hostname,
+            },
         )
 
 
@@ -209,13 +209,13 @@ def register_host(configuration, home_dir, hostname, operating_system, provider,
         'provisioning_details': {
             'operating_system': operating_system,
             'provider': provider,
-            'stage': stage
+            'stage': stage,
         },
         # we are supporting an all-in-one deployment with the
         # VM, so this VM will be both a master and a node
         'groups': [
             'masters',
-            'nodes'
+            'nodes',
         ],
         # no `infra` region exists as we need the same node to
         # host OpenShift infrastructure and be schedule-able
@@ -223,7 +223,7 @@ def register_host(configuration, home_dir, hostname, operating_system, provider,
             'openshift_schedulable': True,
             'openshift_node_labels': {
                 'region': 'infra',
-                'zone': 'default'
-            }
-        }
+                'zone': 'default',
+            },
+        },
     }))

@@ -16,7 +16,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
             expected_calls=[{
                 'playbook_relative_path': 'prepare/golang',
                 'playbook_variables': {}
-            }]
+            }],
         ))
 
     def test_preset(self):
@@ -28,7 +28,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                 'playbook_variables': {
                     'origin_ci_golang_version': golang_version_for_preset(preset)
                 }
-            }]
+            }],
         ))
 
     def test_version(self):
@@ -40,7 +40,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                 'playbook_variables': {
                     'origin_ci_golang_version': version
                 }
-            }]
+            }],
         ))
 
     def test_repo(self):
@@ -53,7 +53,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                     'origin_ci_golang_disabledrepos': '*',
                     'origin_ci_golang_enabledrepos': repo
                 }
-            }]
+            }],
         ))
 
     def test_repos(self):
@@ -66,7 +66,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                     'origin_ci_golang_disabledrepos': '*',
                     'origin_ci_golang_enabledrepos': ','.join(repos)
                 }
-            }]
+            }],
         ))
 
     def test_repourl(self):
@@ -78,7 +78,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                 'playbook_variables': {
                     'origin_ci_golang_tmp_repourls': [repourl]
                 }
-            }]
+            }],
         ))
 
     def test_tmp_repourls(self):
@@ -90,7 +90,7 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                 'playbook_variables': {
                     'origin_ci_golang_tmp_repourls': repourls
                 }
-            }]
+            }],
         ))
 
     def test_repo_and_repourl(self):
@@ -105,5 +105,5 @@ class PrepareGolangTestCase(PlaybookRunnerTestCase):
                     'origin_ci_golang_enabledrepos': repo,
                     'origin_ci_golang_tmp_repourls': [repourl]
                 }
-            }]
+            }],
         ))

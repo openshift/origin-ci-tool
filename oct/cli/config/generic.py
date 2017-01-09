@@ -58,18 +58,18 @@ Examples:
 '''.format(name=name, container=container, use=use, key=example_key, value=example_value)
             ),
             argument(
-                'option'
+                'option',
             ),
             argument(
-                'value'
+                'value',
             ),
             option(
                 '--view', '-v',
                 help='Print all configuration options.',
                 is_flag=True,
-                callback=view_configuration
+                callback=view_configuration,
             ),
-            pass_context
+            pass_context,
         ]
 
         for click_option in reversed(click_options):

@@ -12,7 +12,7 @@ from .origin_artifacts import origin_artifacts
 Once actions have been executed on remote hosts, this command
 allows for downloading files from the hosts to recover artifacts,
 etc, from the actions.
-'''
+''',
 )
 def download():
     """

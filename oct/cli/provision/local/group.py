@@ -22,7 +22,7 @@ Note: without a license to publish and distribute VMWare Fusion box
 files, we cannot provide any image stage other than the most basic
 bare operating system stage. If you are using VMWare Fusion as your
 Vagrant provider, you must build the other image stages yourself.
-'''
+''',
 )
 def local():
     """

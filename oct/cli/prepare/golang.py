@@ -69,11 +69,11 @@ Examples:
 \b
   Install a specific Go version from an RPM repository available on the web
   $ oct prepare golang --version=1.6.3 --repourl=myrepo.com/golang/x86_64/
-'''
+''',
 )
 @isolated_install_options(
     package_name='Golang',
-    preset_callback=install_golang_custom_callback
+    preset_callback=install_golang_custom_callback,
 )
 @ansible_output_options
 @pass_context
@@ -112,6 +112,5 @@ def install_golang(client, version, repos=None, repourls=None):
 
     client.run_playbook(
         playbook_relative_path='prepare/golang',
-        playbook_variables=playbook_variables
-
+        playbook_variables=playbook_variables,
     )

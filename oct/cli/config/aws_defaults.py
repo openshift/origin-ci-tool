@@ -20,7 +20,7 @@ def get_container_from_context(context):
     use='parameterize Ansible actions',
     example_key='vpc_id',
     example_value='vpc-aaaaaaa',
-    fetch_func=get_container_from_context
+    fetch_func=get_container_from_context,
 )
 def aws_defaults_command(context, option, value, view):
     """
@@ -33,5 +33,5 @@ def aws_defaults_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.aws_variables,
         option=option,
-        value=value
+        value=value,
     )

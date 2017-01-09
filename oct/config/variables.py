@@ -27,7 +27,8 @@ class PlaybookExtraVariables(object):
                  become_method=DEFAULT_ESCALATION_METHOD,
                  become_user=DEFAULT_USER,
                  # miscellaneous variables
-                 docker_volume_group=DEFAULT_DOCKER_VOLUME_GROUP):
+                 docker_volume_group=DEFAULT_DOCKER_VOLUME_GROUP,
+                 ):
         # hosts to target for the following plays
         self.hosts = target_hosts
         # method for connecting to the target hosts

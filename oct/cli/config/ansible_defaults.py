@@ -20,7 +20,7 @@ def get_container_from_context(context):
     use='parameterize Ansible actions',
     example_key='become_method',
     example_value='pfexec',
-    fetch_func=get_container_from_context
+    fetch_func=get_container_from_context,
 )
 def ansible_defaults_command(context, option, value, view):
     """
@@ -33,5 +33,5 @@ def ansible_defaults_command(context, option, value, view):
     update_configuration_option(
         container=context.obj.ansible_variables,
         option=option,
-        value=value
+        value=value,
     )

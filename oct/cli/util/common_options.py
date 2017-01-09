@@ -15,7 +15,7 @@ def ansible_output_options(func):
     output_options = [
         ansible_verbosity_option,
         ansible_dry_run_option,
-        ansible_debug_mode_option
+        ansible_debug_mode_option,
     ]
 
     for output_option in reversed(output_options):
@@ -56,7 +56,7 @@ def ansible_verbosity_option(func):
         expose_value=False,
         help='Ansible verbosity level. Repeat to increase.',
         callback=update_ansible_verbosity,
-        is_eager=True
+        is_eager=True,
     )(func)
 
 
@@ -87,7 +87,7 @@ def ansible_dry_run_option(func):
         expose_value=False,
         help='Toggle Ansible dry-run mode.',
         callback=update_ansible_dry_run,
-        is_eager=True
+        is_eager=True,
     )(func)
 
 
@@ -118,5 +118,5 @@ def ansible_debug_mode_option(func):
         expose_value=False,
         help='Toggle Ansible debug mode.',
         callback=update_ansible_debug_mode,
-        is_eager=True
+        is_eager=True,
     )(func)
