@@ -4,14 +4,13 @@ from __future__ import absolute_import, division, print_function
 from traceback import format_exception
 from unittest import TestCase
 
-from click.testing import CliRunner
-from mock import patch, PropertyMock
-from os import environ
-
 import oct.config.configuration as configuration_module
+from click.testing import CliRunner
+from mock import PropertyMock, patch
 from oct.config.configuration import Configuration
 from oct.oct import oct_command
 from oct.tests.unit.formatting_util import format_assertion_failure, format_expectation
+from os import environ
 
 # Allow for run-time triggering of stack trace output
 show_stack_trace = 'SHOW_STACK_TRACE' in environ

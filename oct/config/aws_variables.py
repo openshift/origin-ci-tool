@@ -16,6 +16,7 @@ DEFAULT_REGION = 'us-east-1'
 
 _aws_variable_prefix = 'origin_ci_aws_'
 
+
 class AWSVariables(object):
     """
     This container holds values for defaulting

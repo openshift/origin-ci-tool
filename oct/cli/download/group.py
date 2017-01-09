@@ -1,8 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from .origin_artifacts import origin_artifacts
 from click import group
+
+from .origin_artifacts import origin_artifacts
 
 
 @group(

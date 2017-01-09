@@ -7,6 +7,7 @@ from ..util.common_options import ansible_output_options
 
 _short_help = 'Download Origin test artifacts from the remote host.'
 
+
 @command(
     short_help=_short_help,
     name='origin-artifacts',

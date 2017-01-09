@@ -160,7 +160,7 @@ def determine_base_path():
 
     :return: base path for the configuration dir
     """
-    base_dir = getenv('OCT_CONFIG_HOME', abspath(join(expanduser('~'),'.config')))
+    base_dir = getenv('OCT_CONFIG_HOME', abspath(join(expanduser('~'), '.config')))
     return abspath(join(base_dir, 'origin-ci-tool', 'vagrant'))
 
 

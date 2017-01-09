@@ -8,6 +8,7 @@ from .ansible_defaults import ansible_defaults_command
 from .aws_client import aws_client_command
 from .aws_defaults import aws_defaults_command
 
+
 @group(
     short_help='View, update and append to the serialized configuration.',
     help='''
