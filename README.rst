@@ -500,17 +500,16 @@ following command from the ``origin-ci-tool`` source directory:
 
 .. code-block:: shell
 
-    $ pip install --editable .[development] --process-dependency-links
+    $ make install-development
 
 All of the unit tests can be run with:
 
 .. code-block:: shell
 
-    $ coverage run -m unittest discover --verbose
+    $ make test
 
-The code coverage report can be seen with:
+The code coverage report can be generated to ``htmlcov/index.html`` with:
 
 .. code-block:: shell
 
-    $ coverage report -m
-    $ open htmlcov/index.html
+    $ coverage html
