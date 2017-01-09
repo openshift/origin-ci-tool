@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
-oct_root="$( realpath "$( dirname "${BASH_SOURCE[0]}" )/../.." )"
+oct_root="$( dirname "${BASH_SOURCE[0]}" )/../.."
 
 pushd "${oct_root}" >/dev/null 2>&1
 
