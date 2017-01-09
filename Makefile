@@ -12,6 +12,7 @@ install-development:
 
 # Run the source code verification scripts.
 verify:
+	hack/verify/formatting.sh
 	hack/verify/pep8.sh
 	hack/verify/declared-versions-match.sh
 .PHONY: verify

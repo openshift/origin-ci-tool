@@ -12,7 +12,8 @@ base_requires = [
 test_requires = base_requires + [
     'mock',
     'coverage',
-    'pep8'
+    'pep8',
+    'yapf==0.14.0'
 ]
 
 setup(
