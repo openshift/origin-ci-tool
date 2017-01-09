@@ -11,7 +11,8 @@ base_requires = [
 
 test_requires = base_requires + [
     'mock',
-    'coverage'
+    'coverage',
+    'pep8'
 ]
 
 setup(
