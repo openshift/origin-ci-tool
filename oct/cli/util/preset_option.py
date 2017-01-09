@@ -29,7 +29,8 @@ def raw_preset_option(help_action, callback):
     :return: the preset option
     """
     return option(
-        '--for', '-f',
+        '--for',
+        '-f',
         'preset',
         type=Choice([
             Preset.origin_master,

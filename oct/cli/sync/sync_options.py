@@ -30,7 +30,8 @@ def sync_source_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--src', '-s',
+        '--src',
+        '-s',
         'sync_source',
         type=Path(
             exists=True,
@@ -49,7 +50,8 @@ def sync_destination_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--dest', '-d',
+        '--dest',
+        '-d',
         'sync_destination',
         type=Path(
             file_okay=False,

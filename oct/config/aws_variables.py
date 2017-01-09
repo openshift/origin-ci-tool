@@ -27,29 +27,28 @@ class AWSVariables(object):
     as a var named 'origin_ci_aws' + field_name.
     """
 
-    def __init__(self,
-                 master_subnet_ids=None,
-                 etcd_security_group_ids=None,
-                 node_security_group_ids=None,
-                 master_security_group_ids=None,
-                 master_external_elb_security_group_ids=None,
-                 master_internal_elb_security_group_ids=None,
-                 router_security_group_ids=None,
-                 router_elb_security_group_ids=None,
-
-                 identifying_tag_key=DEFAULT_IDENTIFYING_TAG_KEY,
-                 master_subnet_tag_value=DEFAULT_MASTER_SUBNET_TAG_VALUE,
-                 etcd_security_group_tag_value=DEFAULT_ETCD_SECURITY_GROUP_TAG_VALUE,
-                 node_security_group_tag_value=DEFAULT_NODE_SECURITY_GROUP_TAG_VALUE,
-                 master_security_group_tag_value=DEFAULT_MASTER_SECURITY_GROUP_TAG_VALUE,
-                 master_external_elb_security_group_tag_value=DEFAULT_MASTER_EXTERNAL_ELB_SECURITY_GROUP_TAG_VALUE,
-                 master_internal_elb_security_group_tag_value=DEFAULT_MASTER_INTERNAL_ELB_SECURITY_GROUP_TAG_VALUE,
-                 router_security_group_tag_value=DEFAULT_ROUTER_SECURITY_GROUP_TAG_VALUE,
-                 router_elb_security_group_tag_value=DEFAULT_ROUTER_ELB_SECURITY_GROUP_TAG_VALUE,
-
-                 master_instance_type=DEFAULT_MASTER_INSTANCE_TYPE,
-                 region=DEFAULT_REGION,
-                 ):
+    def __init__(
+            self,
+            master_subnet_ids=None,
+            etcd_security_group_ids=None,
+            node_security_group_ids=None,
+            master_security_group_ids=None,
+            master_external_elb_security_group_ids=None,
+            master_internal_elb_security_group_ids=None,
+            router_security_group_ids=None,
+            router_elb_security_group_ids=None,
+            identifying_tag_key=DEFAULT_IDENTIFYING_TAG_KEY,
+            master_subnet_tag_value=DEFAULT_MASTER_SUBNET_TAG_VALUE,
+            etcd_security_group_tag_value=DEFAULT_ETCD_SECURITY_GROUP_TAG_VALUE,
+            node_security_group_tag_value=DEFAULT_NODE_SECURITY_GROUP_TAG_VALUE,
+            master_security_group_tag_value=DEFAULT_MASTER_SECURITY_GROUP_TAG_VALUE,
+            master_external_elb_security_group_tag_value=DEFAULT_MASTER_EXTERNAL_ELB_SECURITY_GROUP_TAG_VALUE,
+            master_internal_elb_security_group_tag_value=DEFAULT_MASTER_INTERNAL_ELB_SECURITY_GROUP_TAG_VALUE,
+            router_security_group_tag_value=DEFAULT_ROUTER_SECURITY_GROUP_TAG_VALUE,
+            router_elb_security_group_tag_value=DEFAULT_ROUTER_ELB_SECURITY_GROUP_TAG_VALUE,
+            master_instance_type=DEFAULT_MASTER_INSTANCE_TYPE,
+            region=DEFAULT_REGION,
+    ):
         # literal AWS EC2 object identifiers
         self.master_subnet_ids = master_subnet_ids
         self.etcd_security_group_ids = etcd_security_group_ids

@@ -14,7 +14,8 @@ def package_options(func):
     :return: decorated CLI command
     """
     return option(
-        '--update/--upgrade', '-d/-g',
+        '--update/--upgrade',
+        '-d/-g',
         'update_current_stage',
         default=False,
         help='Update stage or upgrade to next stage.  [default: upgrade]',

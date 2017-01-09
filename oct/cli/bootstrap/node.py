@@ -31,6 +31,4 @@ def node(context):
 
     :param context: Click context
     """
-    context.obj.run_playbook(
-        playbook_relative_path='bootstrap/node',
-    )
+    context.obj.run_playbook(playbook_relative_path='bootstrap/node', )

@@ -24,7 +24,8 @@ Usage:
 ''',
 )
 @option(
-    '--dest', '-d',
+    '--dest',
+    '-d',
     metavar='DIR',
     required=True,
     help='Destination directory for artifacts.',

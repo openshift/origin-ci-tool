@@ -33,6 +33,4 @@ def repositories(context):
 
     :param context: Click context
     """
-    context.obj.run_playbook(
-        playbook_relative_path='prepare/repositories',
-    )
+    context.obj.run_playbook(playbook_relative_path='prepare/repositories', )

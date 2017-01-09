@@ -100,7 +100,7 @@ class CallbackModule(CallbackBase):
         # the screen at a rate more frequent than that
         # which we get callbacks at
         self._queue = Queue()
-        self._worker = Process(target=display_workload, args=(self._queue,))
+        self._worker = Process(target=display_workload, args=(self._queue, ))
         # ensure that the worker thread is reaped if
         # the main thread dies by marking the thread
         # as a daemon
@@ -631,15 +631,24 @@ class Failure(object):
 # http://nezzen.net/2008/06/23/colored-text-in-python-using-ansi-escape-sequences/
 
 codeCodes = {
-    'black': '0;30', 'bright gray': '0;37',
-    'blue': '0;34', 'white': '1;37',
-    'green': '0;32', 'bright blue': '1;34',
-    'cyan': '0;36', 'bright green': '1;32',
-    'red': '0;31', 'bright cyan': '1;36',
-    'purple': '0;35', 'bright red': '1;31',
-    'yellow': '0;33', 'bright purple': '1;35',
-    'dark gray': '1;30', 'bright yellow': '1;33',
-    'magenta': '0;35', 'bright magenta': '1;35',
+    'black': '0;30',
+    'bright gray': '0;37',
+    'blue': '0;34',
+    'white': '1;37',
+    'green': '0;32',
+    'bright blue': '1;34',
+    'cyan': '0;36',
+    'bright green': '1;32',
+    'red': '0;31',
+    'bright cyan': '1;36',
+    'purple': '0;35',
+    'bright red': '1;31',
+    'yellow': '0;33',
+    'bright purple': '1;35',
+    'dark gray': '1;30',
+    'bright yellow': '1;33',
+    'magenta': '0;35',
+    'bright magenta': '1;35',
     'normal': '0',
 }
 
@@ -647,5 +656,6 @@ codeCodes = {
 def colorize(text, color):
     """String in color."""
     return u"\033[%sm%s\033[0m" % (codeCodes[color], text)
+
 
 # --- end "pretty"

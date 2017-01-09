@@ -13,94 +13,112 @@ if not show_stack_trace:
 
 class PrepareDockerTestCase(PlaybookRunnerTestCase):
     def test_default(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {},
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {},
+                }],
+            )
+        )
 
     def test_preset(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--for', Preset.origin_master],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master),
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker', '--for', Preset.origin_master],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master),
+                    },
+                }],
+            )
+        )
 
     def test_version(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--version', '1.10.3'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_version': '1.10.3',
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker', '--version', '1.10.3'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_version': '1.10.3',
+                    },
+                }],
+            )
+        )
 
     def test_repo(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--repo', 'reponame'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_disabledrepos': '*',
-                    'origin_ci_docker_enabledrepos': 'reponame',
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker', '--repo', 'reponame'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_disabledrepos': '*',
+                        'origin_ci_docker_enabledrepos': 'reponame',
+                    },
+                }],
+            )
+        )
 
     def test_repos(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--repo', 'reponame', '--repo', 'otherrepo'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_disabledrepos': '*',
-                    'origin_ci_docker_enabledrepos': 'reponame,otherrepo',
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker', '--repo', 'reponame', '--repo', 'otherrepo'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_disabledrepos': '*',
+                        'origin_ci_docker_enabledrepos': 'reponame,otherrepo',
+                    },
+                }],
+            )
+        )
 
     def test_repourl(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
+                    },
+                }],
+            )
+        )
 
     def test_tmp_repourls(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever', '--repourl', 'https://www.myrepo.com/ok'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok'],
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=[
+                    'prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever', '--repourl', 'https://www.myrepo.com/ok'
+                ],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok'],
+                    },
+                }],
+            )
+        )
 
     def test_repo_and_repourl(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'docker', '--repo', 'reponame', '--repourl', 'https://www.myrepo.com/whatever'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/docker',
-                'playbook_variables': {
-                    'origin_ci_docker_disabledrepos': '*',
-                    'origin_ci_docker_enabledrepos': 'reponame',
-                    'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
-                },
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'docker', '--repo', 'reponame', '--repourl', 'https://www.myrepo.com/whatever'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/docker',
+                    'playbook_variables': {
+                        'origin_ci_docker_disabledrepos': '*',
+                        'origin_ci_docker_enabledrepos': 'reponame',
+                        'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
+                    },
+                }],
+            )
+        )
 
 
 class DockerPresetTestCase(TestCase):

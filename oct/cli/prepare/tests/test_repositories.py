@@ -9,10 +9,12 @@ if not show_stack_trace:
 
 class PrepareRepositoriesTestCase(PlaybookRunnerTestCase):
     def test_prepare_repositories(self):
-        self.run_test(TestCaseParameters(
-            args=['prepare', 'repositories'],
-            expected_calls=[{
-                'playbook_relative_path': 'prepare/repositories',
-                'playbook_variables': None,
-            }],
-        ))
+        self.run_test(
+            TestCaseParameters(
+                args=['prepare', 'repositories'],
+                expected_calls=[{
+                    'playbook_relative_path': 'prepare/repositories',
+                    'playbook_variables': None,
+                }],
+            )
+        )

@@ -33,7 +33,5 @@ def deprovision(context):
     """
     context.obj.run_playbook(
         playbook_relative_path='deprovision/main',
-        playbook_variables={
-            'origin_ci_inventory_dir': context.obj.ansible_client_configuration.host_list,
-        },
+        playbook_variables={'origin_ci_inventory_dir': context.obj.ansible_client_configuration.host_list, },
     )

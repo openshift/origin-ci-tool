@@ -64,7 +64,8 @@ Examples:
 ''',
 )
 @option(
-    '--os', '-o',
+    '--os',
+    '-o',
     'operating_system',
     type=Choice([
         OperatingSystem.fedora,
@@ -76,7 +77,8 @@ Examples:
     help='VM operating system.',
 )
 @option(
-    '--provider', '-p',
+    '--provider',
+    '-p',
     type=Choice([
         Provider.libvirt,
         Provider.virtualbox,
@@ -88,7 +90,8 @@ Examples:
     help='Virtualization provider.',
 )
 @option(
-    '--stage', '-s',
+    '--stage',
+    '-s',
     type=Choice([
         Stage.bare,
         Stage.base,
@@ -100,7 +103,8 @@ Examples:
     help='VM image stage.',
 )
 @option(
-    '--master-ip', '-i',
+    '--master-ip',
+    '-i',
     'ip',
     default=DEFAULT_MASTER_IP,
     show_default=True,
@@ -203,27 +207,33 @@ def register_host(configuration, home_dir, hostname, operating_system, provider,
     :param provider: provider used with Vagrant
     :param stage: image stage the VM was based off of
     """
-    configuration.register_vagrant_host(VagrantVMMetadata(data={
-        'directory': home_dir,
-        'hostname': hostname,
-        'provisioning_details': {
-            'operating_system': operating_system,
-            'provider': provider,
-            'stage': stage,
-        },
-        # we are supporting an all-in-one deployment with the
-        # VM, so this VM will be both a master and a node
-        'groups': [
-            'masters',
-            'nodes',
-        ],
-        # no `infra` region exists as we need the same node to
-        # host OpenShift infrastructure and be schedule-able
-        'extra': {
-            'openshift_schedulable': True,
-            'openshift_node_labels': {
-                'region': 'infra',
-                'zone': 'default',
-            },
-        },
-    }))
+    configuration.register_vagrant_host(
+        VagrantVMMetadata(
+            data={
+                'directory':
+                    home_dir,
+                'hostname':
+                    hostname,
+                'provisioning_details': {
+                    'operating_system': operating_system,
+                    'provider': provider,
+                    'stage': stage,
+                },
+                # we are supporting an all-in-one deployment with the
+                # VM, so this VM will be both a master and a node
+                'groups': [
+                    'masters',
+                    'nodes',
+                ],
+                # no `infra` region exists as we need the same node to
+                # host OpenShift infrastructure and be schedule-able
+                'extra': {
+                    'openshift_schedulable': True,
+                    'openshift_node_labels': {
+                        'region': 'infra',
+                        'zone': 'default',
+                    },
+                },
+            }
+        )
+    )

@@ -7,9 +7,7 @@ from ..util.common_options import ansible_output_options
 from ..util.repository_options import Repository, repository_argument
 
 
-@command(
-    short_help='Install and configure systems from binaries and artifacts.',
-)
+@command(short_help='Install and configure systems from binaries and artifacts.', )
 @repository_argument
 @ansible_output_options
 @pass_context
@@ -62,12 +60,8 @@ def install_openshift(ansible_client, deployment_type):
     """
     ansible_client.run_playbook(
         playbook_relative_path='byo/openshift-node/network_manager',
-        playbook_variables={
-            'ansible_become_user': 'root',
-        },
-        option_overrides={
-            'become': True,
-        },
+        playbook_variables={'ansible_become_user': 'root', },
+        option_overrides={'become': True, },
     )
     ansible_client.run_playbook(
         playbook_relative_path='byo/config',
@@ -75,9 +69,7 @@ def install_openshift(ansible_client, deployment_type):
             'ansible_become_user': 'root',
             'deployment_type': deployment_type,
         },
-        option_overrides={
-            'become': True,
-        },
+        option_overrides={'become': True, },
     )
 
 

@@ -30,6 +30,4 @@ def host(context):
 
     :param context: Click context
     """
-    context.obj.run_playbook(
-        playbook_relative_path='bootstrap/host',
-    )
+    context.obj.run_playbook(playbook_relative_path='bootstrap/host', )

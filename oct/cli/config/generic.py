@@ -41,9 +41,7 @@ def configuration_options(name, container, use, example_key, example_value, fetc
 
         click_options = [
             command(
-                name=name,
-                short_help=_short_help.format(container),
-                help=_short_help.format(container) + '''
+                name=name, short_help=_short_help.format(container), help=_short_help.format(container) + '''
 
 Existing configuration options that are used to {use}
 can be edited with this command.
@@ -64,7 +62,8 @@ Examples:
                 'value',
             ),
             option(
-                '--view', '-v',
+                '--view',
+                '-v',
                 help='Print all configuration options.',
                 is_flag=True,
                 callback=view_configuration,

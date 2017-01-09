@@ -100,8 +100,7 @@ class PlaybookRunnerTestCase(TestCase):
         if result.exception is not None:
             extra = ''.join(format_exception(*result.exc_info))
         self.assertEqual(
-            parameters.expected_result,
-            result.exit_code,
+            parameters.expected_result, result.exit_code,
             format_assertion_failure(
                 message='Command did not exit with correct code.',
                 expectation=(parameters.expected_result, result.exit_code),
@@ -174,11 +173,9 @@ class PlaybookRunnerTestCase(TestCase):
             msg=format_assertion_failure(
                 message=message,
                 expectation=(actual, expected),
-                extra='Full Call Metadata Context:\n{}'.format(
-                    format_expectation(
-                        self._call_metadata,
-                        self._expected_calls,
-                    )
-                ),
+                extra='Full Call Metadata Context:\n{}'.format(format_expectation(
+                    self._call_metadata,
+                    self._expected_calls,
+                )),
             ),
         )

@@ -27,13 +27,14 @@ class AnsibleCoreClient(object):
     Ansible Core, allowing us to run playbooks.
     """
 
-    def __init__(self,
-                 inventory_dir,
-                 verbosity=DEFAULT_VERBOSITY,
-                 dry_run=False,
-                 log_directory=None,
-                 custom_module_path=None,
-                 ):
+    def __init__(
+            self,
+            inventory_dir,
+            verbosity=DEFAULT_VERBOSITY,
+            dry_run=False,
+            log_directory=None,
+            custom_module_path=None,
+    ):
         if custom_module_path is None:
             # default to the pre-packaged custom module path
             from ..oct import __file__ as base_directory

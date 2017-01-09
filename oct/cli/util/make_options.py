@@ -45,7 +45,8 @@ def make_parameter_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--env', '-e',
+        '--env',
+        '-e',
         'parameters',
         metavar='KEY=VAL',
         multiple=True,
@@ -61,7 +62,8 @@ def make_directory_override_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--dest', '-d',
+        '--dest',
+        '-d',
         'make_destination',
         type=Path(
             file_okay=False,

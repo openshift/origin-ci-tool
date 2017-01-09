@@ -51,13 +51,15 @@ Examples:
 @repository_argument
 @sync_destination_option
 @option(
-    '--remote', '-r',
+    '--remote',
+    '-r',
     'remote_name',
     metavar='NAME',
     help='Named remote server to use.  [default: origin]',
 )
 @option(
-    '--new-remote', '-n',
+    '--new-remote',
+    '-n',
     'new_remote',
     nargs=2,
     metavar='NAME URL',
@@ -97,9 +99,7 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
     if not (remote_name or new_remote):
         remote_name = 'origin'
 
-    playbook_variables = {
-        'origin_ci_sync_repository': repository,
-    }
+    playbook_variables = {'origin_ci_sync_repository': repository, }
 
     if sync_destination:
         playbook_variables['origin_ci_sync_destination'] = sync_destination

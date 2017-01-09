@@ -50,7 +50,8 @@ def ansible_verbosity_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--verbose', '-v',
+        '--verbose',
+        '-v',
         default=0,
         count=True,
         expose_value=False,
@@ -82,7 +83,9 @@ def ansible_dry_run_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--dry-run', '--check', '-C',
+        '--dry-run',
+        '--check',
+        '-C',
         is_flag=True,
         expose_value=False,
         help='Toggle Ansible dry-run mode.',
@@ -113,7 +116,8 @@ def ansible_debug_mode_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--debug', '-d',
+        '--debug',
+        '-d',
         is_flag=True,
         expose_value=False,
         help='Toggle Ansible debug mode.',

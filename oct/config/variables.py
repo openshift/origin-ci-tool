@@ -18,17 +18,18 @@ class PlaybookExtraVariables(object):
     an extra var named 'origin_ci_' + field_name.
     """
 
-    def __init__(self,
-                 # host configuration
-                 target_hosts=DEFAULT_TARGET_GROUP,
-                 connection_method=DEFAULT_CONNECTION_METHOD,
-                 # remote user configuration
-                 become=True,
-                 become_method=DEFAULT_ESCALATION_METHOD,
-                 become_user=DEFAULT_USER,
-                 # miscellaneous variables
-                 docker_volume_group=DEFAULT_DOCKER_VOLUME_GROUP,
-                 ):
+    def __init__(
+            self,
+            # host configuration
+            target_hosts=DEFAULT_TARGET_GROUP,
+            connection_method=DEFAULT_CONNECTION_METHOD,
+            # remote user configuration
+            become=True,
+            become_method=DEFAULT_ESCALATION_METHOD,
+            become_user=DEFAULT_USER,
+            # miscellaneous variables
+            docker_volume_group=DEFAULT_DOCKER_VOLUME_GROUP,
+    ):
         # hosts to target for the following plays
         self.hosts = target_hosts
         # method for connecting to the target hosts

@@ -46,11 +46,7 @@ def load_configuration(path, default_func):
             loaded_object = load(configuration_file)
 
     # ensure that the object is saved on process exit
-    register(
-        save_configuration,
-        loaded_object,
-        path
-    )
+    register(save_configuration, loaded_object, path)
 
     return loaded_object
 
@@ -74,12 +70,7 @@ def save_configuration(data, path):
             raise
 
     with open(path, 'w+') as configuration_file:
-        dump(
-            data,
-            configuration_file,
-            default_flow_style=False,
-            explicit_start=True
-        )
+        dump(data, configuration_file, default_flow_style=False, explicit_start=True)
 
 
 class Configuration(object):
@@ -140,9 +131,7 @@ class Configuration(object):
         :param playbook_relative_path: the location of the playbook
         :param playbook_variables: extra variables for the playbook
         """
-        playbook_variables = self.ansible_variables.default(
-            self.aws_variables.default(playbook_variables),
-        )
+        playbook_variables = self.ansible_variables.default(self.aws_variables.default(playbook_variables), )
 
         self.ansible_client_configuration.run_playbook(
             playbook_file=playbook_path(playbook_relative_path),

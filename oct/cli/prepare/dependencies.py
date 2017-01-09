@@ -30,6 +30,4 @@ def dependencies(context):
 
     :param context: Click context
     """
-    context.obj.run_playbook(
-        playbook_relative_path='prepare/dependencies',
-    )
+    context.obj.run_playbook(playbook_relative_path='prepare/dependencies', )

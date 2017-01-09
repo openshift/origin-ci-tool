@@ -34,7 +34,8 @@ Examples:
 @ansible_output_options
 @package_options
 @option(
-    '--bump-version', '-b',
+    '--bump-version',
+    '-b',
     'bump_version',
     type=Choice([
         'major',
@@ -46,7 +47,8 @@ Examples:
     help='Which version segment to bump.',
 )
 @option(
-    '--serve-local/--serve-remote', '-l/-r',
+    '--serve-local/--serve-remote',
+    '-l/-r',
     'serve_local_file',
     default=False,
     help='Point metadata reference to local file.  [default: remote]',

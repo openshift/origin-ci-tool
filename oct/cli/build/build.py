@@ -31,7 +31,8 @@ Examples:
 )
 @repository_argument
 @option(
-    '--follow-dependencies', '-f',
+    '--follow-dependencies',
+    '-f',
     'follow_dependencies',
     is_flag=True,
     default=False,
@@ -76,9 +77,7 @@ def build_openshift(ansible_client, repository, follow_dependencies):
     run_make(ansible_client, repository, 'release-rpms')
     ansible_client.run_playbook(
         playbook_relative_path='prepare/local_rpm_repository',
-        playbook_variables={
-            'origin_ci_host_repository': repository,
-        },
+        playbook_variables={'origin_ci_host_repository': repository, },
     )
     if follow_dependencies:
         build_source_to_image(ansible_client)

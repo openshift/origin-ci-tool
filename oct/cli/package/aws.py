@@ -24,7 +24,8 @@ Examples:
 ''',
 )
 @option(
-    '--mark-ready', '-r',
+    '--mark-ready',
+    '-r',
     'mark_ready',
     is_flag=True,
     help='Mark an AMI created previously as ready.',
@@ -42,9 +43,7 @@ def ami(context, update_current_stage, mark_ready):
     """
     configuration = context.obj
     if mark_ready:
-        configuration.run_playbook(
-            playbook_relative_path='package/ami-mark-ready',
-        )
+        configuration.run_playbook(playbook_relative_path='package/ami-mark-ready', )
     else:
         configuration.run_playbook(
             playbook_relative_path='package/ami',

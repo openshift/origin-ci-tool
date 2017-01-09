@@ -75,7 +75,8 @@ Examples:
 ''',
 )
 @option(
-    '--os', '-o',
+    '--os',
+    '-o',
     'operating_system',
     type=Choice([
         OperatingSystem.fedora,
@@ -88,17 +89,17 @@ Examples:
     help='VM operating system.',
 )
 @option(
-    '--provider', '-p',
-    type=Choice([
-        Provider.aws,
-    ]),
+    '--provider',
+    '-p',
+    type=Choice([Provider.aws, ]),
     default=Provider.aws,
     show_default=True,
     metavar='NAME',
     help='Cloud provider.',
 )
 @option(
-    '--stage', '-s',
+    '--stage',
+    '-s',
     type=Choice([
         Stage.bare,
         Stage.base,
@@ -110,13 +111,15 @@ Examples:
     help='VM image stage.',
 )
 @option(
-    '--name', '-n',
+    '--name',
+    '-n',
     metavar='NAME',
     required=True,
     help='VM instance name.',
 )
 @option(
-    '--destroy', '-d',
+    '--destroy',
+    '-d',
     is_flag=True,
     expose_value=False,
     help='Tear down the current VMs.',
@@ -147,9 +150,7 @@ def destroy(configuration):
 
     :param configuration: Origin CI Tool configuration
     """
-    configuration.run_playbook(
-        playbook_relative_path='provision/aws_all_in_one_down',
-    )
+    configuration.run_playbook(playbook_relative_path='provision/aws_all_in_one_down', )
 
 
 def provision_with_aws(configuration, operating_system, stage, name, discrete_ssh_config):
@@ -163,9 +164,7 @@ def provision_with_aws(configuration, operating_system, stage, name, discrete_ss
     :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
     if not configuration.aws_client_configuration.keypair_name:
-        raise ClickException(
-            'No key-pair name found! Configure one using:\n  $ oct configure aws-client keypair_name NAME'
-        )
+        raise ClickException('No key-pair name found! Configure one using:\n  $ oct configure aws-client keypair_name NAME')
     if not configuration.aws_client_configuration.private_key_path:
         raise ClickException(
             'No private key path found! Configure one using:\n  $ oct configure aws-client private_key_path PATH'
@@ -190,6 +189,4 @@ def provision_with_aws(configuration, operating_system, stage, name, discrete_ss
         # that was set aside for Docker storage, then update the kernel
         # partition tables and set up the volume group backed by the LVM
         # pool
-        configuration.run_playbook(
-            playbook_relative_path='provision/aws-docker-storage',
-        )
+        configuration.run_playbook(playbook_relative_path='provision/aws-docker-storage', )

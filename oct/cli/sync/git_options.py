@@ -46,7 +46,8 @@ def git_refspec_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--refspec', '-r',
+        '--refspec',
+        '-r',
         metavar='REF',
         help='Git ref spec to checkout.',
     )(func)
@@ -60,7 +61,8 @@ def git_branch_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--branch', '-b',
+        '--branch',
+        '-b',
         metavar='BRANCH',
         help='Git branch to checkout.  [default: master]',
     )(func)
@@ -74,7 +76,8 @@ def git_commit_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--commit', '-c',
+        '--commit',
+        '-c',
         metavar='SHA',
         help='Git commit SHA to checkout.',
     )(func)
@@ -88,7 +91,8 @@ def git_tag_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--tag', '-t',
+        '--tag',
+        '-t',
         metavar='TAG',
         help='Git tag to checkout.',
     )(func)
@@ -102,7 +106,8 @@ def git_destination_option(func):
     :return: decorated CLI command
     """
     return option(
-        '--merge-into', '-m',
+        '--merge-into',
+        '-m',
         'merge_target',
         metavar='BRANCH',
         help='Git branch to merge synced state into.',

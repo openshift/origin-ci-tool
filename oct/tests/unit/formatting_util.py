@@ -40,8 +40,6 @@ def format_expectation(actual, expected, diff=False):
         expected_data,
     )
     if diff:
-        expectation += '\nDiff:\n{}'.format(
-            ''.join(ndiff(actual_data.splitlines(1), expected_data.splitlines(1))),
-        )
+        expectation += '\nDiff:\n{}'.format(''.join(ndiff(actual_data.splitlines(1), expected_data.splitlines(1))), )
 
     return expectation
