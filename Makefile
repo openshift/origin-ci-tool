@@ -18,8 +18,13 @@ verify:
 .PHONY: verify
 
 # Run the unit tests.
+ifdef TARGET
+    TARGET = --verbose $(TARGET)
+else
+    TARGET ?= discover --verbose
+endif
 test:
-	coverage run -m unittest discover --verbose
+	coverage run -m unittest $(TARGET)
 .PHONY: test
 
 # Generate and view the coverage information.

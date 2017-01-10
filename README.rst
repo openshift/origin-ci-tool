@@ -508,6 +508,13 @@ All of the unit tests can be run with:
 
     $ make test
 
+Specific modules, test classes and test methods can be supplied using ``${TARGET}`` as they would be supplied to the ``unittest``
+module normally:
+
+.. code-block:: shell
+
+    $ TARGET=oct.cli.provision.local.tests.test_all_in_one.ProvisionVagrantTestCase make test
+
 The code coverage report can be generated to ``htmlcov/index.html`` with:
 
 .. code-block:: shell
