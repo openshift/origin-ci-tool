@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from click import ClickException, argument, command, echo, option, pass_context
 
-_short_help = 'Update or view the {} configuration.'
+_SHORT_HELP = 'Update or view the {} configuration.'
 
 
 def configuration_options(name, container, use, example_key, example_value, fetch_func):
@@ -41,7 +41,7 @@ def configuration_options(name, container, use, example_key, example_value, fetc
 
         click_options = [
             command(
-                name=name, short_help=_short_help.format(container), help=_short_help.format(container) + '''
+                name=name, short_help=_SHORT_HELP.format(container), help=_SHORT_HELP.format(container) + '''
 
 Existing configuration options that are used to {use}
 can be edited with this command.

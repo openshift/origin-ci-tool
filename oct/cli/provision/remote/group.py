@@ -5,12 +5,12 @@ from click import group
 
 from .all_in_one import all_in_one_command
 
-_short_help = 'Provision virtual machines in a cloud.'
+_SHORT_HELP = 'Provision virtual machines in a cloud.'
 
 
 @group(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 Cloud VM provisioning is supported for a range of operating systems,
 virtualization providers, and image stages. The choice of operating

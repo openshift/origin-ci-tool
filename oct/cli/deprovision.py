@@ -5,12 +5,12 @@ from click import command, pass_context
 
 from .util.common_options import ansible_output_options
 
-_short_help = 'Remove provisioned VMs and local artifacts.'
+_SHORT_HELP = 'Remove provisioned VMs and local artifacts.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 Remove the virtual machines that were provisoned and
 delete local artifacts that were used by this tool to

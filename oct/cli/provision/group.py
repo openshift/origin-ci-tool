@@ -6,12 +6,12 @@ from click import group
 from .local.group import local
 from .remote.group import remote
 
-_short_help = 'Provision a virtual machine for continuous integration tasks.'
+_SHORT_HELP = 'Provision a virtual machine for continuous integration tasks.'
 
 
 @group(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 Virtual machine provisioning is supported for a range of operating
 systems, virtualization providers, and image stages. The choice of

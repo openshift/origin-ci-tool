@@ -1,14 +1,17 @@
 # coding=utf-8
+"""
+A callback module that outputs jUnit XML for plays.
+"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from os import getenv, mkdir
+from os.path import abspath, exists, expanduser, join
 from random import choice
 from string import ascii_letters
 from timeit import default_timer as timer
 
 from ansible.plugins.callback import CallbackBase
 from junit_xml import TestCase, TestSuite
-from os import getenv, mkdir
-from os.path import abspath, exists, expanduser, join
 
 
 class CallbackModule(CallbackBase):

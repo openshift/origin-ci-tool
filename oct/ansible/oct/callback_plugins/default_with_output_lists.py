@@ -1,4 +1,7 @@
 # coding=utf-8
+"""
+A callback module that limits the amount of overlong lines.
+"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from copy import deepcopy
@@ -20,6 +23,16 @@ class CallbackModule(default.CallbackModule):
     CALLBACK_NAME = 'default_with_output_lists'
 
     def _dump_results(self, original_result, indent=None, sort_keys=True, keep_invocation=False):
+        """
+        Dump results from a module.
+
+        :param original_result: results from the module
+        :param indent: how many spaces to use for indentation
+        :param sort_keys: whether or not to sort keys
+        :param keep_invocation: whether or not to keep the module invocation
+        :return: module results
+        :rtype: str
+        """
         result = deepcopy(original_result)
 
         for entry in ['stdout', 'stderr', 'module_stdout', 'module_stderr', 'results']:
@@ -31,6 +44,6 @@ class CallbackModule(default.CallbackModule):
                 result[entry] = result[split_entry]
 
             if split_entry in result:
-                del (result[split_entry])
+                del result[split_entry]
 
         return super(CallbackModule, self)._dump_results(result=result, indent=4)

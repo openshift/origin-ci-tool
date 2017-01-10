@@ -6,12 +6,12 @@ from click import group
 from .local import local
 from .remote import remote
 
-_short_help = 'Update the state of repositories on the virtual machine.'
+_SHORT_HELP = 'Update the state of repositories on the virtual machine.'
 
 
 @group(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 When developing one of the repositories in the OpenShift
 ecosystem, it is necessary to update the source code on

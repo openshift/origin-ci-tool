@@ -5,12 +5,12 @@ from click import command, option, pass_context
 
 from ..util.common_options import ansible_output_options
 
-_short_help = 'Bootstrap the local host to support this CLI.'
+_SHORT_HELP = 'Bootstrap the local host to support this CLI.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 In order for a machine to run all of the tasks that this CLI knows how
 to run, a set of requisite dependencies need to be installed first. This

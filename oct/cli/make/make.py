@@ -7,12 +7,12 @@ from ..util.common_options import ansible_output_options
 from ..util.make_options import make_options
 from ..util.repository_options import repository_argument
 
-_short_help = "Run targets from a repository's Makefile on the target host."
+_SHORT_HELP = "Run targets from a repository's Makefile on the target host."
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 It may be necessary to have a more fine-grained interaction with
 source repositories on remote hosts than what is possible with the

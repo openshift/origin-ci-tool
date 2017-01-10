@@ -5,12 +5,12 @@ from click import group
 
 from .all_in_one import all_in_one_command
 
-_short_help = 'Provision virtual machines under a local hypervisor.'
+_SHORT_HELP = 'Provision virtual machines under a local hypervisor.'
 
 
 @group(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 Local VM provisioning is supported for a range of operating systems,
 virtualization providers, and image stages. The choice of operating

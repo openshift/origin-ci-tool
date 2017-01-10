@@ -137,6 +137,17 @@ def main():
 
 
 def update_metadata(metadata, version_increment, provider, checksum, serve_local):
+    """
+    Update the Vagrant box metadata.
+
+    :param metadata: metadata to update
+    :param version_increment: how to increment the version
+    :param provider: for which provider to update the metadata
+    :param checksum: new checksum for the box data
+    :param serve_local: whether or not to serve the box locally
+    :return: updated metadata
+    :rtype: dict
+    """
     if version_increment == 'major':
         metadata['version'] = bump_major(metadata['version'])
     elif version_increment == 'minor':

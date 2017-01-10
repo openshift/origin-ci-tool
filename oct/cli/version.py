@@ -9,12 +9,12 @@ VERSION = '0.1.0'
 OPENSHIFT_ANSIBLE_VERSION = 'openshift-ansible-3.4.17-1-148-g134c620'
 OPENSHIFT_ANSIBLE_CHECKOUT = '134c6200d1c24131da456808a7b8b7f59a14f91d'
 
-_short_help = 'Print version information for this tool.'
+_SHORT_HELP = 'Print version information for this tool.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 As this tool bundles a number of other tools to achieve
 its goals, the version of all of those tools is important

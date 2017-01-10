@@ -5,12 +5,12 @@ from click import command, pass_context
 
 from ..util.common_options import ansible_output_options
 
-_short_help = 'Bootstrap a machine to be an Ansible target host.'
+_SHORT_HELP = 'Bootstrap a machine to be an Ansible target host.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 In order for Ansible to interact with a target host, a set of requisite
 dependencies need to be installed first. This command will install them

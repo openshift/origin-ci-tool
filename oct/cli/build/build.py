@@ -6,12 +6,12 @@ from click import command, option, pass_context
 from ..util.common_options import ansible_output_options
 from ..util.repository_options import Repository, repository_argument
 
-_short_help = 'Build binaries and other artifacts from source code.'
+_SHORT_HELP = 'Build binaries and other artifacts from source code.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 Once the source code in the repository on the remote host
 is up-to-date or reflects the current state of the source
