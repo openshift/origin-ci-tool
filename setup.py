@@ -13,7 +13,8 @@ test_requires = base_requires + [
     'mock',
     'coverage',
     'pep8',
-    'yapf==0.14.0'
+    'yapf==0.14.0',
+    'pylint'
 ]
 
 setup(

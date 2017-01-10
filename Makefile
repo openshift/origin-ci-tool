@@ -14,6 +14,7 @@ install-development:
 verify:
 	hack/verify/formatting.sh
 	hack/verify/pep8.sh
+	hack/verify/pylint.sh
 	hack/verify/declared-versions-match.sh
 .PHONY: verify
 

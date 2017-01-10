@@ -1,0 +1,17 @@
+[MASTER]
+load-plugins = pylint.extensions.docparams,pylint.extensions.docstyle
+accept-no-param-doc = no
+accept-no-raise-doc = no
+accept-no-return-doc = no
+accept-no-yields-doc = no
+
+[MESSAGES CONTROL]
+disable = docstring-first-line-empty,fixme,line-too-long,missing-type-doc,design
+
+[REPORTS]
+reports = no
+include-ids = yes
+files-output = no
+
+[BASIC]
+no-docstring-rgx = ^_|^test_|.*TestCase
