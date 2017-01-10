@@ -5,7 +5,8 @@ from unittest import TestCase
 
 from oct.cli.prepare.docker import docker_version_for_preset
 from oct.cli.util.preset_option import Preset
-from oct.tests.unit.playbook_runner_test_case import PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace
+from oct.tests.unit.playbook_runner_test_case import PlaybookRunnerTestCase, TestCaseParameters, show_stack_trace, \
+    PlaybookRunCallSpecification
 
 if not show_stack_trace:
     __unittest = True
@@ -16,10 +17,9 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker'],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {},
-                }],
+                expected_calls=[PlaybookRunCallSpecification(
+                    playbook_relative_path='prepare/docker',
+                )],
             )
         )
 
@@ -27,12 +27,12 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker', '--for', Preset.origin_master],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master),
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={'origin_ci_docker_version': docker_version_for_preset(Preset.origin_master), },
+                    )
+                ],
             )
         )
 
@@ -40,12 +40,12 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker', '--version', '1.10.3'],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_version': '1.10.3',
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={'origin_ci_docker_version': '1.10.3', },
+                    )
+                ],
             )
         )
 
@@ -53,13 +53,15 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker', '--repo', 'reponame'],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_disabledrepos': '*',
-                        'origin_ci_docker_enabledrepos': 'reponame',
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={
+                            'origin_ci_docker_disabledrepos': '*',
+                            'origin_ci_docker_enabledrepos': 'reponame',
+                        },
+                    )
+                ],
             )
         )
 
@@ -67,13 +69,15 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker', '--repo', 'reponame', '--repo', 'otherrepo'],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_disabledrepos': '*',
-                        'origin_ci_docker_enabledrepos': 'reponame,otherrepo',
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={
+                            'origin_ci_docker_disabledrepos': '*',
+                            'origin_ci_docker_enabledrepos': 'reponame,otherrepo',
+                        },
+                    )
+                ],
             )
         )
 
@@ -81,12 +85,12 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever'],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'], },
+                    )
+                ],
             )
         )
 
@@ -96,12 +100,14 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
                 args=[
                     'prepare', 'docker', '--repourl', 'https://www.myrepo.com/whatever', '--repourl', 'https://www.myrepo.com/ok'
                 ],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok'],
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={
+                            'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever', 'https://www.myrepo.com/ok'],
+                        },
+                    )
+                ],
             )
         )
 
@@ -109,14 +115,16 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['prepare', 'docker', '--repo', 'reponame', '--repourl', 'https://www.myrepo.com/whatever'],
-                expected_calls=[{
-                    'playbook_relative_path': 'prepare/docker',
-                    'playbook_variables': {
-                        'origin_ci_docker_disabledrepos': '*',
-                        'origin_ci_docker_enabledrepos': 'reponame',
-                        'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='prepare/docker',
+                        playbook_variables={
+                            'origin_ci_docker_disabledrepos': '*',
+                            'origin_ci_docker_enabledrepos': 'reponame',
+                            'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
+                        },
+                    )
+                ],
             )
         )
 

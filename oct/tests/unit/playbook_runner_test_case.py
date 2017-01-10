@@ -22,8 +22,6 @@ CLICK_RC_OK = 0
 CLICK_RC_EXCEPTION = 1
 CLICK_RC_USAGE = 2
 
-DUMMY_INVENTORY_DIR = 'dummy-inventory-dir'
-
 
 class TestCaseParameters(object):
     def __init__(self, args, expected_result=CLICK_RC_OK, expected_calls=None, expected_output=None):
@@ -41,6 +39,20 @@ class TestCaseParameters(object):
         self.expected_calls = expected_calls
 
 
+class PlaybookRunCallSpecification(object):
+    def __init__(self, playbook_relative_path, playbook_variables=None, unexpected_playbook_variables=None):
+        """
+        Specify a run_playbook call.
+
+        :param playbook_relative_path: relative playbook path passed to the call
+        :param playbook_variables: affirm that these variables are passed to the call
+        :param unexpected_playbook_variables: affirm that these variables are not passed to the call
+        """
+        self.playbook_relative_path = playbook_relative_path
+        self.playbook_variables = {} if playbook_variables is None else playbook_variables
+        self.unexpected_playbook_variables = {} if unexpected_playbook_variables is None else unexpected_playbook_variables
+
+
 class PlaybookRunnerTestCase(TestCase):
     """
     Set up a common test case that validates correct
@@ -55,29 +67,21 @@ class PlaybookRunnerTestCase(TestCase):
         Mock out the filesystem methods on Configuration
         so we don't touch disk in our tests.
         """
-        inventory_path_mock = PropertyMock()
-        inventory_path_mock.return_value = DUMMY_INVENTORY_DIR
-
         self._call_metadata = []
         patches = [
             patch.object(
                 target=Configuration,
                 attribute='run_playbook',
                 new=lambda _, playbook_relative_path, playbook_variables=None:
-                self._call_metadata.append({
-                    'playbook_relative_path': playbook_relative_path,
-                    'playbook_variables': playbook_variables,
-                }),
+                self._call_metadata.append(PlaybookRunCallSpecification(
+                    playbook_relative_path=playbook_relative_path,
+                    playbook_variables=playbook_variables,
+                )),
             ),
             patch.object(
                 target=Configuration,
                 attribute='load_vagrant_metadata',
                 new=lambda _: [],
-            ),
-            patch.object(
-                target=Configuration,
-                attribute='ansible_inventory_path',
-                new_callable=inventory_path_mock,
             ),
             patch.object(
                 target=configuration_module,
@@ -146,16 +150,21 @@ class PlaybookRunnerTestCase(TestCase):
             prefix = '[playbook {}]'.format(i)
 
             self.make_equality_assertion(
-                actual=actual['playbook_relative_path'],
-                expected=expected['playbook_relative_path'],
+                actual=actual.playbook_relative_path,
+                expected=expected.playbook_relative_path,
                 message='{}: Invalid source.'.format(prefix),
             )
 
-            self.make_equality_assertion(
-                actual=actual['playbook_variables'],
-                expected=expected['playbook_variables'],
-                message='{}: Invalid variables.'.format(prefix),
-            )
+            for expected_variable in expected.playbook_variables:
+                self.assertIn(member=expected_variable, container=actual.playbook_variables)
+                self.make_equality_assertion(
+                    actual=actual.playbook_variables[expected_variable],
+                    expected=expected.playbook_variables[expected_variable],
+                    message='{}: Variable present but invalid.'.format(prefix),
+                )
+
+            for unexpected_variable in expected.unexpected_playbook_variables:
+                self.assertNotIn(member=unexpected_variable, container=actual.playbook_variables)
 
     def make_equality_assertion(self, actual, expected, message):
         """
