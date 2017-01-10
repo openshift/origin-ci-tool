@@ -5,13 +5,13 @@ from click import command, pass_context
 
 from ..util.common_options import ansible_output_options
 
-_short_help = 'Install system dependencies on remote hosts.'
+_SHORT_HELP = 'Install system dependencies on remote hosts.'
 
 
 @command(
     name='dependencies',
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 If a preset is chosen, default values for the other options are used
 and user-provided options are ignored.

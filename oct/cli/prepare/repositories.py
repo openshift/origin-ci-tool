@@ -5,12 +5,12 @@ from click import command, pass_context
 
 from ..util.common_options import ansible_output_options
 
-_short_help = 'Initialize source code repositories.'
+_SHORT_HELP = 'Initialize source code repositories.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 In order to sync or build from source code on the virtual
 machine, or install from the artifacts created from the build,

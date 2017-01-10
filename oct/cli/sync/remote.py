@@ -8,12 +8,12 @@ from .sync_options import sync_destination_option
 from ..util.common_options import ansible_output_options
 from ..util.repository_options import Repository, repository_argument
 
-_short_help = 'Synchronize a repository using remote servers.'
+_SHORT_HELP = 'Synchronize a repository using remote servers.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 Source code repositories on the remote hosts can be updated to
 the state held on authoritative upstream Git servers with this

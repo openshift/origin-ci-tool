@@ -8,12 +8,12 @@ from .sync_options import sync_options
 from ..util.common_options import ansible_output_options
 from ..util.repository_options import repository_argument
 
-_short_help = 'Synchronize a repository using local sources.'
+_SHORT_HELP = 'Synchronize a repository using local sources.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 The local Git client can be used to synchronize the repositories
 on remote hosts with local copies by directly pushing to a ref

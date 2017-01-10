@@ -5,13 +5,13 @@ from click import command, option, pass_context
 
 from ..util.common_options import ansible_output_options
 
-_short_help = 'Download Origin test artifacts from the remote host.'
+_SHORT_HELP = 'Download Origin test artifacts from the remote host.'
 
 
 @command(
-    short_help=_short_help,
+    short_help=_SHORT_HELP,
     name='origin-artifacts',
-    help=_short_help + '''
+    help=_SHORT_HELP + '''
 
 To preserve information about tests run on the remote system and
 to allow for better debugging, it is possible to download the

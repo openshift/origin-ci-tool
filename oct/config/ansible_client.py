@@ -3,8 +3,10 @@ from __future__ import absolute_import, division, print_function
 
 from functools import partial
 from time import sleep
+from os import environ, mkdir
+from os.path import abspath, dirname, exists, join
 
-from __main__ import display
+from __main__ import display  # pylint: disable=no-name-in-module
 from ansible import constants
 from ansible.cli.playbook import PlaybookCLI
 from ansible.executor.playbook_executor import PlaybookExecutor
@@ -14,8 +16,6 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.plugins import callback_loader
 from ansible.vars import VariableManager
 from click import ClickException
-from os import environ, mkdir
-from os.path import abspath, dirname, exists, join
 
 DEFAULT_VERBOSITY = 1
 

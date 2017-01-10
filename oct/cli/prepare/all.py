@@ -27,13 +27,13 @@ def install_dependencies_for_preset(context, _, value):
     context.exit()
 
 
-_short_help = 'Configure all dependencies on remote hosts.'
+_SHORT_HELP = 'Configure all dependencies on remote hosts.'
 
 
 @command(
     name='all',
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 If a preset is chosen, default values for the other options are used
 and user-provided options are ignored.

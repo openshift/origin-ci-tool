@@ -39,13 +39,13 @@ class Stage(object):
     install = 'install'
 
 
-_short_help = 'Provision a virtual host for an All-In-One deployment.'
+_SHORT_HELP = 'Provision a virtual host for an All-In-One deployment.'
 
 
 @command(
     name='all-in-one',
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 An All-In-One deployment of OpenShift uses one virtual host on which
 all cluster components are provisioned. These types of deployments are

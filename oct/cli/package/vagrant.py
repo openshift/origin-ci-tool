@@ -6,12 +6,12 @@ from click import Choice, command, echo, option, pass_context
 from .common_options import next_stage, package_options
 from ..util.common_options import ansible_output_options
 
-_short_help = 'Package a running Vagrant virtual machine.'
+_SHORT_HELP = 'Package a running Vagrant virtual machine.'
 
 
 @command(
-    short_help=_short_help,
-    help=_short_help + '''
+    short_help=_SHORT_HELP,
+    help=_SHORT_HELP + '''
 
 This command allows for a local virtual machine to be packaged
 as an update for its current stage or as an instance of the next
