@@ -502,11 +502,23 @@ following command from the ``origin-ci-tool`` source directory:
 
     $ make install-development
 
+Static analyzers for source code style, format and common errors can be run with:
+
+.. code-block:: shell
+
+    $ make verify
+
 All of the unit tests can be run with:
 
 .. code-block:: shell
 
     $ make test
+
+In order to see stack traces from the test harness, use the environment ``${SHOW_STACK_TRACE}``:
+
+.. code-block:: shell
+
+    $ SHOW_STACK_TRACE=true make test
 
 Specific modules, test classes and test methods can be supplied using ``${TARGET}`` as they would be supplied to the ``unittest``
 module normally:
