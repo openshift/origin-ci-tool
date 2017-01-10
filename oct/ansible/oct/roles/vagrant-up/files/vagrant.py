@@ -87,7 +87,7 @@ def determine_vagrant_hostname(vm_directory):
     :return: the name of the running VM, or None
     """
     for line in check_output(['vagrant', 'status'], cwd=vm_directory).splitlines():
-        matches = search('([^\s]+)[\s]+running \(.+', line)
+        matches = search(r'([^\s]+)[\s]+running \(.+', line)
         if matches:
             return matches.group(1)
 
