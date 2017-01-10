@@ -1,15 +1,15 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from codecs import open
 from datetime import datetime
+from os import environ, makedirs
+from os.path import exists, join, sep
 from shutil import rmtree
 from tempfile import mkdtemp
 from traceback import format_exc
 
 from ansible.plugins.callback import CallbackBase
-from codecs import open
-from os import environ, makedirs
-from os.path import exists, join, sep
 from yaml import dump
 
 

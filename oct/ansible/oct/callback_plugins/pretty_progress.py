@@ -3,6 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from Queue import Empty
 from multiprocessing import Process, Queue
+from os import environ
+from os.path import join
+from re import sub
 from sys import stderr, stdout
 from time import sleep
 from timeit import default_timer as timer
@@ -13,9 +16,6 @@ from ansible.playbook.play import Play
 from ansible.playbook.task import Task
 from ansible.plugins.callback import CallbackBase
 from backports.shutil_get_terminal_size import get_terminal_size
-from os import environ
-from os.path import join
-from re import sub
 
 RUNNING_PREFIX = 'RUNNING'
 SUCCESS_PREFIX = 'SUCCESS'
