@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from oct.cli.util.repository_options import Repository
 from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, PlaybookRunnerTestCase, TestCaseParameters, \
-    show_stack_trace
+    show_stack_trace, PlaybookRunCallSpecification
 
 if not show_stack_trace:
     __unittest = True
@@ -41,13 +41,15 @@ class MakeTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['make', Repository.origin, 'target'],
-                expected_calls=[{
-                    'playbook_relative_path': 'make/main',
-                    'playbook_variables': {
-                        'origin_ci_make_repository': Repository.origin,
-                        'origin_ci_make_targets': ['target'],
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='make/main',
+                        playbook_variables={
+                            'origin_ci_make_repository': Repository.origin,
+                            'origin_ci_make_targets': ['target'],
+                        },
+                    )
+                ],
             )
         )
 
@@ -55,13 +57,15 @@ class MakeTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['make', Repository.origin, 'target', 'second_target'],
-                expected_calls=[{
-                    'playbook_relative_path': 'make/main',
-                    'playbook_variables': {
-                        'origin_ci_make_repository': Repository.origin,
-                        'origin_ci_make_targets': ['target', 'second_target'],
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='make/main',
+                        playbook_variables={
+                            'origin_ci_make_repository': Repository.origin,
+                            'origin_ci_make_targets': ['target', 'second_target'],
+                        },
+                    )
+                ],
             )
         )
 
@@ -69,16 +73,18 @@ class MakeTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['make', Repository.origin, 'target', '--env', 'KEY=VAL'],
-                expected_calls=[{
-                    'playbook_relative_path': 'make/main',
-                    'playbook_variables': {
-                        'origin_ci_make_repository': Repository.origin,
-                        'origin_ci_make_targets': ['target'],
-                        'origin_ci_make_parameters': {
-                            'KEY': 'VAL',
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='make/main',
+                        playbook_variables={
+                            'origin_ci_make_repository': Repository.origin,
+                            'origin_ci_make_targets': ['target'],
+                            'origin_ci_make_parameters': {
+                                'KEY': 'VAL',
+                            },
                         },
-                    },
-                }],
+                    )
+                ],
             )
         )
 
@@ -86,16 +92,18 @@ class MakeTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['make', Repository.origin, 'target', '--env', 'KEY=OTHERKEY=VAL'],
-                expected_calls=[{
-                    'playbook_relative_path': 'make/main',
-                    'playbook_variables': {
-                        'origin_ci_make_repository': Repository.origin,
-                        'origin_ci_make_targets': ['target'],
-                        'origin_ci_make_parameters': {
-                            'KEY': 'OTHERKEY=VAL',
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='make/main',
+                        playbook_variables={
+                            'origin_ci_make_repository': Repository.origin,
+                            'origin_ci_make_targets': ['target'],
+                            'origin_ci_make_parameters': {
+                                'KEY': 'OTHERKEY=VAL',
+                            },
                         },
-                    },
-                }],
+                    )
+                ],
             )
         )
 
@@ -103,18 +111,20 @@ class MakeTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['make', Repository.origin, 'target', '--env', 'KEY=VAL', '--env', 'KEY2=VAL', '--env', 'KEY3=VAL'],
-                expected_calls=[{
-                    'playbook_relative_path': 'make/main',
-                    'playbook_variables': {
-                        'origin_ci_make_repository': Repository.origin,
-                        'origin_ci_make_targets': ['target'],
-                        'origin_ci_make_parameters': {
-                            'KEY': 'VAL',
-                            'KEY2': 'VAL',
-                            'KEY3': 'VAL',
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='make/main',
+                        playbook_variables={
+                            'origin_ci_make_repository': Repository.origin,
+                            'origin_ci_make_targets': ['target'],
+                            'origin_ci_make_parameters': {
+                                'KEY': 'VAL',
+                                'KEY2': 'VAL',
+                                'KEY3': 'VAL',
+                            },
                         },
-                    },
-                }],
+                    )
+                ],
             )
         )
 
@@ -131,13 +141,15 @@ class MakeTestCase(PlaybookRunnerTestCase):
         self.run_test(
             TestCaseParameters(
                 args=['make', Repository.origin, 'target', '--dest', '/some/path'],
-                expected_calls=[{
-                    'playbook_relative_path': 'make/main',
-                    'playbook_variables': {
-                        'origin_ci_make_repository': Repository.origin,
-                        'origin_ci_make_targets': ['target'],
-                        'origin_ci_make_destination': '/some/path',
-                    },
-                }],
+                expected_calls=[
+                    PlaybookRunCallSpecification(
+                        playbook_relative_path='make/main',
+                        playbook_variables={
+                            'origin_ci_make_repository': Repository.origin,
+                            'origin_ci_make_targets': ['target'],
+                            'origin_ci_make_destination': '/some/path',
+                        },
+                    )
+                ],
             )
         )
