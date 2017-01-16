@@ -15,6 +15,7 @@ class Repository(object):
     source_to_image = 'source-to-image'
     metrics = 'origin-metrics'
     logging = 'origin-aggregated-logging'
+    online = 'online'
 
 
 def repository_argument(func):
@@ -32,5 +33,6 @@ def repository_argument(func):
             Repository.source_to_image,
             Repository.metrics,
             Repository.logging,
+            Repository.online,
         ])
     )(func)

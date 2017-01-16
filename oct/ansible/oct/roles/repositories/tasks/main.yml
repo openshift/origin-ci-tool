@@ -20,6 +20,14 @@
     - 'origin-metrics'
     - 'origin-aggregated-logging'
 
+- name: initialize git directories for each private repository
+  include: initialize_repository_placeholder.yml
+  vars:
+    origin_ci_repository: '{{ item }}'
+  with_items:
+    - 'ose'
+    - 'online'
+
 - name: ensure the repository management group exists
   group:
     name: '{{ origin_ci_user }}-git'
