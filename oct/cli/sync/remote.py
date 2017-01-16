@@ -42,7 +42,7 @@ Examples:
   $ oct sync remote origin-aggregated-logging --branch=enterprise
 \b
   Synchronize the Origin repo, specifying a pull request refspec
-  $ oct sync remote origin --refspec=/pull/1000/head --branch=pull-1000
+  $ oct sync remote origin --refspec=pull/1000/head --branch=pull-1000
 \b
   Synchronize the Origin repo, resulting in a merged state of two branches
   $ oct sync remote origin --remote=myfork --branch=my-feature-branch --merge-into=master
