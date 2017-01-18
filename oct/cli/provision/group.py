@@ -25,7 +25,8 @@ and install process your VM begins. The following stages are supported:
 \b
  - bare: bare operating system
  - base: RPM dependencies installed and configured, repositories cloned
- - install: artifacts and binaries built and installed from repositories
+ - build: artifacts and binaries built from repositories
+ - install: OpenShift cluster installed from artifacts
 
 Your choice of stage is not final: it is always possible to use
 this tool to 'upgrade' your stage by running sync and install jobs

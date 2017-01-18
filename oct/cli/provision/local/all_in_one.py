@@ -36,6 +36,7 @@ class Stage(object):
     """
     bare = 'bare'
     base = 'base'
+    build = 'build'
     install = 'install'
 
 
@@ -95,6 +96,7 @@ Examples:
     type=Choice([
         Stage.bare,
         Stage.base,
+        Stage.build,
         Stage.install,
     ]),
     default=Stage.install,
