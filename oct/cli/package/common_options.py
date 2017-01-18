@@ -32,6 +32,8 @@ def next_stage(current_stage):
     if current_stage == Stage.bare:
         return Stage.base
     elif current_stage == Stage.base:
+        return Stage.build
+    elif current_stage == Stage.build:
         return Stage.install
     elif current_stage == Stage.install:
         echo('Warning: No next stage exists past the "{}" stage. Overwriting current stage instead.'.format(Stage.install))

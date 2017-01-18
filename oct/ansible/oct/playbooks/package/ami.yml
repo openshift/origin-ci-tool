@@ -43,7 +43,8 @@
       set_fact:
         origin_ci_image_upgrades:
           bare: base
-          base: install
+          base: build
+          build: install
 
     - name: update image stage if we are upgrading stages
       set_fact:
