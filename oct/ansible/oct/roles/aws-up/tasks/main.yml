@@ -128,6 +128,8 @@
       ansible_ssh_user: 'ec2-user'
       ansible_ssh_extra_args: '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes -o ConnectTimeout=0 -o ServerAliveInterval=30'
       ansible_timeout: 0
+      openshift_schedulable: '{{ openshift_schedulable }}'
+      openshift_node_labels: '{{ openshift_node_labels }}'
     dest: '{{ origin_ci_inventory_dir }}/host_vars/{{ origin_ci_aws_host }}.yml'
 
 - name: determine where updated SSH configuration should go

@@ -183,6 +183,11 @@ def provision_with_aws(configuration, operating_system, stage, name, discrete_ss
             'origin_ci_aws_keypair_name': configuration.aws_client_configuration.keypair_name,
             'origin_ci_aws_private_key_path': configuration.aws_client_configuration.private_key_path,
             'origin_ci_ssh_config_strategy': 'discrete' if discrete_ssh_config else 'update',
+            'openshift_schedulable': True,
+            'openshift_node_labels': {
+                'region': 'infra',
+                'zone': 'default',
+            },
         },
     )
 
