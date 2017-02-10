@@ -7,6 +7,7 @@
     name: '{{ item }}'
     state: latest
   with_items:
+   - ansible
    - augeas                   # developer UX
    - bridge-utils             #
    - bsdtar                   # Origin build/package
