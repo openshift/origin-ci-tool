@@ -8,11 +8,9 @@
     state: touch
 
 - name: Set VG for docker-storage-setup
-  ini_file:
+  lineinfile:
     dest: /etc/sysconfig/docker-storage-setup
-    section: Global
-    option: VG
-    value: "{{ origin_ci_docker_volume_group }}"
+    line: "VG={{ origin_ci_docker_volume_group }}"
 
 - name: Run docker-storage-setup
   command: docker-storage-setup
