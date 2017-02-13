@@ -1,40 +1,18 @@
 ---
-- name: create a logical volume for Docker data
-  lvol:
-    vg: '{{ origin_ci_docker_volume_group }}'
-    lv: 'docker-data'
-    size: '70%FREE'
-    state: present
+- name: Create docker-storage-setup sysconfig
+  file:
+    path: /etc/sysconfig/docker-storage-setup
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+    state: touch
 
-- name: create a logical volume for Docker metadata
-  lvol:
-    vg: '{{ origin_ci_docker_volume_group }}'
-    lv: 'docker-metadata'
-    size: '17%FREE'
-    state: present
+- name: Set VG for docker-storage-setup
+  ini_file:
+    dest: /etc/sysconfig/docker-storage-setup
+    section: Global
+    option: VG
+    value: "{{ origin_ci_docker_volume_group }}"
 
-- name: enumerate the Docker daemon storage options we use
-  set_fact:
-    origin_ci_docker_storage_opts: [
-      '--storage-driver devicemapper',
-      '--storage-opt dm.datadev=/dev/{{ origin_ci_docker_volume_group }}/docker-data',
-      '--storage-opt dm.metadatadev=/dev/{{ origin_ci_docker_volume_group }}/docker-metadata'
-    ]
-
-- name: determine installed Docker version
-  command: "repoquery --pkgnarrow=installed --queryformat '%{version}' docker"
-  register: origin_ci_installed_docker_version
-
-- name: add version-specific Docker daemon storage options
-  set_fact:
-    origin_ci_docker_storage_opts: "{{ origin_ci_docker_storage_opts + [
-      '--storage-opt dm.use_deferred_removal=true',
-      '--storage-opt dm.use_deferred_deletion=true'
-    ] }}"
-  when: origin_ci_installed_docker_version.stdout | version_compare('1.10', '>=')
-
-- name: update the Docker daemon storage configuration options
-  lineinfile:
-    dest: /etc/sysconfig/docker-storage
-    regexp: '^DOCKER_STORAGE_OPTIONS='
-    line: 'DOCKER_STORAGE_OPTIONS={{ origin_ci_docker_storage_opts | join(" ") }}'
+- name: Run docker-storage-setup
+  command: docker-storage-setup

@@ -21,11 +21,11 @@
     regexp: '^ADD_REGISTRY=(.*)'
     line: '# ADD_REGISTRY=\1'
 
-- name: configure the Docker daemon storage
-  include: configure_docker_daemon_storage.yml
-
 - name: configure the OpenShift storage
   include: configure_openshift_storage.yml
+
+- name: configure the Docker daemon storage
+  include: configure_docker_daemon_storage.yml
 
 - name: increase the default timeout for the Docker daemon service
   lineinfile:
