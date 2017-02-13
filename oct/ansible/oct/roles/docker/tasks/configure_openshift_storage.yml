@@ -3,7 +3,7 @@
   lvol:
     vg: '{{ origin_ci_docker_volume_group }}'
     lv: 'openshift-xfs-vol-dir'
-    size: '100%FREE'
+    size: '30%FREE'
     state: present
 
 - name: make the OpenShift XFS filesystem
