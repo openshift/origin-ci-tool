@@ -19,6 +19,7 @@
     - 'source-to-image'
     - 'origin-metrics'
     - 'origin-aggregated-logging'
+    - 'openshift-ansible'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml
