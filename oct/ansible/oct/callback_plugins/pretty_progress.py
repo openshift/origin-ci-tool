@@ -609,15 +609,17 @@ class Failure(object):
         :return: the formatted error
         """
         full_message = colorize('A task failed on host `{}`!\n'.format(self.host), color=COLOR_ERROR)
-        full_message += format_result(self.result)
+        result = format_result(self.result)
 
-        if full_message.count('\n') == 1:
+        if len(result.splitlines()) == 0:
             # we have not been able to get any use-able
             # messages from the result, so we should
             # tell the user to look at the logs
             # TODO: better OS-agnostic filesystem code for this
             log_location = join(environ.get('ANSIBLE_LOG_ROOT_PATH', join('tmp', 'ansible', 'log')), '/', '{}'.format(self.host))
             full_message += 'No useful error messages could be extracted, see full output at {}\n'.format(log_location)
+        else:
+            full_message += result
 
         return full_message
 
