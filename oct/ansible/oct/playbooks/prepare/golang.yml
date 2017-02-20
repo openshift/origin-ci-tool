@@ -56,7 +56,7 @@
 
     - name: ensure the GOPATH exists
       file:
-        path: '{{ origin_ci_gopath }}'
+        path: '{{ origin_ci_gopath | default("/data") }}'
         state: directory
 
     - name: install golang ecosystem tooling
