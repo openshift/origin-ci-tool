@@ -44,3 +44,13 @@
   roles:
     - role: isolated-install
       origin_ci_isolated_package_name: 'golang'
+
+  post_tasks:
+    - name: install golang ecosystem tooling
+      command: 'go get {{ item }}'
+      with_items:
+        - 'golang.org/x/tools/cmd/cover'
+        - 'golang.org/x/tools/cmd/goimports'
+        - 'github.com/tools/godep'
+        - 'github.com/golang/lint/golint'
+        - 'github.com/openshift/imagebuilder/cmd/imagebuilder'

@@ -16,6 +16,9 @@ class Repository(object):
     metrics = 'origin-metrics'
     logging = 'origin-aggregated-logging'
     online = 'online'
+    release = 'release'
+    aoscdjobs = 'aos-cd-jobs'
+    openshift_ansible = 'openshift-ansible'
 
 
 def repository_argument(func):
@@ -34,5 +37,8 @@ def repository_argument(func):
             Repository.metrics,
             Repository.logging,
             Repository.online,
+            Repository.release,
+            Repository.aoscdjobs,
+            Repository.openshift_ansible,
         ])
     )(func)
