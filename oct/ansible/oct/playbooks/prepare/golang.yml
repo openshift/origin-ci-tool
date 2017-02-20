@@ -46,6 +46,19 @@
       origin_ci_isolated_package_name: 'golang'
 
   post_tasks:
+    - name: persist the GOPATH
+      lineinfile:
+        dest: /etc/environment
+        regexp: '^GOPATH='
+        line: 'GOPATH={{ origin_ci_gopath | default("/data") }}'
+        state: present
+        create: true
+
+    - name: ensure the GOPATH exists
+      file:
+        path: '{{ origin_ci_gopath }}'
+        state: directory
+
     - name: install golang ecosystem tooling
       command: 'go get {{ item }}'
       with_items:

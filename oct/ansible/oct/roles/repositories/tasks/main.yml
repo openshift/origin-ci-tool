@@ -55,14 +55,6 @@
     - '{{ ansible_user_id }}'
     - '{{ ansible_env.SUDO_USER }}'
 
-- name: persist the GOPATH
-  lineinfile:
-    dest: /etc/environment
-    regexp: '^GOPATH='
-    line: 'GOPATH={{ origin_ci_gopath }}'
-    state: present
-    create: true
-
 - name: determine current Git configuration to allow for idempotency
   command: '/usr/bin/git config --list --global'
   register: origin_ci_global_config_probe
