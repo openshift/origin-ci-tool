@@ -469,7 +469,10 @@ def format_result(result):
     # detect internal stacktrace crashes
     full_message += format_internal_exception_output(result)
     full_message += format_parsing_error(result)
-    return full_message
+
+    # filter out empty lines and lines of only whitespace
+    full_message = [line for line in full_message.splitlines() if line and line.strip()]
+    return "\n".join(full_message)
 
 
 def format_failure_message(result):
