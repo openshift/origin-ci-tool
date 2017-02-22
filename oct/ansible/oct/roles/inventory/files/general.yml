@@ -1,5 +1,4 @@
 ---
-openshift_pkg_version: "-0.0.1"
 debug_level: 5
 osm_default_node_selector: "region=infra"
 openshift_hosted_router_selector: "region=infra"
@@ -9,3 +8,4 @@ openshift_master_identity_providers:
     login: "true"
     challenge: "true"
     kind: "AllowAllPasswordIdentityProvider"
+deployment_type: "origin"
