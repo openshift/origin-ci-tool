@@ -64,7 +64,7 @@
     - name: 'centos-paas-sig-openshift-origin-rpms'
       description: 'CentOS PaaS SIG Origin Repository'
       url: 'http://mirror.centos.org/centos/7/paas/x86_64/openshift-origin/'
-    - name: 'centos-paas-sig-openshift-furute-rpms'
+    - name: 'centos-paas-sig-openshift-future-rpms'
       description: 'CentOS PaaS SIG Future Repository'
       url: 'https://buildlogs.centos.org/centos/7/paas/x86_64/openshift-future/'
-  when: ansible_distribution == ['RedHat', 'CentOS']
+  when: ansible_distribution in ['RedHat', 'CentOS']
