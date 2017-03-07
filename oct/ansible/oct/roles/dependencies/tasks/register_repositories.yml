@@ -56,7 +56,7 @@
     state: present
     description: '{{ item.description }}'
     baseurl: '{{ item.url }}'
-    gpgcheck: yes
+    gpgcheck: no
     sslverify: no
     sslclientcert: /var/lib/yum/client-cert.pem
     sslclientkey: /var/lib/yum/client-key.pem
