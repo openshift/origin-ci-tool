@@ -5,7 +5,7 @@ A callback module that outputs jUnit XML for plays.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from os import getenv, mkdir
-from os.path import abspath, exists, expanduser, join
+from os.path import abspath, exists, expanduser, join, split, normpath, sep, realpath, splitext
 from random import choice
 from string import ascii_letters
 from timeit import default_timer as timer
@@ -60,6 +60,28 @@ class CallbackModule(CallbackBase):
 
         :param playbook: playbook which began execution
         """
+        # We want the playbook names to be short but
+        # ultimately unique identifiers. If we notice
+        # that we're running a playbook from a known
+        # repo, we strip the leading path for brevity.
+        # We do not need the file extension, and it is
+        # interpreted weirdly by jUnit viewers, so we
+        # get rid of it
+        playbook_path = splitext(normpath(realpath(playbook._file_name)))[0].split(sep)
+        project_prefixes = [
+            ['oct', 'ansible', 'oct', 'playbooks'],
+            ['openshift-ansible', 'playbooks'],
+            ['openshift-ansible-gce', 'playbooks'],
+        ]
+        for i in range(len(playbook_path)):
+            for prefix in project_prefixes:
+                if i + len(prefix) >= len(playbook_path):
+                    continue
+
+                if playbook_path[i:i + len(prefix)] == prefix:
+                    self.playbook_name = sep.join(playbook_path[i + len(prefix):])
+                    return
+
         self.playbook_name = playbook._file_name
 
     def v2_playbook_on_task_start(self, task, is_conditional):
@@ -144,7 +166,7 @@ class CallbackModule(CallbackBase):
 
         log_filename = ''
         for _ in range(10):
-            log_basename = '{}.xml'.format(''.join(choice(ascii_letters) for i in range(10)))
+            log_basename = '{}.xml'.format(''.join(choice(ascii_letters) for _ in range(10)))
             log_filename = join(log_dir, log_basename)
             if not exists(log_filename):
                 # TODO: determine a better way to do this
@@ -170,7 +192,10 @@ def format_result(result):
     # detect internal stacktrace crashes
     full_message += format_internal_exception_output(result)
     full_message += format_parsing_error(result)
-    return full_message
+
+    # filter out empty lines and lines of only whitespace
+    full_message = [line for line in full_message.splitlines() if line and line.strip()]
+    return "\n".join(full_message)
 
 
 def format_failure_message(result):
@@ -237,10 +262,10 @@ def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
 
     if stderr_key in result:
         if len(result[stderr_key]) > 0:
-            output_message += '{}\n{}\n'.format('Output to stderr:', result[stderr_key])
+            output_message += '{}\n{}\n'.format(colorize('Output to stderr:', color=COLOR_ERROR), result[stderr_key])
 
     if stdout_key in result and len(result[stdout_key]) == 0 and stderr_key in result and len(result[stderr_key]) == 0:
-        output_message = 'No output was written to stdout or stderr!'
+        output_message = colorize('No output was written to stdout or stderr!', color=COLOR_ERROR)
 
     return output_message
 
