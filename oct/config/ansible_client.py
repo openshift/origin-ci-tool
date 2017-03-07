@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from functools import partial
 from time import sleep
-from os import environ, mkdir
+from os import environ, mkdir, makedirs
 from os.path import abspath, dirname, exists, join
 
 from __main__ import display  # pylint: disable=no-name-in-module
@@ -130,7 +130,7 @@ class AnsibleCoreClient(object):
         # that the directory for it exists, at the least, so
         # ansible doesn't complain
         if not exists(self.host_list):
-            mkdir(self.host_list)
+            makedirs(self.host_list)
 
         variable_manager = VariableManager()
         data_loader = DataLoader()
