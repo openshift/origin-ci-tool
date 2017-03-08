@@ -17,7 +17,7 @@ test_requires = base_requires + [
 ]
 
 setup(
-    name='oct',
+    name='origin-ci-tool',
     version='0.1.0',
     url='https://www.github.com/openshift/origin-ci-tool',
     maintainer='Steve Kuznetsov',
