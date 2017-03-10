@@ -27,7 +27,7 @@
   when: origin_ci_sync_remote not in origin_ci_sync_remotes_probe.stdout and origin_ci_sync_address is defined
 
 - name: inspect the remote for the address if we do not have an address
-  shell: '/usr/bin/git remote show {{ origin_ci_sync_remote }} | grep "Fetch URL" | cut -c 14- '
+  command: '/usr/bin/git remote get-url {{ origin_ci_sync_remote }}'
   args:
     chdir: '{{ origin_ci_sync_destination }}'
   register: origin_ci_sync_remote_url
