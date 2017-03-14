@@ -4,14 +4,15 @@ A callback module that outputs jUnit XML for plays.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from os import getenv, mkdir
-from os.path import abspath, exists, expanduser, join, split, normpath, sep, realpath, splitext
 from random import choice
 from string import ascii_letters
 from timeit import default_timer as timer
 
+import os
 from ansible.plugins.callback import CallbackBase
 from junit_xml import TestCase, TestSuite
+from os import getenv, makedirs
+from os.path import abspath, exists, expanduser, join, normpath, realpath, sep, splitext
 
 
 class CallbackModule(CallbackBase):
@@ -159,10 +160,17 @@ class CallbackModule(CallbackBase):
         """
         suite = TestSuite(self.playbook_name, self.test_cases)
 
-        base_dir = getenv('OCT_CONFIG_HOME', abspath(join(expanduser('~'), '.config')))
-        log_dir = abspath(join(base_dir, 'origin-ci-tool', 'logs', 'junit'))
+        if 'ANSIBLE_JUNIT_DIR' in os.environ:
+            log_dir = abspath(getenv('ANSIBLE_JUNIT_DIR'))
+        else:
+            if 'OCT_CONFIG_HOME' in os.environ:
+                base_dir = getenv('OCT_CONFIG_HOME')
+            else:
+                base_dir = abspath(join(expanduser('~'), '.config'))
+            log_dir = abspath(join(base_dir, 'origin-ci-tool', 'logs', 'junit'))
+
         if not exists(log_dir):
-            mkdir(log_dir)
+            makedirs(log_dir)
 
         log_filename = ''
         for _ in range(10):
