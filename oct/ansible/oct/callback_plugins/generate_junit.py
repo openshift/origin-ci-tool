@@ -270,10 +270,10 @@ def format_terminal_output(result, stdout_key='stdout', stderr_key='stderr'):
 
     if stderr_key in result:
         if len(result[stderr_key]) > 0:
-            output_message += '{}\n{}\n'.format(colorize('Output to stderr:', color=COLOR_ERROR), result[stderr_key])
+            output_message += '{}\n{}\n'.format('Output to stderr:', result[stderr_key])
 
     if stdout_key in result and len(result[stdout_key]) == 0 and stderr_key in result and len(result[stderr_key]) == 0:
-        output_message = colorize('No output was written to stdout or stderr!', color=COLOR_ERROR)
+        output_message = 'No output was written to stdout or stderr!'
 
     return output_message
 
