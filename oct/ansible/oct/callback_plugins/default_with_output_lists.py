@@ -6,10 +6,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from copy import deepcopy
 
-from ansible.plugins.callback import default
+from ansible.plugins.callback.default import CallbackModule as DefaultCallbackModule
 
 
-class CallbackModule(default.CallbackModule):
+class CallbackModule(DefaultCallbackModule):
     """
     This CallbackModule overrides the default stdout
     callback plugin to always use arrays for stderr
