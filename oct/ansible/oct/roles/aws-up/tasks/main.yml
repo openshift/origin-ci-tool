@@ -146,7 +146,7 @@
   file:
     path: '{{ item }}'
     state: touch
-  with_items: origin_ci_ssh_config_files
+  with_items: '{{ origin_ci_ssh_config_files }}'
 
 - name: update the SSH configuration
   blockinfile:
@@ -164,4 +164,4 @@
         LogLevel FATAL
     state: present
     marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_aws_hostname }}'
-  with_items: origin_ci_ssh_config_files
+  with_items: '{{ origin_ci_ssh_config_files }}'
