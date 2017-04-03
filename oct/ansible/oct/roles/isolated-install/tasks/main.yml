@@ -50,22 +50,14 @@
 
 - name: 'add temporary repositories to the whitelist for install'
   set_fact:
-    origin_ci_isolated_enabledrepos: "{{ origin_ci_isolated_enabledrepos }},{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
-  with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
-
-- name: 'install {{ origin_ci_isolated_package }} using default repos'
-  package:
-    name: '{{ origin_ci_isolated_package }}'
-    state: present
-  when: origin_ci_isolated_enabledrepos is not defined
+    origin_ci_isolated_enabledrepos: "{{ ( (origin_ci_isolated_enabledrepos | default() | list) + (origin_ci_isolated_tmp_repourls | map('regex_replace', '[^a-zA-Z0-9]', '') | list) ) | join(',') }}"
 
 - name: 'install {{ origin_ci_isolated_package }} using selected repos'
   yum:
     name: '{{ origin_ci_isolated_package }}'
     state: present
-    disablerepo: '{{ origin_ci_isolated_disabledrepos }}'
-    enablerepo: '{{ origin_ci_isolated_enabledrepos }}'
-  when: origin_ci_isolated_enabledrepos is defined
+    disablerepo: '{{ origin_ci_isolated_disabledrepos | default(omit) }}'
+    enablerepo: '{{ origin_ci_isolated_enabledrepos | default(omit) }}'
 
 - name: 'remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}'
   yum_repository:
