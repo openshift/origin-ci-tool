@@ -57,8 +57,8 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
                     PlaybookRunCallSpecification(
                         playbook_relative_path='prepare/docker',
                         playbook_variables={
-                            'origin_ci_docker_disabledrepos': '*',
-                            'origin_ci_docker_enabledrepos': 'reponame',
+                            'origin_ci_docker_disabledrepos': ['*'],
+                            'origin_ci_docker_enabledrepos': ['reponame'],
                         },
                     )
                 ],
@@ -73,8 +73,8 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
                     PlaybookRunCallSpecification(
                         playbook_relative_path='prepare/docker',
                         playbook_variables={
-                            'origin_ci_docker_disabledrepos': '*',
-                            'origin_ci_docker_enabledrepos': 'reponame,otherrepo',
+                            'origin_ci_docker_disabledrepos': ['*'],
+                            'origin_ci_docker_enabledrepos': ['reponame', 'otherrepo'],
                         },
                     )
                 ],
@@ -119,8 +119,8 @@ class PrepareDockerTestCase(PlaybookRunnerTestCase):
                     PlaybookRunCallSpecification(
                         playbook_relative_path='prepare/docker',
                         playbook_variables={
-                            'origin_ci_docker_disabledrepos': '*',
-                            'origin_ci_docker_enabledrepos': 'reponame',
+                            'origin_ci_docker_disabledrepos': ['*'],
+                            'origin_ci_docker_enabledrepos': ['reponame'],
                             'origin_ci_docker_tmp_repourls': ['https://www.myrepo.com/whatever'],
                         },
                     )

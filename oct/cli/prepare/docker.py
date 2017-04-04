@@ -106,8 +106,8 @@ def install_docker(client, version, repos=None, repourls=None):
         playbook_variables['origin_ci_docker_version'] = version
 
     if repos:
-        playbook_variables['origin_ci_docker_disabledrepos'] = '*'
-        playbook_variables['origin_ci_docker_enabledrepos'] = ','.join(repos)
+        playbook_variables['origin_ci_docker_disabledrepos'] = ['*']
+        playbook_variables['origin_ci_docker_enabledrepos'] = list(repos)
 
     if repourls:
         playbook_variables['origin_ci_docker_tmp_repourls'] = list(repourls)
