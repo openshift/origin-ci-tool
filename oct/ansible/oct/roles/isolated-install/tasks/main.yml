@@ -34,36 +34,49 @@
     name: '{{ origin_ci_isolated_package_name }}'
     state: absent
 
+- name: 'format the list of temporary repositories'
+  set_fact:
+    origin_ci_isolated_tmp_repourls_formatted: "{{ origin_ci_isolated_tmp_repourls | map('regex_replace', '[^a-zA-Z0-9]', '' ) | list }}"
+  when: origin_ci_isolated_tmp_repourls is defined
+
 - name: 'register temporary repositories that we need to install {{ origin_ci_isolated_package }}'
   yum_repository:
-    name: "{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
+    name: '{{ item.0 }}'
     description: 'Temporary repository necessary to install {{ origin_ci_isolated_package }}'
     state: present
     enabled: yes
-    baseurl: '{{ item }}'
+    baseurl: '{{ item.1 }}'
     gpgcheck: no
     sslverify: no
     sslclientcert: /var/lib/yum/client-cert.pem
     sslclientkey: /var/lib/yum/client-key.pem
     file: '{{ origin_ci_tmp_repofile }}'
-  with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
+  with_together:
+    - '{{ origin_ci_isolated_tmp_repourls_formatted | default([]) }}'
+    - '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
 
 - name: 'add temporary repositories to the whitelist for install'
   set_fact:
-    origin_ci_isolated_enabledrepos: "{{ ( (origin_ci_isolated_enabledrepos | default() | list) + (origin_ci_isolated_tmp_repourls | map('regex_replace', '[^a-zA-Z0-9]', '') | list) ) | join(',') }}"
+    origin_ci_isolated_enabledrepos: "{{ origin_ci_isolated_enabledrepos + origin_ci_isolated_tmp_repourls_formatted }}"
+  when: origin_ci_isolated_enabledrepos is defined and origin_ci_isolated_tmp_repourls_formatted is defined
+
+- name: 'use the list of temporary repositories as the whitelist for install'
+  set_fact:
+    origin_ci_isolated_enabledrepos: "{{ origin_ci_isolated_tmp_repourls_formatted }}"
+  when: origin_ci_isolated_enabledrepos is not defined and origin_ci_isolated_tmp_repourls_formatted is defined
 
 - name: 'install {{ origin_ci_isolated_package }} using selected repos'
   yum:
     name: '{{ origin_ci_isolated_package }}'
     state: present
-    disablerepo: '{{ origin_ci_isolated_disabledrepos | default(omit) }}'
-    enablerepo: '{{ origin_ci_isolated_enabledrepos | default(omit) }}'
+    disablerepo: "{{ origin_ci_isolated_disabledrepos | default([]) | join(',') }}"
+    enablerepo: "{{ origin_ci_isolated_enabledrepos | default([]) | join(',') }}"
 
 - name: 'remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}'
   yum_repository:
-    name: "{{ item | regex_replace('[^a-zA-Z0-9]', '') }}"
+    name: '{{ item }}'
     state: absent
-  with_items: '{{ origin_ci_isolated_tmp_repourls | default([]) }}'
+  with_items: '{{ origin_ci_isolated_tmp_repourls_formatted | default([]) }}'
 
 - name: 'remove temporary repofile that we needed to install {{ origin_ci_isolated_package }}'
   file:

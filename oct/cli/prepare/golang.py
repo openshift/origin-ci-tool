@@ -104,8 +104,8 @@ def install_golang(client, version, repos=None, repourls=None):
         playbook_variables['origin_ci_golang_version'] = version
 
     if repos:
-        playbook_variables['origin_ci_golang_disabledrepos'] = '*'
-        playbook_variables['origin_ci_golang_enabledrepos'] = ','.join(repos)
+        playbook_variables['origin_ci_golang_disabledrepos'] = ['*']
+        playbook_variables['origin_ci_golang_enabledrepos'] = list(repos)
 
     if repourls:
         playbook_variables['origin_ci_golang_tmp_repourls'] = list(repourls)
