@@ -51,7 +51,7 @@ Examples:
   Update the option '{key}' option to '{value}'
   $ oct configure {name} '{key}' '{value}'
 \b
-  View the current {container}options
+  View the current {container} options
   $ oct configure {name} --view
 '''.format(name=name, container=container, use=use, key=example_key, value=example_value)
             ),

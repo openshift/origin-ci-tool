@@ -1,0 +1,52 @@
+---
+- name: ensure we have the parameters necessary to prepare the user
+  hosts: 'localhost'
+  connection: 'local'
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - name: ensure all required variables are set
+      fail:
+        msg: 'This playbook requires {{ item }} to be set.'
+      when: item not in vars and item not in hostvars[inventory_hostname]
+      with_items:
+        - origin_ci_hosts
+        - origin_ci_connection
+        - origin_ci_user
+
+- name: prepare a new user for Origin CI actions
+  hosts: '{{ origin_ci_hosts }}'
+  connection: '{{ origin_ci_connection }}'
+  become: yes
+  become_user: root
+
+  pre_tasks:
+    - name: create the OpenShift CI user
+      user:
+        name: '{{ origin_ci_user }}'
+        comment: 'OpenShift CI User'
+        state: present
+
+    - name: ensure the OpenShift CI user can elevate privileges
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: '^{{ origin_ci_user }}'
+        line: '{{ origin_ci_user }}  ALL=(ALL)  NOPASSWD: ALL'
+        state: present
+
+    - name: ensure the user has home directories
+      file:
+        path: '{{ item }}'
+        state: directory
+        owner: '{{ origin_ci_user }}'
+      with_items:
+        - '/home/{{ origin_ci_user }}'
+        - '/home/{{ origin_ci_user }}/.ssh'
+
+    - name: authorize the default SSH key for the user
+      get_url:
+        url: 'http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key'
+        dest: '/home/{{ origin_ci_user }}/.ssh/authorized_keys'
+        owner: '{{ origin_ci_user }}'
+        mode: 'u+rw'

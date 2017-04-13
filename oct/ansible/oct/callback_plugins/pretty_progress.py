@@ -472,7 +472,7 @@ def format_result(result):
 
     # filter out empty lines and lines of only whitespace
     full_message = [line for line in full_message.splitlines() if line and line.strip()]
-    return "\n".join(full_message)
+    return "\n".join(full_message) + "\n"
 
 
 def format_failure_message(result):

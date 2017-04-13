@@ -8,6 +8,7 @@ from .dependencies import dependencies
 from .docker import docker
 from .golang import golang
 from .repositories import repositories
+from .user import user
 
 
 @group(
@@ -37,3 +38,4 @@ prepare.add_command(dependencies)
 prepare.add_command(docker)
 prepare.add_command(golang)
 prepare.add_command(repositories)
+prepare.add_command(user)

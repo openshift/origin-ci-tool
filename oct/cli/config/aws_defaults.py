@@ -16,8 +16,8 @@ def get_container_from_context(context):
 
 @configuration_options(
     name='aws-defaults',
-    container='Ansible default',
-    use='parameterize Ansible actions',
+    container='AWS default',
+    use='execute AWS EC2 actions',
     example_key='vpc_id',
     example_value='vpc-aaaaaaa',
     fetch_func=get_container_from_context,

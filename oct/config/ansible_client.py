@@ -190,4 +190,4 @@ class AnsibleCoreClient(object):
         if result != TaskQueueManager.RUN_OK:
             # TODO: this seems bad, but can we discover the thread here to join() it?
             sleep(0.2)
-            raise ClickException('\nPlaybook execution failed with code ' + str(result))
+            raise ClickException('Playbook execution failed with code ' + str(result))

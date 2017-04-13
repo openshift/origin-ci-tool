@@ -115,6 +115,9 @@
     timeout: 600
     state: 'started'
 
+- name: determine the default user to use for SSH
+  set_fact:
+    origin_ci_aws_ssh_user: 'ec2-user'
 - name: update variables for the host
   copy:
     content:
@@ -125,7 +128,7 @@
       origin_ci_aws_ami_os: '{{ origin_ci_aws_ami_os }}'
       origin_ci_aws_ami_stage: '{{ origin_ci_aws_ami_stage }}'
       ansible_ssh_private_key_file: '{{ origin_ci_aws_private_key_path }}'
-      ansible_ssh_user: 'ec2-user'
+      ansible_ssh_user: '{{ origin_ci_aws_ssh_user }}'
       ansible_ssh_extra_args: '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes -o ConnectTimeout=0 -o ServerAliveInterval=30'
       ansible_timeout: 0
       openshift_schedulable: '{{ openshift_schedulable }}'
@@ -154,7 +157,7 @@
     block: >
       Host {{ origin_ci_aws_hostname }} {{ origin_ci_aws_host }}
         HostName {{ origin_ci_aws_host }}
-        User ec2-user
+        User {{ origin_ci_aws_ssh_user }}
         Port 22
         UserKnownHostsFile /dev/null
         StrictHostKeyChecking no
