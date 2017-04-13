@@ -118,6 +118,13 @@
 - name: determine the default user to use for SSH
   set_fact:
     origin_ci_aws_ssh_user: 'ec2-user'
+  when: origin_ci_aws_ami_stage == 'bare'
+
+- name: determine the default user to use for SSH
+  set_fact:
+    origin_ci_aws_ssh_user: 'origin'
+  when: origin_ci_aws_ami_stage != 'bare'
+
 - name: update variables for the host
   copy:
     content:
