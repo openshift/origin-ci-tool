@@ -5,6 +5,7 @@ A callback module that limits the amount of overlong lines.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from copy import deepcopy
+from datetime import datetime
 
 from ansible.plugins.callback.default import CallbackModule as DefaultCallbackModule
 
@@ -15,7 +16,8 @@ class CallbackModule(DefaultCallbackModule):
     callback plugin to always use arrays for stderr
     and stdout, whether from commands or from modules,
     and to always output indented JSON no matter the
-    verbosity level.
+    verbosity level. This module also adds the current
+    system time into a `generated_timestamp` field.
     """
 
     CALLBACK_VERSION = 2.0
@@ -34,6 +36,7 @@ class CallbackModule(DefaultCallbackModule):
         :rtype: str
         """
         result = deepcopy(original_result)
+        result['generated_timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
         for entry in ['stdout', 'stderr', 'module_stdout', 'module_stderr', 'results']:
             split_entry = '{}_lines'.format(entry)
