@@ -52,19 +52,17 @@
 
 - name: register the CentOS PaaS SIG repositories
   yum_repository:
-    name: '{{ item.name }}'
+    name: 'centos-paas-sig-openshift-origin{{ item }}-rpms'
     state: present
-    description: '{{ item.description }}'
-    baseurl: '{{ item.url }}'
+    description: 'CentOS PaaS SIG Origin {{ item | list | join(".") }} Repository'
+    baseurl: 'https://buildlogs.centos.org/centos/7/paas/x86_64/openshift-origin{{ item }}/'
     gpgcheck: no
     sslverify: no
     sslclientcert: /var/lib/yum/client-cert.pem
     sslclientkey: /var/lib/yum/client-key.pem
   with_items:
-    - name: 'centos-paas-sig-openshift-origin-rpms'
-      description: 'CentOS PaaS SIG Origin Repository'
-      url: 'http://mirror.centos.org/centos/7/paas/x86_64/openshift-origin/'
-    - name: 'centos-paas-sig-openshift-future-rpms'
-      description: 'CentOS PaaS SIG Future Repository'
-      url: 'https://buildlogs.centos.org/centos/7/paas/x86_64/openshift-future/'
+    - '13'
+    - '14'
+    - '15'
+    - '36'
   when: ansible_distribution in ['RedHat', 'CentOS']
