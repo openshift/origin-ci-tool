@@ -9,37 +9,41 @@
   with_items:
    - ansible
    - augeas                   # developer UX
-   - bridge-utils             #
-   - bsdtar                   # Origin build/package
-   - bzip2                    #
-   - bzr                      #
    - bind                     #
    - bind-utils               #
+   - bridge-utils             #
+   - bsdtar                   # Origin build/package
    - btrfs-progs-devel        #
-   - ctags                    #
+   - bzip2                    #
+   - bzr                      #
    - createrepo               # Origin build/package
+   - ctags                    #
    - deltarpm                 # vagrant-openshift, should remove
    - device-mapper-devel      #
-   - ethtool                  #
    - e2fsprogs                #
+   - ethtool                  #
    - firefox                  # Origin Web Console tests
    - fontconfig               #
-   - git                      # Interacting with repos
    - gcc                      #
    - gcc-c++                  #
+   - git                      # Interacting with repos
    - glibc-static             #
    - gnuplot                  # Origin test logger
    - google-chrome-stable     # Origin Web Console tests
-   - httpie                   # developer UX
+   - gpgme                    # Image Signature verification dep (containers/image)
+   - gpgme-devel              #
    - hg                       #
+   - httpie                   # developer UX
    - iscsi-initiator-utils    #
-   - jq                       # Origin e2e test, but should use jsonpath instead
    - java-1.?.0-openjdk       #
+   - jq                       # Origin e2e test, but should use jsonpath instead
    - kernel-devel             #
    - krb5-devel               # Origin build/package | Origin GSSAPI tests
-   - libsemanage-python       # OpenShift-Ansible (upstream this)
-   - libselinux-devel         #
+   - libassuan                # Image Signature verification dep (containers/image)
+   - libassuan-devel          #
    - libnetfilter_queue-devel #
+   - libselinux-devel         #
+   - libsemanage-python       # OpenShift-Ansible (upstream this)
    - lsof                     # developer UX
    - make                     # Interacting with repos
    - mlocate                  # vagrant-openshift, should remove
