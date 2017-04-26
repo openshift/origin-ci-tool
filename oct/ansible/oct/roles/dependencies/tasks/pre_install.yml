@@ -9,3 +9,16 @@
 
 - name: configure the package manager
   include: configure_yum.yml
+
+- name: ensure systemd journal has persistent logs
+  lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: '^Storage='
+    line: 'Storage=persistent'
+    state: present
+    create: true
+
+- name: restart the journal
+  systemd:
+    service: 'systemd-journald'
+    state: 'restarted'
