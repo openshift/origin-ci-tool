@@ -1,7 +1,7 @@
 ---
 - name: determine if we are inside AWS EC2
   command: 'curl -s http://instance-data.ec2.internal'
-  ignore_errors: yes
+  failed_when: no
   register: ec2_probe
 
 - name: configure EC2 parameters for inventory when controlling from inside EC2

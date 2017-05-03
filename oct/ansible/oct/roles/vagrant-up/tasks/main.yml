@@ -19,7 +19,7 @@
   command: '/usr/bin/vagrant status {{ origin_ci_vagrant_hostname }}'
   args:
     chdir: '{{ origin_ci_vagrant_home_dir }}'
-  ignore_errors: yes
+  failed_when: no
   register: origin_ci_vagrant_status
 
 - name: provision the VM with Vagrant
