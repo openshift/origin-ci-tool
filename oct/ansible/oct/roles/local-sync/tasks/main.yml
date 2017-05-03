@@ -14,14 +14,14 @@
   args:
     chdir: '{{ origin_ci_sync_source }}'
   register: origin_ci_sync_staged_commit
-  ignore_errors: yes
+  failed_when: no
 
 - name: attempt to commit unstaged changes
   command: '/usr/bin/git commit --all --message="<AUTOMATED COMMIT OF UNSTAGED CHANGES>"'
   args:
     chdir: '{{ origin_ci_sync_source }}'
   register: origin_ci_sync_unstaged_commit
-  ignore_errors: yes
+  failed_when: no
 
 - name: push local changes to the remotes
   command: >

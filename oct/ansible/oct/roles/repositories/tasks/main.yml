@@ -58,7 +58,7 @@
 - name: determine current Git configuration to allow for idempotency
   command: '/usr/bin/git config --list --global'
   register: origin_ci_global_config_probe
-  ignore_errors: yes
+  failed_when: no
   become: yes
   become_user: '{{ origin_ci_user }}'
 

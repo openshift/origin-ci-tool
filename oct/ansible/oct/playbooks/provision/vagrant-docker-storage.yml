@@ -31,7 +31,7 @@
   tasks:
     - name: probe for the Docker volume group
       command: '/usr/sbin/lvs {{ origin_ci_docker_volume_group }}'
-      ignore_errors: yes
+      failed_when: no
       register: origin_ci_docker_volume_group_probe
 
     - name: determine if we should be skipping the rest of the plays or not
