@@ -18,7 +18,7 @@ def get_container_from_context(context):
     name='aws-client',
     container='AWS client',
     use='execute AWS EC2 actions',
-    example_key='aws_keypair_name',
+    example_key='keypair_name',
     example_value='id_rsa',
     fetch_func=get_container_from_context,
 )
