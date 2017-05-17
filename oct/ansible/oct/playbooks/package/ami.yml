@@ -79,10 +79,27 @@
         content: '{{ origin_ci_aws_updated_host_vars.stdout }}'
         dest: '{{ origin_ci_aws_host_vars }}'
 
+    - name: determine AWS EC2 AMI name
+      set_fact:
+        origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
+      when: "{{ origin_ci_aws_additional_tags }} | length | int > 0"
+
+    - name: search for an AMI to update
+      ec2_ami_find:
+        region: '{{ origin_ci_aws_region }}'
+        ami_tags:
+          Name: '{{ origin_ci_aws_ami_name }}'
+        sort: 'creationDate'
+        sort_order: descending
+        sort_end: 1
+        no_result_action: fail
+      register: ami_facts
+      when: "{{ origin_ci_aws_additional_tags }} | length | int > 0"
+
     - name: determine which AMI to update
       set_fact:
         origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
-      when: "'{{ origin_ci_aws_additional_tags }}' | length | int > 0"
+      when: "{{ origin_ci_aws_additional_tags }} | length | int > 0"
 
     - name: add any additional tags
       ec2_tag:
@@ -91,3 +108,4 @@
         tags: "{ '{{ item.key }}': '{{ item.value }}' }"
         state: present
       with_dict: '{{ origin_ci_aws_additional_tags }}'
+      when: "{{ origin_ci_aws_additional_tags }} | length | int > 0"
