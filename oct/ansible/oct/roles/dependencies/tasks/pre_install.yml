@@ -13,10 +13,15 @@
 - name: ensure systemd journal has persistent logs
   lineinfile:
     dest: /etc/systemd/journald.conf
-    regexp: '^Storage='
-    line: 'Storage=persistent'
+    regexp: '^#?{{ item.key }}='
+    line: '{{ item.key }}={{ item.val }}'
     state: present
     create: true
+  with_items:
+    - key: 'Storage'
+      val: 'persistent'
+    - key: 'SyncIntervalSec'
+      val: '1s'
 
 - name: restart the journal
   systemd:
