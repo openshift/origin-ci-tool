@@ -53,6 +53,6 @@
       ec2_tag:
         region: '{{ origin_ci_aws_region }}'
         resource: '{{ origin_ci_aws_ami_id }}'
-        tags:
-          ready: 'yes'
+        tags: "{ '{{ item.key }}': '{{ item.value }}' }"
         state: present
+      with_dict: origin_ci_aws_additional_tags

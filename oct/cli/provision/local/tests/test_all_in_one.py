@@ -3,9 +3,9 @@ from __future__ import absolute_import, division, print_function
 
 from mock import patch
 from oct.cli.provision.local import all_in_one
-from oct.cli.provision.local.all_in_one import DEFAULT_MASTER_IP, OperatingSystem, Provider, Stage
+from oct.cli.provision.local.all_in_one import OperatingSystem, Provider, Stage
 from oct.config import vagrant as vagrant_configuration
-from oct.config.configuration import Configuration, DEFAULT_HOSTNAME
+from oct.config.configuration import Configuration
 from oct.config.vagrant import VagrantVMMetadata
 from oct.tests.unit.playbook_runner_test_case import CLICK_RC_USAGE, PlaybookRunnerTestCase, \
     TestCaseParameters, show_stack_trace, PlaybookRunCallSpecification
