@@ -55,4 +55,4 @@
         resource: '{{ origin_ci_aws_ami_id }}'
         tags: "{ '{{ item.key }}': '{{ item.value }}' }"
         state: present
-      with_dict: origin_ci_aws_additional_tags
+      with_dict: "{{ origin_ci_aws_additional_tags }}"
