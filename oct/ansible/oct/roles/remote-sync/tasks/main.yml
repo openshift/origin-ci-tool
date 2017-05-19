@@ -42,6 +42,11 @@
     dest: '{{ origin_ci_sync_destination }}'
     force: yes
 
+- name: prune out any refs that should not exist on the remote
+  shell: '/usr/bin/git fetch {{ origin_ci_sync_remote }} --tags --prune'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+
 - name: check out the desired post-merge state, if requested
   shell: '/usr/bin/git checkout {{ origin_ci_sync_merge_target }}'
   args:
