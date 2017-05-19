@@ -45,13 +45,14 @@
       ready: 'yes'
     sort: 'creationDate'
     sort_order: descending
-    sort_end: 1
     no_result_action: fail
   register: ami_facts
 
 - name: determine which AMI to use
   set_fact:
-    origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
+    origin_ci_aws_ami_id: '{{ item.ami_id }}'
+  with_items: '{{ ami_facts.results }}'
+  when: "'qe' not in item.tags"
 
 - name: determine which subnets are available
   ec2_vpc_subnet_facts:
