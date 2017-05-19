@@ -107,14 +107,6 @@
   set_fact:
     origin_ci_aws_host: '{{ ec2.instances[0][origin_ci_aws_host_address_variable] }}'
 
-- name: wait for SSH to be available
-  wait_for:
-    host: '{{ origin_ci_aws_host }}'
-    port: 22
-    delay: 10
-    timeout: 600
-    state: 'started'
-
 - name: determine the default user to use for SSH
   set_fact:
     origin_ci_aws_ssh_user: 'ec2-user'
@@ -175,3 +167,11 @@
     state: present
     marker: '# {mark} ANSIBLE MANAGED BLOCK FOR HOST {{ origin_ci_aws_hostname }}'
   with_items: '{{ origin_ci_ssh_config_files }}'
+
+- name: wait for SSH to be available
+  wait_for:
+    host: '{{ origin_ci_aws_host }}'
+    port: 22
+    delay: 10
+    timeout: 600
+    state: 'started'
