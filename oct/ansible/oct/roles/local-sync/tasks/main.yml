@@ -27,7 +27,7 @@
   command: >
     /usr/bin/git push ssh://{{ item }}{{ hostvars[item]['origin_ci_sync_destination'] }} \
                       {{ origin_ci_sync_version }}:{{ origin_ci_sync_version }}          \
-                      --force --tags
+                      --force --tags --prune
   args:
     chdir: '{{ origin_ci_sync_source }}'
   with_items: '{{ groups[origin_ci_hosts] }}' # TODO: this is fragile if literal hosts are passed in. do we care?
