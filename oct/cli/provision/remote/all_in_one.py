@@ -34,6 +34,7 @@ class Stage(object):
     base = 'base'
     build = 'build'
     install = 'install'
+    fork = 'fork'
 
 
 def destroy_callback(context, _, value):

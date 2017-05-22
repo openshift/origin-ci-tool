@@ -38,6 +38,7 @@ class Stage(object):
     base = 'base'
     build = 'build'
     install = 'install'
+    fork = 'fork'
 
 
 _SHORT_HELP = 'Provision a virtual host for an All-In-One deployment.'
