@@ -49,7 +49,7 @@
     - name: update image stage if we are upgrading stages
       set_fact:
         origin_ci_aws_ami_stage: '{{ origin_ci_image_upgrades[origin_ci_aws_ami_stage] }}'
-      when: origin_ci_aws_stage_strategy == 'upgrade' or origin_ci_aws_stage_strategy == 'next'
+      when: origin_ci_aws_stage_strategy == 'next'
 
     - name: update image stage if we are upgrading stages
       set_fact:

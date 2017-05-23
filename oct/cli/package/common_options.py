@@ -13,26 +13,12 @@ def package_options(func):
     :param func: Click CLI command to decorate
     :return: decorated CLI command
     """
-    option(
+    return option(
         '--stage',
         '-s',
         'upgrade_stage',
         type=Choice(['current', 'next', 'fork', 'base']),
         help='Update the current stage, upgrade to next default stage, or choose a stage',
-    )(func)
-    option(
-        '--upgrade',
-        '-g',
-        'upgrade_current_stage',
-        is_flag=True,
-        help='[DEPRECATED] Upgrade to next stage.',
-    )(func)
-    return option(
-        '--update',
-        '-d',
-        'update_current_stage',
-        is_flag=True,
-        help='[DEPRECATED] Update the current stage.',
     )(func)
 
 

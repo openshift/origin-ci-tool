@@ -81,42 +81,12 @@ class PackageAMITestCase(PlaybookRunnerTestCase):
             )
         )
 
-    def test_invalid_upgrade(self):
-        self.run_test(
-            TestCaseParameters(
-                args=['package', 'ami', "--stage=fork", "--upgrade"],
-                expected_calls=None,
-                expected_result=CLICK_RC_USAGE,
-                expected_output="--upgrade and --stage options are mutually exclusive",
-            )
-        )
-
-    def test_invalid_update(self):
-        self.run_test(
-            TestCaseParameters(
-                args=['package', 'ami', "--stage=base", "--update"],
-                expected_calls=None,
-                expected_result=CLICK_RC_USAGE,
-                expected_output="--update and --stage options are mutually exclusive",
-            )
-        )
-
     def test_no_options(self):
         self.run_test(
             TestCaseParameters(
                 args=['package', 'ami'],
                 expected_calls=None,
                 expected_result=CLICK_RC_USAGE,
-                expected_output="one of --update, --upgrade, or --stage must be specified",
-            )
-        )
-
-    def test_no_options(self):
-        self.run_test(
-            TestCaseParameters(
-                args=['package', 'ami', "--update", "--upgrade"],
-                expected_calls=None,
-                expected_result=CLICK_RC_USAGE,
-                expected_output="--update and --upgrade options are mutually exclusive",
+                expected_output="--stage must be specified",
             )
         )
