@@ -20,7 +20,16 @@ stage in the pipeline.
 \b
 Examples:
   Package a VM as a stage upgrade
-  $ oct package ami --upgrade
+  $ oct package ami --stage next
+\b
+  Package a VM for a specific stage
+  $ oct package ami --stage fork
+\b  
+  Mark a packaged AMI as ready for use
+  $ oct package ami --mark-ready
+\b  
+  Package a VM with custom tags
+  $ oct package ami --tag FOO=BAR --tag OTHER=VAL
 ''',
 )
 @option(
@@ -34,6 +43,7 @@ Examples:
     '--tag',
     '-t',
     "tags",
+    metavar='KEY=VALUE',
     multiple=True,
     help='Tag an AMI with the provided key-value pair.',
 )
