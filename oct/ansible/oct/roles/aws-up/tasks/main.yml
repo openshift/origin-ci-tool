@@ -51,7 +51,7 @@
 - name: determine which AMI to use
   set_fact:
     origin_ci_aws_ami_id: '{{ item.ami_id }}'
-  with_items: '{{ ami_facts.results }}'
+  with_items: '{{ ami_facts.results | reverse }}' # we need to reverse so we find the _newest_ non-QE AMI
   when: "'qe' not in item.tags"
 
 - name: determine which subnets are available
