@@ -24,10 +24,10 @@ Examples:
 \b
   Package a VM for a specific stage
   $ oct package ami --stage fork
-\b
+\b  
   Mark a packaged AMI as ready for use
   $ oct package ami --mark-ready
-\b
+\b  
   Package a VM with custom tags
   $ oct package ami --tag FOO=BAR --tag OTHER=VAL
 ''',
