@@ -44,7 +44,7 @@
       image_stage: '{{ origin_ci_aws_ami_stage }}'
       ready: 'yes'
     sort: 'creationDate'
-    sort_order: descending
+    sort_order: ascending
     no_result_action: fail
   register: ami_facts
 
