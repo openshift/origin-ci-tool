@@ -94,18 +94,9 @@
     owner: root
     creates: /usr/bin/chromedriver
 
-# we need the --exclude functionality from yum so we
-# cannot use the agnostic package module from Ansible
-- name: install yum if the host does not have it
+- name: update all packages to latest state
   package:
-    name: yum
-    state: present
-  when: ansible_pkg_mgr != 'yum'
-
-- name: update all non-kernel packages to latest state
-  yum:
     name: '*'
-    exclude: 'kernel*'
     state: latest
 
 - name: determine installed npm version
