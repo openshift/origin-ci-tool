@@ -52,6 +52,7 @@
    - openldap-clients         # Origin LDAP tests
    - openssl                  # Origin `test-cmd` tests
    - openvswitch              #
+   - python-pip               # used for ansible plugin deps
    - python-dbus              # OpenShift-Ansible (upstream this)
    - rubygems                 #
    - screen                   # developer UX
@@ -98,6 +99,11 @@
   package:
     name: '*'
     state: latest
+
+- name: install jUnit dependency for Ansible plugins
+  pip:
+    name: junit_xml
+    state: present
 
 - name: determine installed npm version
   command: "repoquery --pkgnarrow=installed --queryformat '%{version}' npm"
