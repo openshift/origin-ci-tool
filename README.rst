@@ -89,6 +89,8 @@ Install Ansible and the ``origin-ci-tool`` in the virtual environment:
 
     $ pip install git+https://github.com/openshift/origin-ci-tool.git --process-dependency-links
 
+**Note:** If you come across `ImportError: No module named cryptography.hazmat.backends`, run the previous command with the additional option `--ignore-installed`
+
 You are now ready to use the ``oct`` CLI tool. If you want to use this virtual environment and get access to ``oct`` every time
 you open a shell, add the activate line to your ``~/.bashrc``:
 
