@@ -22,6 +22,7 @@
     - 'openshift-ansible'
     - 'release'
     - 'aos-cd-jobs'
+    - 'jenkins'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml
