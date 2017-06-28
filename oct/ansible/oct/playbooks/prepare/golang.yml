@@ -67,3 +67,4 @@
         - 'github.com/tools/godep'
         - 'github.com/golang/lint/golint'
         - 'github.com/openshift/imagebuilder/cmd/imagebuilder'
+        - 'github.com/josephspurrier/goversioninfo'
