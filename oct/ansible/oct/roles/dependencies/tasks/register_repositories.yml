@@ -31,6 +31,7 @@
     - 3.3
     - 3.4
     - 3.5
+    - 3.6
   when: ansible_distribution == 'RedHat'
 
 - name: register dependency repositories from the OpenShift public mirror
