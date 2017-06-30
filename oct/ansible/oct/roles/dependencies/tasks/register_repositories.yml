@@ -33,6 +33,26 @@
     - 3.5
   when: ansible_distribution == 'RedHat'
 
+- name: register RHEL 7 Atomic OpenShift Online Integration repositories
+  yum_repository:
+    name: 'rhel-7-server-online-int-{{ item }}-rpms'
+    state: present
+    description: 'A repository of dependencies for Atomic OpenShift {{ item }} Online'
+    baseurl: >
+      https://mirror.openshift.com/enterprise/online-int/latest/RH7-RHAOS-{{ item }}/x86_64/os/
+    gpgcheck: no
+    gpgkey: >
+      file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,
+      file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,
+      https://mirror.ops.rhcloud.com/libra/keys/RPM-GPG-KEY-redhat-openshifthosted
+    failovermethod: priority
+    sslverify: no
+    sslclientcert: /var/lib/yum/client-cert.pem
+    sslclientkey: /var/lib/yum/client-key.pem
+  with_items:
+    - 3.6
+  when: ansible_distribution == 'RedHat'
+
 - name: register dependency repositories from the OpenShift public mirror
   get_url:
     url: https://mirror.openshift.com/pub/openshift-origin/nightly/rhel-7/dependencies/openshift-rhel7-dependencies.repo
