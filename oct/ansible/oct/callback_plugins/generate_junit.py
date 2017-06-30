@@ -13,6 +13,7 @@ from ansible.plugins.callback import CallbackBase
 from junit_xml import TestCase, TestSuite
 from os import getenv, makedirs
 from os.path import abspath, exists, expanduser, join, normpath, realpath, sep, splitext
+from codecs import open as codec_open
 
 
 class CallbackModule(CallbackBase):
@@ -189,8 +190,9 @@ class CallbackModule(CallbackBase):
                 # TODO: determine a better way to do this
                 break
 
-        with open(log_filename, 'w') as result_file:
-            TestSuite.to_file(result_file, suites)
+        contents = TestSuite.to_xml_string(suites, 'utf-8')
+        with codec_open(log_filename, 'w', 'utf-8') as result_file:
+            result_file.write(contents)
 
 
 def format_result(result):
