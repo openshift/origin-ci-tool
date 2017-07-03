@@ -44,6 +44,9 @@
         sort_end: 1
         no_result_action: fail
       register: ami_facts
+      until: ami_facts.results is defined
+      retries: 5
+      delay: 10
 
     - name: determine which AMI to update
       set_fact:
