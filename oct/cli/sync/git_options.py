@@ -114,7 +114,7 @@ def git_destination_option(func):
     )(func)
 
 
-def validate_git_specifier(refspec, branch, commit, tag):
+def validate_git_specifier(pullrefs, refspec, branch, commit, tag):
     """
     Validate that the set of specifiers given is consistent.
     The set is valid if:
@@ -122,30 +122,39 @@ def validate_git_specifier(refspec, branch, commit, tag):
      - only a commit is given
      - only a tag is given
      - a refspec and target non-master branch is given
+     - a pullrefs and target non-master branch is given
 
+    :param pullrefs: pull request references inside prow like 'master:97d901d8e7,4:bcb00a13b2'
     :param refspec: provided refspec like 'pull/1/head'
     :param branch: provided branch like 'master'
     :param commit: provided commit SHA like '2cbd73cbd5aacc965ecfa480fa90164a85191489'
     :param tag: provided tag like 'v1.3.0-rc2'
     """
-    if commit and (refspec or branch or tag):
-        raise UsageError('If a commit is specified, neither a refspec, branch, or tag can also be specified.')
+    if commit and (pullrefs or refspec or branch or tag):
+        raise UsageError('If a commit is specified, neither a pullrefs, refspec, branch, or tag can also be specified.')
 
-    if tag and (commit or refspec or branch):
-        raise UsageError('If a tag is specified, neither a refspec, branch, or commit can also be specified.')
+    if tag and (commit or refspec or pullrefs or branch):
+        raise UsageError('If a tag is specified, neither a pullrefs, refspec, branch, or commit can also be specified.')
 
     if refspec and not branch:
         raise UsageError('If a refspec is specified, the name of the branch to create for it is required.')
 
+    if pullrefs and not branch:
+        raise UsageError('If a pullrefs is specified, the name of the branch to create for it is required.')
+
     if refspec and branch == 'master':
         raise UsageError('The branch specified for a refspec cannot be the master branch.')
 
+    if pullrefs and branch == 'master':
+        raise UsageError('The branch specified for a pullrefs cannot be the master branch.')
 
-def git_version_specifier(refspec, branch, commit, tag):
+
+def git_version_specifier(pullrefs, refspec, branch, commit, tag):
     """
     Return the minimal set of specifiers that the user
     input reduces to, in a dict of variables for Ansible.
 
+    :param pullrefs: pull request references inside prow like 'master:97d901d8e7,4:bcb00a13b2'
     :param refspec: provided refspec like 'pull/1/head'
     :param branch: provided branch like 'master'
     :param commit: provided commit SHA like '2cbd73cbd5aacc965ecfa480fa90164a85191489'
@@ -158,11 +167,20 @@ def git_version_specifier(refspec, branch, commit, tag):
     if tag:
         return {'origin_ci_sync_version': tag}
 
-    if branch and not refspec:
-        return {'origin_ci_sync_version': branch}
+    if branch and pullrefs:
+        pull_refs = []
+        for pull_num in [r.split(':')[0] for r in pullrefs.split(',')][1:]:
+            pull_refs.append(pull_num)
+        return {
+            'origin_ci_sync_version': branch,
+            'origin_ci_pull_refs': pull_refs,
+        }
 
     if branch and refspec:
         return {
             'origin_ci_sync_version': branch,
             'origin_ci_sync_refspec': refspec + ':' + branch,
         }
+
+    if branch:
+        return {'origin_ci_sync_version': branch}
