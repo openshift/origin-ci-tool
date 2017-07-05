@@ -29,7 +29,6 @@
    - git                      # Interacting with repos
    - glibc-static             #
    - gnuplot                  # Origin test logger
-   - google-chrome-stable     # Origin Web Console tests
    - gpgme                    # Image Signature verification dep (containers/image)
    - gpgme-devel              #
    - hg                       #
@@ -85,15 +84,6 @@
         'CentOS',
         'RedHat'
       ]
-
-- name: install ChromeDriver to enable headless UI testing
-  unarchive:
-    src: https://chromedriver.storage.googleapis.com/2.16/chromedriver_linux64.zip
-    copy: no # TODO: change to `remote_src: yes` once https://github.com/ansible/ansible-modules-core/issues/4752 is fixed
-    dest: /usr/bin
-    mode: u=rwx,g=rx,o=rx
-    owner: root
-    creates: /usr/bin/chromedriver
 
 - name: update all packages to latest state
   package:
