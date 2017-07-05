@@ -1,11 +1,4 @@
 ---
-- name: register Google Chrome repository
-  yum_repository:
-    name: google-chrome-stable
-    state: present
-    description: 'A repository containing a stable Goole Chrome release.'
-    baseurl: 'http://dl.google.com/linux/chrome/rpm/stable/x86_64'
-
 - name: register RHEL 7 Atomic OpenShift repositories
   yum_repository:
     name: 'rhel-7-server-ose-{{ item }}-rpms'
