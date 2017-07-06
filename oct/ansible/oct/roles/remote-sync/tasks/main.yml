@@ -41,6 +41,24 @@
     refspec: '{{ origin_ci_sync_refspec | default(omit) }}'
     dest: '{{ origin_ci_sync_destination }}'
     force: yes
+  when: origin_ci_pull_refs is not defined
+
+- name: checkout a new branch if required
+  shell: '/usr/bin/git branch {{ origin_ci_sync_version }} || true'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  when: origin_ci_pull_refs is defined
+
+- name: synchronize the repository with the remote server
+  git:
+    repo: '{{ origin_ci_sync_address | default(origin_ci_sync_remote_url.stdout) }}'
+    remote: '{{ origin_ci_sync_remote }}'
+    version: '{{ origin_ci_sync_version }}'
+    refspec: 'pull/{{ item }}/head:pull/{{ item }}/head'
+    dest: '{{ origin_ci_sync_destination }}'
+    force: yes
+  with_items: '{{ origin_ci_pull_refs }}'
+  when: origin_ci_pull_refs is defined
 
 - name: prune out any refs that should not exist on the remote
   shell: '/usr/bin/git fetch {{ origin_ci_sync_remote }} --tags --prune'
@@ -57,4 +75,11 @@
   shell: '/usr/bin/git merge {{ origin_ci_sync_version }}'
   args:
     chdir: '{{ origin_ci_sync_destination }}'
-  when: origin_ci_sync_merge_target is defined
+  when: origin_ci_sync_merge_target is defined and origin_ci_pull_refs is not defined
+
+- name: merge the resulting state into another branch, if requested
+  shell: '/usr/bin/git merge pull/{{ item }}/head'
+  args:
+    chdir: '{{ origin_ci_sync_destination }}'
+  with_items: '{{ origin_ci_pull_refs }}'
+  when: origin_ci_sync_merge_target is defined and origin_ci_pull_refs is defined

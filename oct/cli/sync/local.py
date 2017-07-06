@@ -66,7 +66,7 @@ def local(context, repository, sync_source, sync_destination, tag, refspec, bran
     :param commit: commit to synchronize to
     :param merge_target: optional second branch to merge the state into
     """
-    validate_git_specifier(refspec, branch, commit, tag)
+    validate_git_specifier(pullrefs=None, refspec=refspec, branch=branch, commit=commit, tag=tag)
 
     # We don't want to use default flag values as we cannot
     # tell if they are applied or not, and that makes validation
@@ -86,7 +86,7 @@ def local(context, repository, sync_source, sync_destination, tag, refspec, bran
     if merge_target:
         playbook_variables['origin_ci_sync_merge_target'] = merge_target
 
-    version_specifier = git_version_specifier(refspec, branch, commit, tag)
+    version_specifier = git_version_specifier(pullrefs=None, refspec=refspec, branch=branch, commit=commit, tag=tag)
     for key in version_specifier:
         playbook_variables[key] = version_specifier[key]
 

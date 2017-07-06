@@ -44,6 +44,9 @@ Examples:
   Synchronize the Origin repo, specifying a pull request refspec
   $ oct sync remote origin --refspec=pull/1000/head --branch=pull-1000
 \b
+  Synchronize the Origin repo, specifying multiple pull requests using the format used in prow
+  $ oct sync remote origin --pullrefs=master:97d901d8e7,4:bcb00a13b2,7:98kkht1fyv --branch=batch-pull
+\b
   Synchronize the Origin repo, resulting in a merged state of two branches
   $ oct sync remote origin --remote=myfork --branch=my-feature-branch --merge-into=master
 ''',
@@ -65,10 +68,15 @@ Examples:
     metavar='NAME URL',
     help='Remote server to install and use.',
 )
+@option(
+    '--pullrefs',
+    metavar='PULL_REFS',
+    help='ProwJob pullrefs to use. Will be unraveled into one or more PR numbers.',
+)
 @git_options
 @ansible_output_options
 @pass_context
-def remote(context, repository, sync_destination, remote_name, new_remote, tag, refspec, branch, commit, merge_target):
+def remote(context, repository, sync_destination, remote_name, new_remote, tag, refspec, pullrefs, branch, commit, merge_target):
     """
     Synchronize a repository on a remote host at the
     sync_destination from the specified remote to the
@@ -81,11 +89,12 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
     :param new_remote: name and url of a new remote server to add and sync from
     :param tag: tag to synchronize to
     :param refspec: refspec to synchronize to
+    :param pullrefs: pull requests in prow format to synchronize
     :param branch: branch to synchronize to (or create for refspec)
     :param commit: commit to synchronize to
     :param merge_target: optional second branch to merge the state into
     """
-    validate_git_specifier(refspec, branch, commit, tag)
+    validate_git_specifier(pullrefs, refspec, branch, commit, tag)
     validate_repository(repository)
     validate_remote(remote_name, new_remote)
 
@@ -93,7 +102,7 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
     # tell if they are applied or not, and that makes validation
     # very difficult as we cannot determine what the user input.
     # Therefore, we can apply defaults now that we have validated.
-    if not (refspec or branch or commit or tag):
+    if not (pullrefs or refspec or branch or commit or tag):
         branch = 'master'
 
     if not (remote_name or new_remote):
@@ -107,7 +116,7 @@ def remote(context, repository, sync_destination, remote_name, new_remote, tag, 
     if merge_target:
         playbook_variables['origin_ci_sync_merge_target'] = merge_target
 
-    version_specifier = git_version_specifier(refspec, branch, commit, tag)
+    version_specifier = git_version_specifier(pullrefs, refspec, branch, commit, tag)
     for key in version_specifier:
         playbook_variables[key] = version_specifier[key]
 
