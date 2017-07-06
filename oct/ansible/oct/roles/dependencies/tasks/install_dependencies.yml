@@ -32,6 +32,7 @@
    - gpgme                    # Image Signature verification dep (containers/image)
    - gpgme-devel              #
    - hg                       #
+   - http-parser              # Origin Web Console tests
    - httpie                   # developer UX
    - iscsi-initiator-utils    #
    - java-1.?.0-openjdk       #
