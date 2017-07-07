@@ -9,6 +9,7 @@
   with_items:
    - ansible
    - augeas                   # developer UX
+   - bc                       # for Bash math
    - bind                     #
    - bind-utils               #
    - bridge-utils             #
