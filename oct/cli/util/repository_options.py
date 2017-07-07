@@ -20,6 +20,7 @@ class Repository(object):
     aoscdjobs = 'aos-cd-jobs'
     openshift_ansible = 'openshift-ansible'
     jenkins = 'jenkins'
+    wildfly = 'sti-wildfly'
 
 
 def repository_argument(func):
@@ -42,5 +43,6 @@ def repository_argument(func):
             Repository.aoscdjobs,
             Repository.openshift_ansible,
             Repository.jenkins,
+            Repository.wildfly,
         ])
     )(func)
