@@ -24,6 +24,10 @@
     - 'aos-cd-jobs'
     - 'jenkins'
     - 'sti-wildfly'
+    - 'jenkins-plugin'
+    - 'jenkins-sync-plugin'
+    - 'jenkins-client-plugin'
+    - 'jenkins-openshift-login-plugin'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml

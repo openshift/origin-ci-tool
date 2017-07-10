@@ -21,6 +21,10 @@ class Repository(object):
     openshift_ansible = 'openshift-ansible'
     jenkins = 'jenkins'
     wildfly = 'sti-wildfly'
+    jenkins_plugin = 'jenkins-plugin'
+    jenkins_sync_plugin = 'jenkins-sync-plugin'
+    jenkins_client_plugin = 'jenkins-client-plugin'
+    jenkins_login_plugin = 'jenkins-openshift-login-plugin'
 
 
 def repository_argument(func):
@@ -44,5 +48,9 @@ def repository_argument(func):
             Repository.openshift_ansible,
             Repository.jenkins,
             Repository.wildfly,
+            Repository.jenkins_plugin,
+            Repository.jenkins_sync_plugin,
+            Repository.jenkins_client_plugin,
+            Repository.jenkins_login_plugin,
         ])
     )(func)
