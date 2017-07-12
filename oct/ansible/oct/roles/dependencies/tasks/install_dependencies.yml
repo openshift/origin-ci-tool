@@ -36,7 +36,7 @@
    - http-parser              # Origin Web Console tests
    - httpie                   # developer UX
    - iscsi-initiator-utils    #
-   - java-1.?.0-openjdk       #
+   - java-1.?.0-openjdk-devel       #
    - jq                       # Origin e2e test, but should use jsonpath instead
    - kernel-devel             #
    - krb5-devel               # Origin build/package | Origin GSSAPI tests
@@ -47,6 +47,7 @@
    - libsemanage-python       # OpenShift-Ansible (upstream this)
    - lsof                     # developer UX
    - make                     # Interacting with repos
+   - maven                  # for building java apps
    - mlocate                  # vagrant-openshift, should remove
    - npm                      # Origin Web Console tests
    - ntp                      #
