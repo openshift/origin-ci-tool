@@ -22,6 +22,10 @@
       val: 'persistent'
     - key: 'SyncIntervalSec'
       val: '1s'
+    - key: 'RateLimitInterval'
+      val: '0'
+    - key: 'RateLimitBurst'
+      val: '0'
 
 - name: restart the journal
   systemd:
