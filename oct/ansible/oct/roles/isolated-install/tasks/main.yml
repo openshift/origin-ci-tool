@@ -75,10 +75,11 @@
 - name: 'remove temporary repositories that we needed to install {{ origin_ci_isolated_package }}'
   yum_repository:
     name: '{{ item }}'
+    file: '{{ origin_ci_tmp_repofile }}'
     state: absent
   with_items: '{{ origin_ci_isolated_tmp_repourls_formatted | default([]) }}'
 
 - name: 'remove temporary repofile that we needed to install {{ origin_ci_isolated_package }}'
   file:
-    path: '{{ origin_ci_tmp_repofile }}'
+    path: '{{ origin_ci_tmp_repofile }}.repo'
     state: absent
