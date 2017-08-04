@@ -3,14 +3,27 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from codecs import open
 from datetime import datetime
+from logging import INFO, FileHandler
 from os import environ, makedirs
-from os.path import exists, join, sep
-from shutil import rmtree
-from tempfile import mkdtemp
+from os.path import exists, join
 from traceback import format_exc
 
 from ansible.plugins.callback import CallbackBase
+from structlog import configure, get_logger
+from structlog.stdlib import BoundLogger, LoggerFactory, add_log_level
+from structlog.processors import JSONRenderer, TimeStamper, UnicodeDecoder
 from yaml import dump
+
+configure(
+    processors=[
+        add_log_level,
+        TimeStamper(fmt="iso"),
+        UnicodeDecoder(),
+        JSONRenderer(),
+    ], context_class=dict, logger_factory=LoggerFactory(), wrapper_class=BoundLogger, cache_logger_on_first_use=True
+)
+logger = get_logger('origin-ci-tool')
+logger.setLevel(INFO)
 
 
 def log_exceptions(func):
@@ -76,50 +89,30 @@ class CallbackModule(CallbackBase):
     CALLBACK_NAME = 'log_results'
     CALLBACK_NEEDS_WHITELIST = True
 
-    def __init__(self):
-        super(CallbackModule, self).__init__()
-
-        self.log_root_dir = environ.get('ANSIBLE_LOG_ROOT_PATH', mkdtemp(prefix='ansible_log'))
-        if not exists(self.log_root_dir):
-            makedirs(self.log_root_dir)
-
-        # we will update the current playbook log path
-        # once we know we are executing a playbook
-        self.current_playbook_log_path = None
-
-    def write_log(self, message, logfile=None, data=None):
+    def write_log(self, message, data=None):
         """
-        Write a message to the current playbook log and
-        optionally dump verbose data to a separate log-
-        file, linking the two with another message in
-        the playbook log.
+        Write a message to the log.
 
-        :param message: message for the playbook log
-        :param logfile: path to extra log file
-        :param data: data for extra log file
+        :param message: message for the log
+        :param data: extra data for the log
         """
-        with open(self.current_playbook_log_path, 'a', encoding='utf-8') as playbook_log:
-            playbook_log.write('{} | {}\n'.format(datetime.now(), message))
-            if logfile and data:
-                playbook_log.write('\tFull output at:{}\n'.format(logfile))
-                # sanitize the data to remove Ansible
-                # internal fields that the user doesn't
-                # need in their output files
-                for key in data.keys():
-                    if key.startswith('_ansible'):
-                        del data[key]
+        if data:
+            # sanitize the data to remove Ansible
+            # internal fields that the user doesn't
+            # need in their output files
+            for key in data.keys():
+                if key.startswith('_ansible'):
+                    del data[key]
 
-                # remove `stdout_lines` if `stdout` is
-                # present -- we can let people load the
-                # data and format it however they want,
-                # but we don't want to store it twice
-                if 'results' in data:
-                    for result in data['results']:
-                        if 'stdout' in result and 'stdout_lines' in result:
-                            del result['stdout_lines']
-
-                with open(logfile, 'wb', encoding='utf-8') as log_file:
-                    log_file.write(dump(data, default_flow_style=False, explicit_start=True))
+            # remove `stdout_lines` if `stdout` is
+            # present -- we can let people load the
+            # data and format it however they want,
+            # but we don't want to store it twice
+            if 'results' in data:
+                for result in data['results']:
+                    if 'stdout' in result and 'stdout_lines' in result:
+                        del result['stdout_lines']
+        logger.info(message, data=data)
 
     def log_task_result(self, status, result):
         """
@@ -130,41 +123,8 @@ class CallbackModule(CallbackBase):
         """
         host = result._host.get_name()
         message = 'Task finished with status "{}" on host "{}"'.format(status, host)
-        logfile = join(self.log_dir_for_task(result._task), '{}_{}.yml'.format(host, status))
         data = result._result
-        self.write_log(message, logfile, data)
-
-    def log_dir_for_task(self, task):
-        """
-        Determine the directory in which logs
-        for the given task should be placed.
-
-        :param task: task to inspect
-        :return: absolute path to the task log directory
-        """
-        return join(self.log_dir_for_play(task._parent._play), 'task_{}'.format(task._uuid))
-
-    def log_dir_for_play(self, play):
-        """
-        Determine the directory in which logs
-        for the given play should be placed.
-
-        :param play: play to inspect
-        :return: absolute path to the play log directory
-        """
-        # the location of the play must be in the playbook
-        playbook_file, _ = self.determine_location_for_workload(play)
-        return join(self.log_dir_for_playbook(playbook_file), 'play_{}'.format(play._uuid))
-
-    def log_dir_for_playbook(self, playbook_source):
-        """
-        Determine the directory in which logs
-        for the given playbook should be placed.
-
-        :param playbook_source: playbook location on disk
-        :return: absolute path to the playbook log directory
-        """
-        return join(self.log_root_dir, 'playbook_{}'.format(playbook_source.replace(sep, '_')))
+        self.write_log(message, data)
 
     def log_message_for_task(self, task, message_prefix):
         """
@@ -206,27 +166,24 @@ class CallbackModule(CallbackBase):
 
         return 'unknown', 'unknown'
 
+    def __init__(self):
+        """ Make sure the log directory exists. """
+        super(CallbackModule, self).__init__()
+        log_directory = environ.get('ANSIBLE_LOG_ROOT_PATH')
+        if not exists(log_directory):
+            makedirs(log_directory)
+        handler = FileHandler(join(log_directory, 'log.txt'), 'a')
+        logger.addHandler(handler)
+
     @log_exceptions_v2_playbook_on_start
     @log_exceptions
     def v2_playbook_on_start(self, playbook):
         """
         Implementation of the callback endpoint to be
         fired when execution of a new playbook begins.
-        We are only interested in recording the results
-        for the last run of any particular playbook, so
-        if the log directory already exists for this
-        playbook, we will over-write it. Otherwise, we
-        make sure to set up the directory for future
-        writes from other callback handlers.
 
         :param playbook: playbook which began execution
         """
-        playbook_log_dir = self.log_dir_for_playbook(playbook._file_name)
-        if exists(playbook_log_dir):
-            rmtree(playbook_log_dir)
-
-        makedirs(playbook_log_dir)
-        self.current_playbook_log_path = join(playbook_log_dir, 'log')
         self.write_log('Starting execution for playbook at {}'.format(playbook._file_name))
 
     @log_exceptions
@@ -286,7 +243,6 @@ class CallbackModule(CallbackBase):
 
         :param play: play which began execution
         """
-        makedirs(self.log_dir_for_play(play))
         play_file, play_line = self.determine_location_for_workload(play)
         self.write_log(
             'Starting execution for play "{}" with name "play_{}" from "{}:{}".'.format(
@@ -306,7 +262,6 @@ class CallbackModule(CallbackBase):
         :param task:task which began execution
         :param is_conditional: whether or not this task is conditional
         """
-        makedirs(self.log_dir_for_task(task))
         self.log_message_for_task(task, 'Starting')
 
     @log_exceptions
@@ -413,10 +368,6 @@ class CallbackModule(CallbackBase):
         # def v2_on_file_diff(self, result):
         # def v2_playbook_on_stats(self, stats):
 
-
-from structlog import get_logger
-
-logger = get_logger()
 
 def callback_generic_event(func):
     def wrapper(*args, **kwargs):
