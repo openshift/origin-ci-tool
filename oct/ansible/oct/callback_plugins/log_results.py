@@ -1,23 +1,21 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from codecs import open
-from datetime import datetime
 from logging import INFO, FileHandler
 from os import environ, makedirs
 from os.path import exists, join
-from traceback import format_exc
 
 from ansible.plugins.callback import CallbackBase
 from structlog import configure, get_logger
 from structlog.stdlib import BoundLogger, LoggerFactory, add_log_level
-from structlog.processors import JSONRenderer, TimeStamper, UnicodeDecoder
+from structlog.processors import JSONRenderer, TimeStamper, UnicodeDecoder, format_exc_info
 from yaml import dump
 
 configure(
     processors=[
         add_log_level,
         TimeStamper(fmt="iso"),
+        format_exc_info,
         UnicodeDecoder(),
         JSONRenderer(),
     ], context_class=dict, logger_factory=LoggerFactory(), wrapper_class=BoundLogger, cache_logger_on_first_use=True
@@ -40,17 +38,13 @@ def log_exceptions(func):
     :param func: function to decorate
     :return: decorated function
     """
-
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception:
-            with open(join(args[0].log_root_dir, 'internal.log'), 'a', encoding='utf-8') as log_file:
-                log_file.write(
-                    '{} | Exception on func {} with args self, {} and kwargs {}:\n{}\n'.
-                    format(datetime.now(), func.__name__, args[1:], kwargs, format_exc())
-                )
-
+            logger.error(
+                callback=func.__name__, args=args, kwargs=kwargs,
+                exc_info=True)
     return wrapper
 
 
