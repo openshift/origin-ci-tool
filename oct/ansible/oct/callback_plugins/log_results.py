@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from contextlib import contextmanager
+from functools import wraps
 from logging import INFO, FileHandler
 from os import environ, makedirs
 from os.path import exists, join
@@ -24,6 +26,16 @@ logger = get_logger('origin-ci-tool')
 logger.setLevel(INFO)
 
 
+@contextmanager
+def bind_logger(**kwargs):
+    global logger
+    logger = logger.bind(**kwargs)
+    try:
+        yield
+    finally:
+        logger = logger.unbind(*kwargs.keys())
+
+
 def log_exceptions(func):
     """
     Instead of allowing exceptions from the method
@@ -38,6 +50,7 @@ def log_exceptions(func):
     :param func: function to decorate
     :return: decorated function
     """
+    @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -61,10 +74,19 @@ def log_exceptions_v2_playbook_on_start(func):
     :param func: wrapped v2_playbook_on_start
     :return: better wrapper
     """
-
+    @wraps(func)
     def wrapper(self, playbook):
         return func(self, playbook)
 
+    return wrapper
+
+
+def log_callback_name(func):
+    """ Add the function name to the log. """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with bind_logger(callback=func.__name__):
+            func(*args, **kwargs)
     return wrapper
 
 
@@ -130,7 +152,7 @@ class CallbackModule(CallbackBase):
         :param message_prefix: message prefix to write
         """
         task_file, task_line = self.determine_location_for_workload(task)
-        self.write_log(
+        logger.info(
             '{} task "{}" with UUID "task_{}" from "{}:{}".'.format(
                 message_prefix,
                 task.get_name(),
@@ -171,6 +193,7 @@ class CallbackModule(CallbackBase):
 
     @log_exceptions_v2_playbook_on_start
     @log_exceptions
+    @log_callback_name
     def v2_playbook_on_start(self, playbook):
         """
         Implementation of the callback endpoint to be
@@ -178,9 +201,10 @@ class CallbackModule(CallbackBase):
 
         :param playbook: playbook which began execution
         """
-        self.write_log('Starting execution for playbook at {}'.format(playbook._file_name))
+        logger.info(playbook=playbook._file_name)
 
     @log_exceptions
+    @log_callback_name
     def v2_playbook_on_import_for_host(self, result, imported_file):
         """
         Implementation of the callback endpoint to be
@@ -189,12 +213,10 @@ class CallbackModule(CallbackBase):
         :param result: result of the import action
         :param imported_file: which file was imported by the host
         """
-        # TODO: determine what this result looks like and place it in the right log dir
-        host = result._host.get_name()
-        self.write_log('Imported file at "{}" on host "{}"'.format(imported_file, host))
-        self.write_log(dump(result, default_flow_style=False, explicit_start=True))
+        logger.info(imported_file=imported_file)
 
     @log_exceptions
+    @log_callback_name
     def v2_playbook_on_not_import_for_host(self, result, missing_file):
         """
         Implementation of the callback endpoint to be
@@ -203,12 +225,10 @@ class CallbackModule(CallbackBase):
         :param result: result of the import action
         :param missing_file: which file was not found on the host
         """
-        # TODO: determine what this result looks like and place it in the right log dir
-        host = result._host.get_name()
-        self.write_log('Failed to import file at "{}" on host "{}"'.format(missing_file, host))
-        self.write_log(dump(result, default_flow_style=False, explicit_start=True))
+        logger.error(missing_file=missing_file)
 
     @log_exceptions
+    @log_callback_name
     def v2_playbook_on_include(self, included_file):
         """
         Implementation of the callback endpoint to be
@@ -216,20 +236,38 @@ class CallbackModule(CallbackBase):
 
         :param included_file: which file was imported by the host
         """
-        self.write_log('Included file at "{}"'.format(included_file))
+        logger.info(included_file=included_file)
 
     @log_exceptions
+    @log_callback_name
+    def v2_playbook_on_no_hosts_matched(self):
+        """
+        Implementation of the callback endpoint to be
+        fired when a playbook finds no hosts to execute on.
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_name
+    def v2_playbook_on_no_hosts_remaining(self):
+        """
+        Implementation of the callback endpoint to be
+        fired when a playbook has no hosts remaining
+        to execute on.
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_name
     def v2_playbook_on_setup(self):
         """
         Implementation of the callback endpoint to be
-        fired when a setup task is executed. We want
-        to handle this case separately from the generic
-        task case as setup "tasks" do not contain much
-        of the metadata we expect to see on all tasks.
+        fired when a setup task is executed.
         """
-        self.write_log('Running setup for playbook.')
+        logger.info()
 
     @log_exceptions
+    @log_callback_name
     def v2_playbook_on_play_start(self, play):
         """
         Implementation of the callback endpoint to be
@@ -238,16 +276,14 @@ class CallbackModule(CallbackBase):
         :param play: play which began execution
         """
         play_file, play_line = self.determine_location_for_workload(play)
-        self.write_log(
-            'Starting execution for play "{}" with name "play_{}" from "{}:{}".'.format(
-                play.get_name(),
-                play._uuid,
-                play_file,
-                play_line,
-            )
-        )
+        logger.info(
+            play_name=play.get_name(),
+            play_uuid=play._uuid,
+            play_file=play_file,
+            play_line=play_line)
 
     @log_exceptions
+    @log_callback_name
     def v2_playbook_on_task_start(self, task, is_conditional):
         """
         Implementation of the callback endpoint to be
@@ -259,6 +295,7 @@ class CallbackModule(CallbackBase):
         self.log_message_for_task(task, 'Starting')
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_failed(self, result, ignore_errors=False):
         """
         Implementation of the callback endpoint to be
@@ -270,6 +307,7 @@ class CallbackModule(CallbackBase):
         self.log_task_result('failed', result)
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_ok(self, result):
         """
         Implementation of the callback endpoint to be
@@ -280,6 +318,7 @@ class CallbackModule(CallbackBase):
         self.log_task_result('ok', result)
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_skipped(self, result):
         """
         Implementation of the callback endpoint to be
@@ -290,6 +329,7 @@ class CallbackModule(CallbackBase):
         self.log_task_result('skipped', result)
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_unreachable(self, result):
         """
         Implementation of the callback endpoint to be
@@ -300,6 +340,7 @@ class CallbackModule(CallbackBase):
         self.log_task_result('unreachable', result)
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_no_hosts(self, task):
         """
         Implementation of the callback endpoint to be
@@ -310,6 +351,7 @@ class CallbackModule(CallbackBase):
         self.log_message_for_task(task, 'No hosts found for')
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_async_ok(self, result):
         """
         Implementation of the callback endpoint to be
@@ -321,6 +363,7 @@ class CallbackModule(CallbackBase):
         self.log_task_result('async ok', result)
 
     @log_exceptions
+    @log_callback_name
     def v2_runner_on_async_failed(self, result):
         """
         Implementation of the callback endpoint to be
@@ -330,23 +373,6 @@ class CallbackModule(CallbackBase):
         :param result: result of the task execution
         """
         self.log_task_result('async failed', result)
-
-    @log_exceptions
-    def v2_playbook_on_no_hosts_matched(self):
-        """
-        Implementation of the callback endpoint to be
-        fired when a playbook finds no hosts to execute on.
-        """
-        self.write_log('No hosts matched.')
-
-    @log_exceptions
-    def v2_playbook_on_no_hosts_remaining(self):
-        """
-        Implementation of the callback endpoint to be
-        fired when a playbook has no hosts remaining
-        to execute on.
-        """
-        self.write_log('No hosts remaining.')
 
         # TODO: unimplemented methods follow - do we need them?
         # def v2_runner_item_on_ok(self, result):
@@ -363,15 +389,6 @@ class CallbackModule(CallbackBase):
         # def v2_playbook_on_stats(self, stats):
 
 
-def callback_generic_event(func):
-    def wrapper(*args, **kwargs):
-        logger.bind(callback=func.__name__)
-        func(*args, **kwargs)
-        logger.unbind('callback')
-
-    return wrapper
-
-
 def callback_result_event(func):
     def wrapper(callback_module, raw_result, *args, **kwargs):
         host = raw_result._host.get_name()
@@ -381,7 +398,7 @@ def callback_result_event(func):
             'type': 'task'
         }
         logger.bind(host=host, result=result, ansible_workload_reference=ansible_workload_reference)
-        callback_generic_event(func)(callback_module, raw_result, *args, **kwargs)
+        log_callback_name(func)(callback_module, raw_result, *args, **kwargs)
         logger.unbind('host', 'result', 'ansible_workload_reference')
 
     return wrapper
@@ -394,7 +411,7 @@ def callback_start_event(func):
             'type': type(ansible_workload).__name__.lower()
         }
         logger.bind(ansible_workload_reference=ansible_workload_reference)
-        callback_generic_event(func)(callback_module, ansible_workload, *args, **kwargs)
+        log_callback_name(func)(callback_module, ansible_workload, *args, **kwargs)
         logger.unbind('ansible_workload_reference')
 
     return wrapper
