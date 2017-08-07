@@ -90,6 +90,39 @@ def log_callback_name(func):
     return wrapper
 
 
+def log_callback_id(func):
+    """ Add identification information about the event to the log. """
+    @wraps(func)
+    def wrapper(callback_module, workload, *args, **kwargs):
+        name = workload.get_name()
+        uuid = str(workload._uuid)
+        location = '{}:{}'.format(*determine_location_for_workload(workload))
+        with bind_logger(name=name, uuid=uuid, location=location):
+            func(callback_module, workload, *args, **kwargs)
+    return wrapper
+
+
+def determine_location_for_workload(workload):
+    """
+    Determine the file location and line number where
+    the Ansible workload is defined. Not every workload
+    has a consistent set of entries in `_attributes`, so
+    we need to take a more dynamic approach to find one
+    that we can (ab)use for this information.
+
+    :param workload: Ansible workload to inspect
+    :return: file path, line number
+    """
+    if not hasattr(workload, '_attributes'):
+        return 'unknown', 'unknown'
+
+    for attribute in workload._attributes.values():
+        if hasattr(attribute, '_data_source'):
+            return attribute._data_source, attribute._line_number
+
+    return 'unknown', 'unknown'
+
+
 class CallbackModule(CallbackBase):
     """
     Logs results from tasks, per playbook, per host.
@@ -141,46 +174,6 @@ class CallbackModule(CallbackBase):
         message = 'Task finished with status "{}" on host "{}"'.format(status, host)
         data = result._result
         self.write_log(message, data)
-
-    def log_message_for_task(self, task, message_prefix):
-        """
-        Log a message for a task. The message will
-        be prepended to a generic stanza identifying
-        the task.
-
-        :param task: task to log for
-        :param message_prefix: message prefix to write
-        """
-        task_file, task_line = self.determine_location_for_workload(task)
-        logger.info(
-            '{} task "{}" with UUID "task_{}" from "{}:{}".'.format(
-                message_prefix,
-                task.get_name(),
-                task._uuid,
-                task_file,
-                task_line,
-            )
-        )
-
-    def determine_location_for_workload(self, workload):
-        """
-        Determine the file location and line number where
-        the Ansible workload is defined. Not every workload
-        has a consistent set of entries in `_attributes`, so
-        we need to take a more dynamic approach to find one
-        that we can (ab)use for this information.
-
-        :param workload: Ansible workload to inspect
-        :return: file path, line number
-        """
-        if not hasattr(workload, '_attributes'):
-            return 'unknown', 'unknown'
-
-        for attribute in workload._attributes.values():
-            if hasattr(attribute, '_data_source'):
-                return attribute._data_source, attribute._line_number
-
-        return 'unknown', 'unknown'
 
     def __init__(self):
         """ Make sure the log directory exists. """
@@ -267,6 +260,7 @@ class CallbackModule(CallbackBase):
         logger.info()
 
     @log_exceptions
+    @log_callback_id
     @log_callback_name
     def v2_playbook_on_play_start(self, play):
         """
@@ -275,14 +269,10 @@ class CallbackModule(CallbackBase):
 
         :param play: play which began execution
         """
-        play_file, play_line = self.determine_location_for_workload(play)
-        logger.info(
-            play_name=play.get_name(),
-            play_uuid=play._uuid,
-            play_file=play_file,
-            play_line=play_line)
+        logger.info()
 
     @log_exceptions
+    @log_callback_id
     @log_callback_name
     def v2_playbook_on_task_start(self, task, is_conditional):
         """
@@ -292,7 +282,7 @@ class CallbackModule(CallbackBase):
         :param task:task which began execution
         :param is_conditional: whether or not this task is conditional
         """
-        self.log_message_for_task(task, 'Starting')
+        logger.info(is_conditional=is_conditional)
 
     @log_exceptions
     @log_callback_name
@@ -340,6 +330,7 @@ class CallbackModule(CallbackBase):
         self.log_task_result('unreachable', result)
 
     @log_exceptions
+    @log_callback_id
     @log_callback_name
     def v2_runner_on_no_hosts(self, task):
         """
@@ -348,7 +339,7 @@ class CallbackModule(CallbackBase):
 
         :param task: task which did not execute
         """
-        self.log_message_for_task(task, 'No hosts found for')
+        logger.info()
 
     @log_exceptions
     @log_callback_name
