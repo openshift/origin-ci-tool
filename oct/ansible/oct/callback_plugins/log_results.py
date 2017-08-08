@@ -123,57 +123,40 @@ def determine_location_for_workload(workload):
     return 'unknown', 'unknown'
 
 
+def log_callback_result(func):
+    """ Add the `host` and `result` callback parameters to the log. """
+    @wraps(func)
+    def wrapper(callback_module, raw_result, *args, **kwargs):
+        host = raw_result._host.get_name()
+        sanitize_results(raw_result._result)
+        with bind_logger(host=host, result=raw_result._result):
+            func(callback_module, raw_result, *args, **kwargs)
+    return wrapper
+
+
+def sanitize_results(data):
+    """
+    Sanitize the results to remove unnecessary fields.
+    Removes Ansible internal fields that the user doesn't need in their output
+    files and `stdout_lines` if `stdout` is present -- we can let people load
+    the data and format it however they want, but we don't want to store it
+    twice.
+    """
+    for key in data.keys():
+        if key.startswith('_ansible'):
+            del data[key]
+    if 'results' in data:
+        for result in data['results']:
+            if 'stdout' in result and 'stdout_lines' in result:
+                del result['stdout_lines']
+
+
 class CallbackModule(CallbackBase):
-    """
-    Logs results from tasks, per playbook, per host.
-    Logfiles are aggregates of YAML snippets that
-    describe actions, their results, and where full
-    log messages can be found. Full log messages are
-    aggregates of YAML snippets that were given to
-    the callback, like the result, whether errors are
-    to be ignored, etc.
-    """
+    """ Log playbook, play, and task execution to a file formatted as json. """
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'log_results'
     CALLBACK_NEEDS_WHITELIST = True
-
-    def write_log(self, message, data=None):
-        """
-        Write a message to the log.
-
-        :param message: message for the log
-        :param data: extra data for the log
-        """
-        if data:
-            # sanitize the data to remove Ansible
-            # internal fields that the user doesn't
-            # need in their output files
-            for key in data.keys():
-                if key.startswith('_ansible'):
-                    del data[key]
-
-            # remove `stdout_lines` if `stdout` is
-            # present -- we can let people load the
-            # data and format it however they want,
-            # but we don't want to store it twice
-            if 'results' in data:
-                for result in data['results']:
-                    if 'stdout' in result and 'stdout_lines' in result:
-                        del result['stdout_lines']
-        logger.info(message, data=data)
-
-    def log_task_result(self, status, result):
-        """
-        Log the result of a task.
-
-        :param status: exit status of the task
-        :param result: result data from the task
-        """
-        host = result._host.get_name()
-        message = 'Task finished with status "{}" on host "{}"'.format(status, host)
-        data = result._result
-        self.write_log(message, data)
 
     def __init__(self):
         """ Make sure the log directory exists. """
@@ -197,6 +180,7 @@ class CallbackModule(CallbackBase):
         logger.info(playbook=playbook._file_name)
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_playbook_on_import_for_host(self, result, imported_file):
         """
@@ -209,6 +193,7 @@ class CallbackModule(CallbackBase):
         logger.info(imported_file=imported_file)
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_playbook_on_not_import_for_host(self, result, missing_file):
         """
@@ -285,6 +270,7 @@ class CallbackModule(CallbackBase):
         logger.info(is_conditional=is_conditional)
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_runner_on_failed(self, result, ignore_errors=False):
         """
@@ -294,9 +280,10 @@ class CallbackModule(CallbackBase):
         :param result: result of the task execution
         :param ignore_errors: if we should consider this a failure
         """
-        self.log_task_result('failed', result)
+        logger.error(ignore_errors=ignore_errors)
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_runner_on_ok(self, result):
         """
@@ -305,9 +292,10 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the task execution
         """
-        self.log_task_result('ok', result)
+        logger.info()
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_runner_on_skipped(self, result):
         """
@@ -316,9 +304,10 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the task execution
         """
-        self.log_task_result('skipped', result)
+        logger.info()
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_runner_on_unreachable(self, result):
         """
@@ -327,7 +316,7 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the task execution
         """
-        self.log_task_result('unreachable', result)
+        logger.error()
 
     @log_exceptions
     @log_callback_id
@@ -342,6 +331,7 @@ class CallbackModule(CallbackBase):
         logger.info()
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_runner_on_async_ok(self, result):
         """
@@ -351,9 +341,10 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the task execution
         """
-        self.log_task_result('async ok', result)
+        logger.info()
 
     @log_exceptions
+    @log_callback_result
     @log_callback_name
     def v2_runner_on_async_failed(self, result):
         """
@@ -363,7 +354,7 @@ class CallbackModule(CallbackBase):
 
         :param result: result of the task execution
         """
-        self.log_task_result('async failed', result)
+        logger.error()
 
         # TODO: unimplemented methods follow - do we need them?
         # def v2_runner_item_on_ok(self, result):
@@ -378,31 +369,3 @@ class CallbackModule(CallbackBase):
         #                                confirm=False, salt_size=None, salt=None, default=None):
         # def v2_on_file_diff(self, result):
         # def v2_playbook_on_stats(self, stats):
-
-
-def callback_result_event(func):
-    def wrapper(callback_module, raw_result, *args, **kwargs):
-        host = raw_result._host.get_name()
-        result = santitize_result(raw_result._result)
-        ansible_workload_reference = {
-            'uuid': raw_result._task._uuid,
-            'type': 'task'
-        }
-        logger.bind(host=host, result=result, ansible_workload_reference=ansible_workload_reference)
-        log_callback_name(func)(callback_module, raw_result, *args, **kwargs)
-        logger.unbind('host', 'result', 'ansible_workload_reference')
-
-    return wrapper
-
-
-def callback_start_event(func):
-    def wrapper(callback_module, ansible_workload, *args, **kwargs):
-        ansible_workload_reference = {
-            'uuid': ansible_workload._uuid,
-            'type': type(ansible_workload).__name__.lower()
-        }
-        logger.bind(ansible_workload_reference=ansible_workload_reference)
-        log_callback_name(func)(callback_module, ansible_workload, *args, **kwargs)
-        logger.unbind('ansible_workload_reference')
-
-    return wrapper
