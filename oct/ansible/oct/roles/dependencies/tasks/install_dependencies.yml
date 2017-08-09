@@ -75,6 +75,7 @@
    - Xvfb                     # Origin Web Console tests
    - yum-utils                #
    - zip                      # Origin build/package
+   - msitools                 # Windows Installer Tools
 
 - name: install distribution-dependent dependencies
   package:
