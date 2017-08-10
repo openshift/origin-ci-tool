@@ -356,16 +356,144 @@ class CallbackModule(CallbackBase):
         """
         logger.error()
 
-        # TODO: unimplemented methods follow - do we need them?
-        # def v2_runner_item_on_ok(self, result):
-        # def v2_runner_item_on_failed(self, result):
-        # def v2_runner_item_on_skipped(self, result):
-        # def v2_runner_retry(self, result):
-        # def v2_runner_on_file_diff(self, result, diff):
-        # def v2_playbook_on_notify(self, result, handler):
-        # def v2_playbook_on_cleanup_task_start(self, task):
-        # def v2_playbook_on_handler_task_start(self, task):
-        # def v2_playbook_on_vars_prompt(self, varname, private=True, prompt=None, encrypt=None,
-        #                                confirm=False, salt_size=None, salt=None, default=None):
-        # def v2_on_file_diff(self, result):
-        # def v2_playbook_on_stats(self, stats):
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_runner_on_async_poll(self, result):
+        """
+        Implementation of the callback endpoint to be
+        fired when an async task is polled.
+
+        :param result: result of the poll
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_runner_item_on_ok(self, result):
+        """
+        Implementation of the callback endpoint to be
+        fired when an item on a task finishes successfully.
+
+        :param result: result of the item execution
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_runner_item_on_failed(self, result):
+        """
+        Implementation of the callback endpoint to be
+        fired when an item on a task fails.
+
+        :param result: result of the item execution
+        """
+        logger.error()
+
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_runner_item_on_skipped(self, result):
+        """
+        Implementation of the callback endpoint to be
+        fired when an item on a task is skipped.
+
+        :param result: result of the item execution
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_runner_retry(self, result):
+        """
+        Implementation of the callback endpoint to be
+        fired when a task is retried.
+
+        :param result: result of the item execution
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_runner_on_file_diff(self, result, diff):
+        """
+        Implementation of the callback endpoint to be
+        fired when a file diff is displayed.
+
+        :param result: result of the item execution
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_result
+    @log_callback_name
+    def v2_playbook_on_notify(self, result, handler):
+        """
+        Implementation of the callback endpoint to be
+        fired when a task is "changed" and has notifiers.
+
+        :param result: result of the item execution
+        :param handler: name of the handler
+        """
+        logger.info(handler=handler)
+
+    @log_exceptions
+    @log_callback_id
+    @log_callback_name
+    def v2_playbook_on_cleanup_task_start(self, task):
+        """
+        Implementation of the callback endpoint to be
+        fired when a cleanup task is executed.
+
+        :param task: cleanup task
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_id
+    @log_callback_name
+    def v2_playbook_on_handler_task_start(self, task):
+        """
+        Implementation of the callback endpoint to be
+        fired when a handler is executed.
+
+        :param task: handler task
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_name
+    def v2_playbook_on_vars_prompt(self, varname, private=True, prompt=None, encrypt=None,
+                                   confirm=False, salt_size=None, salt=None, default=None):
+        """
+        Implementation of the callback endpoint to be
+        fired when a prompt is displayed.
+        """
+        logger.info(varname=varname)
+
+    @log_callback_name
+    @log_callback_result
+    @log_exceptions
+    def v2_on_file_diff(self, result):
+        """
+        Implementation of the callback endpoint to be
+        fired when a file diff is displayed.
+
+        :param result: result of the item execution
+        """
+        logger.info()
+
+    @log_exceptions
+    @log_callback_name
+    def v2_playbook_on_stats(self, stats):
+        """
+        Implementation of the callback endpoint to be
+        fired when playbook stats are displayed.
+
+        :param result: result of the item execution
+        """
+        logger.info()
