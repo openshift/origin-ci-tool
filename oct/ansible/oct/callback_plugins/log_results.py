@@ -50,14 +50,14 @@ def log_exceptions(func):
     :param func: function to decorate
     :return: decorated function
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception:
-            logger.error(
-                callback=func.__name__, args=args, kwargs=kwargs,
-                exc_info=True)
+            logger.error(callback=func.__name__, args=args, kwargs=kwargs, exc_info=True)
+
     return wrapper
 
 
@@ -74,6 +74,7 @@ def log_exceptions_v2_playbook_on_start(func):
     :param func: wrapped v2_playbook_on_start
     :return: better wrapper
     """
+
     @wraps(func)
     def wrapper(self, playbook):
         return func(self, playbook)
@@ -83,15 +84,18 @@ def log_exceptions_v2_playbook_on_start(func):
 
 def log_callback_name(func):
     """ Add the function name to the log. """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         with bind_logger(callback=func.__name__):
             func(*args, **kwargs)
+
     return wrapper
 
 
 def log_callback_id(func):
     """ Add identification information about the event to the log. """
+
     @wraps(func)
     def wrapper(callback_module, workload, *args, **kwargs):
         name = workload.get_name()
@@ -99,6 +103,7 @@ def log_callback_id(func):
         location = '{}:{}'.format(*determine_location_for_workload(workload))
         with bind_logger(name=name, uuid=uuid, location=location):
             func(callback_module, workload, *args, **kwargs)
+
     return wrapper
 
 
@@ -125,12 +130,14 @@ def determine_location_for_workload(workload):
 
 def log_callback_result(func):
     """ Add the `host` and `result` callback parameters to the log. """
+
     @wraps(func)
     def wrapper(callback_module, raw_result, *args, **kwargs):
         host = raw_result._host.get_name()
         sanitize_results(raw_result._result)
         with bind_logger(host=host, result=raw_result._result):
             func(callback_module, raw_result, *args, **kwargs)
+
     return wrapper
 
 
@@ -467,8 +474,9 @@ class CallbackModule(CallbackBase):
 
     @log_exceptions
     @log_callback_name
-    def v2_playbook_on_vars_prompt(self, varname, private=True, prompt=None, encrypt=None,
-                                   confirm=False, salt_size=None, salt=None, default=None):
+    def v2_playbook_on_vars_prompt(
+            self, varname, private=True, prompt=None, encrypt=None, confirm=False, salt_size=None, salt=None, default=None
+    ):
         """
         Implementation of the callback endpoint to be
         fired when a prompt is displayed.
