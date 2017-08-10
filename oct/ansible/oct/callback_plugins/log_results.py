@@ -149,13 +149,19 @@ def sanitize_results(data):
     the data and format it however they want, but we don't want to store it
     twice.
     """
-    for key in data.keys():
-        if key.startswith('_ansible'):
-            del data[key]
+    remove_ansible_data(data)
     if 'results' in data:
         for result in data['results']:
+            remove_ansible_data(result)
             if 'stdout' in result and 'stdout_lines' in result:
                 del result['stdout_lines']
+
+
+def remove_ansible_data(result):
+    """ Remove internal fields that should not be logged. """
+    for key in result.keys():
+        if key.startswith('_ansible'):
+            del result[key]
 
 
 class CallbackModule(CallbackBase):
