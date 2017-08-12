@@ -60,5 +60,4 @@
     - version: '14'
     - version: '15'
     - version: '36'
-      exclude: 'origin*'
   when: ansible_distribution in ['RedHat', 'CentOS']
