@@ -9,6 +9,13 @@
     - pkg
     - bin
 
+- name: initialize configuration for each private repository
+  include: initialize_bare_repository.yml
+  vars:
+    origin_ci_repository: '{{ item }}'
+  with_items:
+    - 'ose'
+
 - name: clone and initialize configuration for each repository
   include: initialize_repository.yml
   vars:
