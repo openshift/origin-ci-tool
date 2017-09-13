@@ -15,6 +15,7 @@
     origin_ci_repository: '{{ item }}'
   with_items:
     - 'origin'
+    - 'ose'
     - 'origin-web-console'
     - 'source-to-image'
     - 'origin-metrics'
