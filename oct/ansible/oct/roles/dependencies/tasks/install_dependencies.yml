@@ -64,7 +64,6 @@
    - sysstat                  # developer UX
    - tcpdump                  # developer UX
    - tig                      # developer UX
-   - tito                     # Origin build/package
    - tmux                     # developer UX
    - tree                     # developer UX
    - unzip                    # Origin build/package
@@ -75,6 +74,14 @@
    - Xvfb                     # Origin Web Console tests
    - yum-utils                #
    - zip                      # Origin build/package
+
+- name: hack around installing tito as it is broken today
+  yum:
+    name: '{{ item }}'
+    state: latest
+    skip_broken: yes
+  with_items:
+   - tito                     # Origin build/package
 
 - name: install distribution-dependent dependencies
   package:
