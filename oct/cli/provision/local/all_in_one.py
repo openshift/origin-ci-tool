@@ -39,6 +39,7 @@ class Stage(object):
     build = 'build'
     install = 'install'
     fork = 'fork'
+    crio = 'crio'
 
 
 _SHORT_HELP = 'Provision a virtual host for an All-In-One deployment.'

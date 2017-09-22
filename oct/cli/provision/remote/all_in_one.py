@@ -35,6 +35,7 @@ class Stage(object):
     build = 'build'
     install = 'install'
     fork = 'fork'
+    crio = 'crio'
 
 
 def destroy_callback(context, _, value):
@@ -107,6 +108,8 @@ Examples:
         Stage.base,
         Stage.build,
         Stage.install,
+        Stage.fork,
+        Stage.crio,
     ]),
     default=Stage.install,
     show_default=True,
