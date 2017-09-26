@@ -66,5 +66,11 @@
         - 'golang.org/x/tools/cmd/goimports'
         - 'github.com/tools/godep'
         - 'github.com/golang/lint/golint'
-        - 'github.com/openshift/imagebuilder/cmd/imagebuilder'
         - 'github.com/josephspurrier/goversioninfo'
+
+    # imagebuilder depends on 'context' pkg which is available only in golang 1.7 and higher
+    - name: install imagebuilder for golang 1.7 and higher
+      command: 'go get {{ item }}'
+      with_items:
+        - 'github.com/openshift/imagebuilder/cmd/imagebuilder'
+      when: '{{ origin_ci_golang_version | version_compare("1.7", ">=") }}'
