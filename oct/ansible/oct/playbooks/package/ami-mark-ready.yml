@@ -30,14 +30,27 @@
       set_fact:
         origin_ci_aws_hostname: '{{ groups[origin_ci_hosts][0] }}'
 
-    - name: determine AWS EC2 AMI id
-      command: 'curl http://169.254.169.254/latest/meta-data/ami-id'
-      delegate_to: "{{ origin_ci_aws_hostname }}"
-      register: metadata_probe
-
-    - name: record the AWS EC2 AMI id
+    - name: determine AWS EC2 AMI name
       set_fact:
-        origin_ci_aws_ami_id: "{{ metadata_probe.stdout }}"
+        origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
+
+    - name: search for an AMI to update
+      ec2_ami_find:
+        region: '{{ origin_ci_aws_region }}'
+        ami_tags:
+          Name: '{{ origin_ci_aws_ami_name }}'
+        sort: 'creationDate'
+        sort_order: descending
+        sort_end: 1
+        no_result_action: fail
+      register: ami_facts
+      until: ami_facts.results is defined
+      retries: 5
+      delay: 10
+
+    - name: determine which AMI to update
+      set_fact:
+        origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
 
     - name: mark the AMI ready
       ec2_tag:
