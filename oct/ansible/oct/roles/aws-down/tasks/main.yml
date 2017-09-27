@@ -10,7 +10,7 @@
     region: '{{ origin_ci_aws_region }}'
     resource: '{{ origin_ci_aws_instance_id }}'
     tags:
-      Name: 'terminate'
+      Name: 'oct-terminate'
 
 - name: tear down the EC2 instance
   ec2:
