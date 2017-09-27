@@ -52,7 +52,7 @@
   set_fact:
     origin_ci_aws_ami_id: '{{ item.ami_id }}'
   with_items: '{{ ami_facts.results }}'
-  when: "'qe' not in item.tags"
+  when: "'qe' not in item.tags or origin_ci_aws_ami_stage == 'fork'"
 
 - name: determine which subnets are available
   ec2_vpc_subnet_facts:
