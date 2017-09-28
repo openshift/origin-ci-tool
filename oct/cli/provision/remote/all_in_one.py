@@ -188,7 +188,7 @@ def provision_with_aws(configuration, operating_system, stage, name, ami_id, dis
             'No private key path found! Configure one using:\n  $ oct configure aws-client private_key_path PATH'
         )
 
-    playbook_variables={
+    playbook_variables = {
         'origin_ci_aws_hostname': configuration.next_available_vagrant_name,  # TODO: fix this
         'origin_ci_aws_ami_os': operating_system,
         'origin_ci_aws_ami_stage': stage,
@@ -205,7 +205,7 @@ def provision_with_aws(configuration, operating_system, stage, name, ami_id, dis
     }
 
     if ami_id is not None:
-        playbook_variables['origin_ci_aws_ami_id']= ami_id,
+        playbook_variables['origin_ci_aws_ami_id'] = ami_id,
 
     configuration.run_playbook(
         playbook_relative_path='provision/aws-up',
