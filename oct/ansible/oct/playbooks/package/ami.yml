@@ -108,10 +108,10 @@
         sort_order: descending
         sort_end: 1
         no_result_action: fail
-        wait: yes
-        wait_timeout: 1800
       register: ami_facts
       when: "origin_ci_aws_additional_tags | length > 0"
+      retries: 100
+      delay: 30
 
     - name: determine which AMI to update
       set_fact:
