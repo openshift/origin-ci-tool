@@ -37,7 +37,7 @@
     dest: '{{ origin_ci_inventory_dir }}/tag_to_group_mappings'
 
 - block:
-  - name: determine which AMI to use
+  - name: list available AMIs
     ec2_ami_find:
       region: '{{ origin_ci_aws_region }}'
       ami_tags:
@@ -49,11 +49,15 @@
       no_result_action: fail
     register: ami_facts
 
-  - name: determine which AMI to use
+  - name: choose appropriate AMIs for use
     set_fact:
-      origin_ci_aws_ami_id: '{{ item.ami_id }}'
+      origin_ci_aws_ami_id_candidate: '{{ item.ami_id }}'
     with_items: '{{ ami_facts.results }}'
     when: "'qe' not in item.tags"
+
+  - name: determine which AMI to use
+    set_fact:
+      origin_ci_aws_ami_id: '{{ origin_ci_aws_ami_id_candidate }}'
   when: origin_ci_aws_ami_id is not defined
 
 - name: determine which subnets are available
