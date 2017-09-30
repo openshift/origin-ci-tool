@@ -57,6 +57,6 @@
   when: ansible_distribution in ['RedHat', 'CentOS']
 
 - name: turn on EPEL for the main dependency install
-  package:
-    name: 'epel-release'
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: present
