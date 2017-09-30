@@ -9,3 +9,8 @@
     name: net.ipv4.tcp_tw_reuse
     value: 1
     reload: yes
+
+- name: turn off EPEL for the downstream users
+  package:
+    name: 'epel-release'
+    state: absent
