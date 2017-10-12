@@ -189,6 +189,9 @@ if options.list:
             'hosts': [],
             'vars': {},
         },
+        'vagrant': {
+            'hosts': [],
+        },
     }
 
     # load VM hosts
