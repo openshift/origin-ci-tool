@@ -13,6 +13,7 @@ DEFAULT_ROUTER_ELB_SECURITY_GROUP_TAG_VALUE = 'router_elb_security_group'
 
 DEFAULT_MASTER_INSTANCE_TYPE = 'm4.xlarge'
 DEFAULT_REGION = 'us-east-1'
+DEFAULT_MASTER_ROOT_VOLUME_SIZE = '35'
 
 _aws_variable_prefix = 'origin_ci_aws_'
 
@@ -48,6 +49,7 @@ class AWSVariables(object):
             router_elb_security_group_tag_value=DEFAULT_ROUTER_ELB_SECURITY_GROUP_TAG_VALUE,
             master_instance_type=DEFAULT_MASTER_INSTANCE_TYPE,
             region=DEFAULT_REGION,
+            master_root_volume_size=DEFAULT_MASTER_ROOT_VOLUME_SIZE,
     ):
         # literal AWS EC2 object identifiers
         self.master_subnet_ids = master_subnet_ids
@@ -75,6 +77,7 @@ class AWSVariables(object):
         # other parameters for setting up the cluster
         self.region = region
         self.master_instance_type = master_instance_type
+        self.master_root_volume_size = master_root_volume_size
 
     def __iter__(self):
         """
