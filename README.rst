@@ -219,6 +219,12 @@ of literal identifiers to use:
 
     $ oct configure aws-defaults master_subnet_ids subnet-XXXXXXXX,subnet-XXXXXXXX,subnet-XXXXXXXX
 
+The root volume size in GB to use for a master (default: 35) can be configured with:
+
+.. code-block:: shell
+
+    $ oct configure aws-defaults master_root_volume_size NUMBER_OF_GB
+
 ****************
 Sample Use-Cases
 ****************
