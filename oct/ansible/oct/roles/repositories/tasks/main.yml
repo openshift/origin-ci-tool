@@ -35,6 +35,7 @@
     - 'jenkins-sync-plugin'
     - 'jenkins-client-plugin'
     - 'jenkins-openshift-login-plugin'
+    - 'image-registry'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml
