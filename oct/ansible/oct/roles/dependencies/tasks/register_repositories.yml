@@ -25,6 +25,7 @@
     - 3.4
     - 3.5
     - 3.6
+    - 3.7
   when: ansible_distribution == 'RedHat'
 
 - name: register dependency repositories from the OpenShift public mirror
@@ -54,6 +55,7 @@
     - version: '14'
     - version: '15'
     - version: '36'
+    - version: '37'
   when: ansible_distribution in ['RedHat', 'CentOS']
 
 - name: turn on EPEL for the main dependency install
