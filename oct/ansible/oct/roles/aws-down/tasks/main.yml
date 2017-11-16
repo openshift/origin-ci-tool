@@ -17,6 +17,7 @@
     region: '{{ origin_ci_aws_region }}'
     instance_ids: [ '{{ origin_ci_aws_instance_id }}' ]
     state: stopped
+  ignore_errors: yes
 
 - name: remove the serialized host variables
   file:
