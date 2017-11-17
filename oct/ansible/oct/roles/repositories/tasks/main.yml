@@ -23,6 +23,7 @@
   with_items:
     - 'origin'
     - 'origin-web-console'
+    - 'origin-web-console-server'
     - 'source-to-image'
     - 'origin-metrics'
     - 'origin-aggregated-logging'
