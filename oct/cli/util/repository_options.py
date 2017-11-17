@@ -12,6 +12,7 @@ class Repository(object):
     origin = 'origin'
     enterprise = 'ose'
     web_console = 'origin-web-console'
+    web_console_server = 'origin-web-console-server'
     source_to_image = 'source-to-image'
     metrics = 'origin-metrics'
     logging = 'origin-aggregated-logging'
@@ -40,6 +41,7 @@ def repository_argument(func):
             Repository.origin,
             Repository.enterprise,
             Repository.web_console,
+            Repository.web_console_server,
             Repository.source_to_image,
             Repository.metrics,
             Repository.logging,
