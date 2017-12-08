@@ -14,6 +14,14 @@
     regexp: "^INSECURE_REGISTRY=.*"
     line: "INSECURE_REGISTRY='--insecure-registry={{ origin_ci_insecure_registries | join(' --insecure-registry=') }}'"
 
+- name: enable debug logging in the docker daemon
+  lineinfile:
+    dest: /etc/sysconfig/docker
+    backrefs: yes
+    regexp: "^OPTIONS='(.*)'"
+    line: "OPTIONS='-D \\1'"
+
+
 - name: ensure no extra registries are added by the configuration
   lineinfile:
     backrefs: yes
