@@ -10,7 +10,50 @@
 - name: Set VG for docker-storage-setup
   lineinfile:
     dest: /etc/sysconfig/docker-storage-setup
+    regexp: "VG=.*"
     line: "VG={{ origin_ci_docker_volume_group }}"
+
+- name: Set storage driver for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "STORAGE_DRIVER=.*"
+    line: "STORAGE_DRIVER=overlay2"
+
+- name: Set devs for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "DEVS=.*"
+    line: "DEVS=/dev/xvdb"
+
+- name: Set data size for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "DATA_SIZE=.*"
+    line: "DATA_SIZE=99%VG"
+
+- name: Set root lv size for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "CONTAINER_ROOT_LV_SIZE=.*"
+    line: "CONTAINER_ROOT_LV_SIZE=100%FREE"
+
+- name: Set root lv name for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "CONTAINER_ROOT_LV_NAME=.*"
+    line: "CONTAINER_ROOT_LV_NAME=docker-root-lv"
+
+- name: Set root lv mount path for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "CONTAINER_ROOT_LV_MOUNT_PATH=.*"
+    line: "CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker"
+
+- name: Remove thin pool for docker-storage-setup
+  lineinfile:
+    dest: /etc/sysconfig/docker-storage-setup
+    regexp: "^CONTAINER_THINPOOL=.*"
+    state: absent
 
 - name: Run docker-storage-setup
   command: docker-storage-setup
