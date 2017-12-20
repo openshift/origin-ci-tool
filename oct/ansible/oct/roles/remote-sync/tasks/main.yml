@@ -9,6 +9,18 @@
     origin_ci_sync_destination: "{{ ansible_env.GOPATH }}/src/github.com/openshift/{{ origin_ci_sync_repository }}"
   when: origin_ci_sync_destination is not defined
 
+- name: check if the destination does not exist
+  stat:
+    path: '{{ origin_ci_sync_destination }}'
+  register: origin_ci_destination_stat
+
+- name: if the destination directory does not exist, clone to it
+  git:
+    repo: 'https://github.com/openshift/{{ origin_ci_sync_repository }}.git'
+    dest: '{{ origin_ci_sync_destination }}'
+    force: yes
+  when: not origin_ci_destination_stat.stat.exists
+
 - name: determine which remotes already exist
   command: '/usr/bin/git remote'
   args:
