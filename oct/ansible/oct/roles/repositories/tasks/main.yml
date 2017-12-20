@@ -39,6 +39,7 @@
     - 'image-registry'
     - 'cluster-operator'
     - 'online-hibernation'
+    - 'kubernetes-metrics-server'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml

@@ -29,6 +29,7 @@ class Repository(object):
     jenkins_login_plugin = 'jenkins-openshift-login-plugin'
     image_registry = 'image-registry'
     cluster_operator = 'cluster-operator'
+    kubernetes_metrics_server = 'kubernetes-metrics-server'
 
 
 def repository_argument(func):
@@ -60,5 +61,6 @@ def repository_argument(func):
             Repository.jenkins_login_plugin,
             Repository.image_registry,
             Repository.cluster_operator,
+            Repository.kubernetes_metrics_server,
         ])
     )(func)
