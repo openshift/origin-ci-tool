@@ -104,7 +104,7 @@
         delete_on_termination: yes
       - device_name: '/dev/sdb'
         volume_type: 'gp2'
-        volume_size: '35'
+        volume_size: '{{ origin_ci_aws_master_image_volume_size }}'
         delete_on_termination: yes
     wait: yes
     wait_timeout: 600

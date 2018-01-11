@@ -2,4 +2,5 @@
 origin_ci_aws_destination_variable: 'public_dns_name'
 origin_ci_aws_vpc_destination_variable: 'ip_address'
 origin_ci_aws_host_address_variable: 'public_ip'
-origin_ci_aws_master_root_volume_size: '35'
+origin_ci_aws_master_root_volume_size: '50'
+origin_ci_aws_master_image_volume_size: '50'
