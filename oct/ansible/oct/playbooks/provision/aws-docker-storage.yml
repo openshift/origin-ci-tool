@@ -30,6 +30,15 @@
         name: lvm2
         state: present
 
+    - name: ensure the new space is empty
+      command: '/usr/bin/dd if=/dev/zero of=/dev/xvdb bs=1M'
+
+    - name: ensure changes are synced to disk
+      command: '/usr/bin/sync'
+
+    - name: ensure the new space is empty
+      command: '/usr/sbin/partprobe'
+
     - name: partition the new space
       script: './../files/partition.sh /dev/xvdb'
 
