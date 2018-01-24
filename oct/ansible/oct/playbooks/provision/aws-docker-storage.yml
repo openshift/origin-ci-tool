@@ -36,7 +36,7 @@
     - name: ensure changes are synced to disk
       command: '/usr/bin/sync'
 
-    - name: ensure the new space is empty
+    - name: commit the new partition table
       command: '/usr/sbin/partprobe'
 
     - name: partition the new space
