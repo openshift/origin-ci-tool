@@ -32,6 +32,7 @@
 
     - name: ensure the new space is empty
       command: '/usr/bin/dd if=/dev/zero of=/dev/xvdb bs=1M'
+      ignore_errors: true
 
     - name: ensure changes are synced to disk
       command: '/usr/bin/sync'
