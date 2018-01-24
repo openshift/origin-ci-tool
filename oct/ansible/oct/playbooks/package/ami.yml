@@ -79,7 +79,7 @@
           image_stage: '{{ origin_ci_aws_ami_stage }}'
           ready: 'no'
         wait: yes
-        wait_timeout: 1800
+        wait_timeout: 3600
 
     - name: determine the host variables file for the AWS EC2 host
       set_fact:
