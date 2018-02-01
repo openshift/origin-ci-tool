@@ -21,6 +21,20 @@
     regexp: '^ADD_REGISTRY=(.*)'
     line: '# ADD_REGISTRY=\1'
 
+- name: log to json-file to avoid flooding journald
+  lineinfile:
+    backrefs: yes
+    dest: /etc/sysconfig/docker
+    regexp: '^OPTIONS=(.*) --log-driver=journald (.*)'
+    line: 'OPTIONS=\1 --log-driver=json-file --log-opt max-size=50m \2'
+
+- name: turn on docker daemon debugging
+  lineinfile:
+    backrefs: yes
+    dest: /etc/sysconfig/docker
+    regexp: "^OPTIONS='(.*)'"
+    line: "OPTIONS='--debug \\1'"
+
 - name: configure the OpenShift storage
   include: configure_openshift_storage.yml
 
