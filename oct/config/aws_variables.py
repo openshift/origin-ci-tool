@@ -13,7 +13,7 @@ DEFAULT_ROUTER_ELB_SECURITY_GROUP_TAG_VALUE = 'router_elb_security_group'
 
 DEFAULT_MASTER_INSTANCE_TYPE = 'm4.xlarge'
 DEFAULT_REGION = 'us-east-1'
-DEFAULT_MASTER_ROOT_VOLUME_SIZE = '35'
+DEFAULT_MASTER_ROOT_VOLUME_SIZE = '75'
 
 _aws_variable_prefix = 'origin_ci_aws_'
 
