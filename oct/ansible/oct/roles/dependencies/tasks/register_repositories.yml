@@ -62,14 +62,3 @@
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: present
-
-- name: register the Docker tested repo
-  yum_repository:
-    name: 'dockertested'
-    state: present
-    description: 'Tested Docker RPMs and dependencies'
-    baseurl: 'https://mirror.openshift.com/enterprise/rhel/dockertested/x86_64/os/'
-    gpgcheck: no
-    sslverify: no
-    sslclientcert: /var/lib/yum/client-cert.pem
-    sslclientkey: /var/lib/yum/client-key.pem
