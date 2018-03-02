@@ -15,6 +15,7 @@
     origin_ci_repository: '{{ item }}'
   with_items:
     - 'ose'
+    - 'online-registration'
 
 - name: clone and initialize configuration for each repository
   include: initialize_repository.yml
