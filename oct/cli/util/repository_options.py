@@ -32,6 +32,7 @@ class Repository(object):
     kubernetes_metrics_server = 'kubernetes-metrics-server'
     online_console_extensions = 'online-console-extensions'
     image_inspector = 'image-inspector'
+    online_registration = 'online-registration'
 
 
 def repository_argument(func):
@@ -66,5 +67,6 @@ def repository_argument(func):
             Repository.kubernetes_metrics_server,
             Repository.online_console_extensions,
             Repository.image_inspector,
+            Repository.online_registration,
         ])
     )(func)
