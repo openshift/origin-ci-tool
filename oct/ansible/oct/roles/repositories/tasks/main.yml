@@ -43,6 +43,7 @@
     - 'kubernetes-metrics-server'
     - 'online-console-extensions'
     - 'image-inspector'
+    - 'service-catalog'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml

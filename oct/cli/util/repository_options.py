@@ -33,6 +33,7 @@ class Repository(object):
     online_console_extensions = 'online-console-extensions'
     image_inspector = 'image-inspector'
     online_registration = 'online-registration'
+    service_catalog = 'service-catalog'
 
 
 def repository_argument(func):
@@ -68,5 +69,6 @@ def repository_argument(func):
             Repository.online_console_extensions,
             Repository.image_inspector,
             Repository.online_registration,
+            Repository.service_catalog,
         ])
     )(func)
