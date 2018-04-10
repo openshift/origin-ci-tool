@@ -28,6 +28,9 @@ Examples:
   Mark a packaged AMI as ready for use
   $ oct package ami --mark-ready
 \b
+  Grant another AWS account launch privileges
+  $ oct package ami --grant-launch AWS_ACCOUNT_ID
+\b
   Package a VM with custom tags
   $ oct package ami --tag FOO=BAR --tag OTHER=VAL
 ''',
@@ -40,6 +43,14 @@ Examples:
     help='Mark an AMI created previously as ready.',
 )
 @option(
+    '--grant-launch',
+    '-g',
+    'grant_launch',
+    metavar='AWS_ACCOUNT_ID',
+    multiple=True,
+    help='Grant launch permissions to the AWS account matching the provided ID',
+)
+@option(
     '--tag',
     '-t',
     "tags",
@@ -50,7 +61,7 @@ Examples:
 @ansible_output_options
 @package_options
 @pass_context
-def ami(context, upgrade_stage, mark_ready, tags):
+def ami(context, upgrade_stage, mark_ready=False, grant_launch=[], tags=[]):
     """
     Package a running AWS EC2 virtual machine.
 
@@ -61,8 +72,9 @@ def ami(context, upgrade_stage, mark_ready, tags):
     """
     configuration = context.obj
 
-    validate_options(upgrade_stage, mark_ready, tags)
+    validate_options(upgrade_stage, mark_ready, grant_launch, tags)
 
+    playbook_variables = {'aws_account_ids_for_launch_permissions': grant_launch}
     ami_tags = {}
     for tag in tags:
         value = u""
@@ -71,26 +83,27 @@ def ami(context, upgrade_stage, mark_ready, tags):
         else:
             key = tag
         ami_tags[key] = value
+    playbook_variables['origin_ci_aws_additional_tags'] = ami_tags
 
     if mark_ready:
         ami_tags["ready"] = "yes"
+
+    if mark_ready or grant_launch:
         configuration.run_playbook(
             playbook_relative_path='package/ami-mark-ready',
-            playbook_variables={'origin_ci_aws_additional_tags': ami_tags},
+            playbook_variables=playbook_variables,
         )
     else:
+        playbook_variables['origin_ci_aws_stage_strategy'] = upgrade_stage
+        playbook_variables['origin_ci_inventory_dir'] = configuration.ansible_client_configuration.host_list
         configuration.run_playbook(
             playbook_relative_path='package/ami',
-            playbook_variables={
-                'origin_ci_aws_stage_strategy': upgrade_stage,
-                'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
-                'origin_ci_aws_additional_tags': ami_tags,
-            },
+            playbook_variables=playbook_variables,
         )
 
 
-def validate_options(upgrade_stage, mark_ready, tags):
-    if not mark_ready and upgrade_stage is None:
+def validate_options(upgrade_stage, mark_ready, grant_launch, tags):
+    if not (mark_ready or grant_launch) and upgrade_stage is None:
         raise UsageError('--stage must be specified')
 
     for tag in tags:

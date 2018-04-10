@@ -59,3 +59,12 @@
         tags: "{ '{{ item.key }}': '{{ item.value }}' }"
         state: present
       with_dict: "{{ origin_ci_aws_additional_tags }}"
+
+    - name: grant launch permissions
+      ec2_ami:
+        image_id: '{{ origin_ci_aws_ami_id }}'
+        region: '{{ origin_ci_aws_region }}'
+        state: present
+        launch_permissions:
+          user_ids: '{{ aws_account_ids_for_launch_permissions }}'
+      when: "aws_account_ids_for_launch_permissions | length > 0"
