@@ -106,5 +106,8 @@
   command: '/usr/bin/npm install npm@3.7.3 --global'
   when: origin_ci_installed_npm_version.stdout | version_compare('3.7.3', '<')
 
+- name: upgrade to latest version
+  command: '{{ ansible_pkg_mgr }} update'
+
 - name: document all the installed packages for the build logs
   command: '{{ ansible_pkg_mgr }} list installed'
