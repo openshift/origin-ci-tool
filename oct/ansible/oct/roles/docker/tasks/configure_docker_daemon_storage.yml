@@ -12,10 +12,5 @@
     dest: /etc/sysconfig/docker-storage-setup
     line: "VG={{ origin_ci_docker_volume_group }}"
 
-- name: Set EXTRA_STORAGE_OPTIONS for docker-storage-setup
-  lineinfile:
-    dest: /etc/sysconfig/docker-storage-setup
-    line: "EXTRA_STORAGE_OPTIONS='--storage-opt dm.libdm_log_level=3'"
-
 - name: Run docker-storage-setup
   command: docker-storage-setup

@@ -32,7 +32,6 @@ write_files:
     content: |
       DEVS=/dev/sdb
       VG=docker_vg
-      EXTRA_DOCKER_STORAGE_OPTIONS='--storage-opt dm.blkdiscard=true'
   - path: /etc/systemd/system/fstrim.timer.d/hourly.conf
     content: |
       [Timer]
