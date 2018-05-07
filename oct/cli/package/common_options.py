@@ -17,7 +17,7 @@ def package_options(func):
         '--stage',
         '-s',
         'upgrade_stage',
-        type=Choice(['current', 'next', 'fork', 'base', 'crio']),
+        type=Choice(['current', 'next', 'fork', 'base', 'crio', 'ose-master', 'ose-ose-enterprise-39', 'ose-ose-enterprise-38', 'ose-ose-enterprise-37', 'ose-ose-enterprise-36']),
         help='Update the current stage, upgrade to next default stage, or choose a stage',
     )(func)
 
