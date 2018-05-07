@@ -36,6 +36,11 @@ class Stage(object):
     install = 'install'
     fork = 'fork'
     crio = 'crio'
+    ose_master = 'ose-master'
+    ose_enterprise_39 = 'ose-enterprise-3.9'
+    ose_enterprise_38 = 'ose-enterprise-3.8'
+    ose_enterprise_37 = 'ose-enterprise-3.7'
+    ose_enterprise_36 = 'ose-enterprise-3.6'
 
 
 def destroy_callback(context, _, value):
@@ -110,6 +115,11 @@ Examples:
         Stage.install,
         Stage.fork,
         Stage.crio,
+        Stage.ose_master,
+        Stage.ose_enterprise_39,
+        Stage.ose_enterprise_38,
+        Stage.ose_enterprise_37,
+        Stage.ose_enterprise_36,
     ]),
     default=Stage.install,
     show_default=True,
