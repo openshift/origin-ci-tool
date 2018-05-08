@@ -48,7 +48,6 @@ def operating_system_option(func):
             OperatingSystem.centos,
             OperatingSystem.rhel,
         ]),
-        # default=OperatingSystem.fedora,
         show_default=True,
         metavar='NAME',
         help='VM operating system.',

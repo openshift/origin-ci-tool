@@ -7,7 +7,6 @@ from ..common_options import discrete_ssh_config_option
 from ...util.common_options import ansible_output_options
 from ...util.cloud_provider.image_options import Stage, operating_system_option, stage_option, ami_id_option
 from ...util.cloud_provider.common_options import Provider, provider_option
-from ...util.cloud_provider.instance_options import instance_name_option
 
 
 def destroy_callback(context, _, value):
@@ -52,7 +51,13 @@ Examples:
 @operating_system_option
 @provider_option
 @stage_option
-@instance_name_option
+@option(
+    '--name',
+    '-n',
+    metavar='NAME',
+    required=True,
+    help='VM instance name.',
+)
 @ami_id_option
 @option(
     '--destroy',
