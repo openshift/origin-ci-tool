@@ -1,4 +1,34 @@
 ---
+- name: Register RHEL 7 Atomic OpenShift repositories
+  yum_repository:
+    name: 'rhel-7-server-ose-{{ item }}-rpms'
+    state: present
+    description: 'A repository of dependencies for Atomic OpenShift {{ item }}'
+    baseurl: >
+      https://mirror.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os
+      https://use-mirror1.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os/,
+      https://use-mirror2.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os/,
+      https://euw-mirror1.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os/,
+    enabled: no
+    gpgcheck: no
+    gpgkey: >
+      file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,
+      file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,
+      https://mirror.ops.rhcloud.com/libra/keys/RPM-GPG-KEY-redhat-openshifthosted
+    failovermethod: priority
+    sslverify: no
+    sslclientcert: /var/lib/yum/client-cert.pem
+    sslclientkey: /var/lib/yum/client-key.pem
+  with_items:
+    - 3.6
+    - 3.7
+    - 3.8
+    - 3.9
+    - 3.10
+    - 3.11
+    - 3.12
+  when: ansible_distribution == 'RedHat'
+
 - name: turn on EPEL for the main dependency install
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
