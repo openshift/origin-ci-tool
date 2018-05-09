@@ -1,46 +1,12 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function
 
-from click import Choice, ClickException, command, option, pass_context
+from click import ClickException, command, option, pass_context
 
 from ..common_options import discrete_ssh_config_option
 from ...util.common_options import ansible_output_options
-
-
-class OperatingSystem(object):
-    """
-    An enumeration of supported operating systems for
-    Vagrant provisioning of VMs.
-    """
-    fedora = 'fedora'
-    centos = 'centos'
-    rhel = 'rhel'
-
-
-class Provider(object):
-    """
-    An enumeration of supported clouds for provisioning
-    of VMs.
-    """
-    aws = 'aws'
-
-
-class Stage(object):
-    """
-    An enumeration of supported stages for images used
-    for provisioning of VMs.
-    """
-    bare = 'bare'
-    base = 'base'
-    build = 'build'
-    install = 'install'
-    fork = 'fork'
-    crio = 'crio'
-    ose_master = 'ose-master'
-    ose_enterprise_39 = 'ose-enterprise-3.9'
-    ose_enterprise_38 = 'ose-enterprise-3.8'
-    ose_enterprise_37 = 'ose-enterprise-3.7'
-    ose_enterprise_36 = 'ose-enterprise-3.6'
+from ...util.cloud_provider.image_options import Stage, operating_system_option, stage_option, ami_id_option
+from ...util.cloud_provider.common_options import Provider, provider_option
 
 
 def destroy_callback(context, _, value):
@@ -82,50 +48,9 @@ Examples:
   $ oct provision remote all-in-one --destroy
 ''',
 )
-@option(
-    '--os',
-    '-o',
-    'operating_system',
-    type=Choice([
-        OperatingSystem.fedora,
-        OperatingSystem.centos,
-        OperatingSystem.rhel,
-    ]),
-    default=OperatingSystem.fedora,
-    show_default=True,
-    metavar='NAME',
-    help='VM operating system.',
-)
-@option(
-    '--provider',
-    '-p',
-    type=Choice([Provider.aws, ]),
-    default=Provider.aws,
-    show_default=True,
-    metavar='NAME',
-    help='Cloud provider.',
-)
-@option(
-    '--stage',
-    '-s',
-    type=Choice([
-        Stage.bare,
-        Stage.base,
-        Stage.build,
-        Stage.install,
-        Stage.fork,
-        Stage.crio,
-        Stage.ose_master,
-        Stage.ose_enterprise_39,
-        Stage.ose_enterprise_38,
-        Stage.ose_enterprise_37,
-        Stage.ose_enterprise_36,
-    ]),
-    default=Stage.install,
-    show_default=True,
-    metavar='NAME',
-    help='VM image stage.',
-)
+@operating_system_option
+@provider_option
+@stage_option
 @option(
     '--name',
     '-n',
@@ -133,13 +58,7 @@ Examples:
     required=True,
     help='VM instance name.',
 )
-@option(
-    '--ami-id',
-    '-a',
-    'ami_id',
-    metavar='ID',
-    help='AWS AMI identifier.',
-)
+@ami_id_option
 @option(
     '--destroy',
     '-d',

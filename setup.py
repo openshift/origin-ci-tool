@@ -7,7 +7,8 @@ base_requires = [
     'backports.shutil_get_terminal_size',
     'semver',
     'junit_xml',
-    'structlog'
+    'structlog',
+    'boto3'
 ]
 
 test_requires = base_requires + [
