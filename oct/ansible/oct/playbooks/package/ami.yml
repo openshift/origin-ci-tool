@@ -53,18 +53,8 @@
 
     - name: update image stage if we are upgrading stages
       set_fact:
-        origin_ci_aws_ami_stage: 'fork'
-      when: origin_ci_aws_stage_strategy == 'fork'
-
-    - name: update image stage if we are upgrading stages
-      set_fact:
-        origin_ci_aws_ami_stage: 'base'
-      when: origin_ci_aws_stage_strategy == 'base'
-
-    - name: update image stage if we are upgrading stages
-      set_fact:
-        origin_ci_aws_ami_stage: 'crio'
-      when: origin_ci_aws_stage_strategy == 'crio'
+        origin_ci_aws_ami_stage: '{{ origin_ci_aws_stage_strategy }}'
+      when: origin_ci_aws_stage_strategy != 'next'
 
     - name: package the Amazon machine image from the running instance
       ec2_ami:
