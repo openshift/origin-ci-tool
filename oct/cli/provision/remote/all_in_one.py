@@ -58,6 +58,13 @@ Examples:
     required=True,
     help='VM instance name.',
 )
+@option(
+    '--launch-unready',
+    '-u',
+    is_flag=True,
+    default=False,
+    help='Include images not tagged "ready" when selecting for launch.',
+)
 @ami_id_option
 @option(
     '--destroy',
@@ -70,7 +77,7 @@ Examples:
 @discrete_ssh_config_option
 @ansible_output_options
 @pass_context
-def all_in_one_command(context, operating_system, provider, stage, name, ami_id, discrete_ssh_config):
+def all_in_one_command(context, operating_system, provider, stage, name, launch_unready, ami_id, discrete_ssh_config):
     """
     Provision a virtual host for an All-In-One deployment.
 
@@ -79,12 +86,13 @@ def all_in_one_command(context, operating_system, provider, stage, name, ami_id,
     :param provider: provider to use with Vagrant
     :param stage: image stage to base the VM off of
     :param name: name to give to the VM instance
+    :param launch_unready: permit launching from images that haven't been tagged 'ready'
     :param ami_id: AWS EC2 AMI identifier
     :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
     configuration = context.obj
     if provider == Provider.aws:
-        provision_with_aws(configuration, operating_system, stage, name, ami_id, discrete_ssh_config)
+        provision_with_aws(configuration, operating_system, stage, name, launch_unready, ami_id, discrete_ssh_config)
     else:
         if ami_id is not None:
             raise ClickException("An AWS EC2 AMI identifier cannot be provided when launching in {}".format(provider))
@@ -99,7 +107,7 @@ def destroy(configuration):
     configuration.run_playbook(playbook_relative_path='provision/aws_all_in_one_down', )
 
 
-def provision_with_aws(configuration, operating_system, stage, name, ami_id, discrete_ssh_config):
+def provision_with_aws(configuration, operating_system, stage, name, launch_unready, ami_id, discrete_ssh_config):
     """
     Provision a VM in the cloud using AWS EC2.
 
@@ -107,6 +115,7 @@ def provision_with_aws(configuration, operating_system, stage, name, ami_id, dis
     :param operating_system: operating system used for the VM
     :param stage: image stage the VM was based off of
     :param name: name to give to the VM instance
+    :param launch_unready: permit launching from images that haven't been tagged 'ready'
     :param ami_id: AWS EC2 AMI identifier
     :param discrete_ssh_config: whether to update ~/.ssh/config or write a new file
     """
@@ -116,11 +125,15 @@ def provision_with_aws(configuration, operating_system, stage, name, ami_id, dis
         raise ClickException(
             'No private key path found! Configure one using:\n  $ oct configure aws-client private_key_path PATH'
         )
-
+    ami_tags = {
+        'operating_system': operating_system,
+        'image_stage': stage,
+    }
+    if not launch_unready:
+        ami_tags['ready'] = 'yes'
     playbook_variables = {
         'origin_ci_aws_hostname': configuration.next_available_vagrant_name,  # TODO: fix this
-        'origin_ci_aws_ami_os': operating_system,
-        'origin_ci_aws_ami_stage': stage,
+        'origin_ci_aws_ami_tags': ami_tags,
         'origin_ci_aws_instance_name': name,
         'origin_ci_inventory_dir': configuration.ansible_client_configuration.host_list,
         'origin_ci_aws_keypair_name': configuration.aws_client_configuration.keypair_name,

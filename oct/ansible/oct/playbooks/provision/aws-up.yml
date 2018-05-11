@@ -15,8 +15,7 @@
         - origin_ci_aws_keypair_name
         - origin_ci_aws_private_key_path
         - origin_ci_aws_region
-        - origin_ci_aws_ami_os
-        - origin_ci_aws_ami_stage
+        - origin_ci_aws_ami_tags
         - origin_ci_aws_instance_name
         - origin_ci_aws_master_instance_type
         - origin_ci_aws_identifying_tag_key

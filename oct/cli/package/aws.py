@@ -31,9 +31,20 @@ Examples:
   Grant another AWS account launch privileges
   $ oct package ami --grant-launch AWS_ACCOUNT_ID
 \b
+  Mark the source AMI for the current instance as ready for use, and also grant launch privileges
+  $ oct package ami --source-ami --mark-ready --grant-launch AWS_ACCOUNT_ID
+\b
   Package a VM with custom tags
   $ oct package ami --tag FOO=BAR --tag OTHER=VAL
 ''',
+)
+@option(
+    '--source-ami',
+    '-a',
+    'source_ami',
+    is_flag=True,
+    default=False,
+    help='Act on the AMI used to launch the instance, instead of creating an AMI (e.g. for validation)',
 )
 @option(
     '--mark-ready',
@@ -61,12 +72,13 @@ Examples:
 @ansible_output_options
 @package_options
 @pass_context
-def ami(context, upgrade_stage, mark_ready=False, grant_launch=[], tags=[]):
+def ami(context, upgrade_stage, source_ami, mark_ready=False, grant_launch=[], tags=[]):
     """
     Package a running AWS EC2 virtual machine.
 
     :param context: Click context
     :param upgrade_stage: whether or not to upgrade the current stage
+    :param source_ami: flag indicating whether to act on the instance source AMI or on an AMI created from the instance
     :param mark_ready: whether or not to mark a previous AMI from this instance ready
     :param tags: tag an AMI with the provided key-value pair
     """
@@ -83,10 +95,14 @@ def ami(context, upgrade_stage, mark_ready=False, grant_launch=[], tags=[]):
         else:
             key = tag
         ami_tags[key] = value
-    playbook_variables['origin_ci_aws_additional_tags'] = ami_tags
 
     if mark_ready:
         ami_tags["ready"] = "yes"
+
+    playbook_variables['origin_ci_aws_additional_tags'] = ami_tags
+
+    if source_ami:
+        playbook_variables['origin_ci_aws_source_ami'] = True
 
     if mark_ready or grant_launch:
         configuration.run_playbook(
