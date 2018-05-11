@@ -30,27 +30,42 @@
       set_fact:
         origin_ci_aws_hostname: '{{ groups[origin_ci_hosts][0] }}'
 
-    - name: determine AWS EC2 AMI name
-      set_fact:
-        origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
+    - name: Set AMI ID for AMI snapshotted from current instance
+      block:
+      - name: determine AWS EC2 AMI name
+        set_fact:
+          origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
 
-    - name: search for an AMI to update
-      ec2_ami_find:
-        region: '{{ origin_ci_aws_region }}'
-        ami_tags:
-          Name: '{{ origin_ci_aws_ami_name }}'
-        sort: 'creationDate'
-        sort_order: descending
-        sort_end: 1
-        no_result_action: fail
-      register: ami_facts
-      until: ami_facts.results is defined
-      retries: 5
-      delay: 10
+      - name: search for an AMI to update
+        ec2_ami_find:
+          region: '{{ origin_ci_aws_region }}'
+          ami_tags:
+            Name: '{{ origin_ci_aws_ami_name }}'
+          sort: 'creationDate'
+          sort_order: descending
+          sort_end: 1
+          no_result_action: fail
+        register: ami_facts
+        retries: 5
+        delay: 10
 
-    - name: determine which AMI to update
-      set_fact:
-        origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
+      - name: determine which AMI to update
+        set_fact:
+          origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
+      when: origin_ci_aws_source_ami is not defined or not origin_ci_aws_source_ami
+
+    - name: Verify AMI ID for source AMI of current instance
+      block:
+        - name: determine AWS EC2 source AMI ID
+          set_fact:
+            origin_ci_aws_ami_id: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_id'] }}"
+        - name: ensure AMI ID variable is set
+          fail:
+            msg: '{{ item }} must be set when updating source AMI.'
+          when: item not in vars and item not in hostvars[inventory_hostname]
+          with_items:
+            - origin_ci_aws_ami_id
+      when: origin_ci_aws_source_ami is defined and origin_ci_aws_source_ami
 
     - name: mark the AMI ready
       ec2_tag:
@@ -59,6 +74,7 @@
         tags: "{ '{{ item.key }}': '{{ item.value }}' }"
         state: present
       with_dict: "{{ origin_ci_aws_additional_tags }}"
+      when: "'ready' in origin_ci_aws_additional_tags and origin_ci_aws_additional_tags.ready|lower == 'yes'"
 
     - name: grant launch permissions
       ec2_ami:

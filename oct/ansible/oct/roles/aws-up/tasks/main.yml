@@ -40,10 +40,7 @@
   - name: list available AMIs
     ec2_ami_find:
       region: '{{ origin_ci_aws_region }}'
-      ami_tags:
-        operating_system: '{{ origin_ci_aws_ami_os }}'
-        image_stage: '{{ origin_ci_aws_ami_stage }}'
-        ready: 'yes'
+      ami_tags: '{{ origin_ci_aws_ami_tags }}'
       sort: 'creationDate'
       sort_order: ascending
       no_result_action: fail
@@ -117,12 +114,12 @@
 - name: determine the default user to use for SSH
   set_fact:
     origin_ci_aws_ssh_user: 'ec2-user'
-  when: origin_ci_aws_ami_stage == 'bare'
+  when: origin_ci_aws_ami_tags.image_stage == 'bare'
 
 - name: determine the default user to use for SSH
   set_fact:
     origin_ci_aws_ssh_user: 'origin'
-  when: origin_ci_aws_ami_stage != 'bare'
+  when: origin_ci_aws_ami_tags.image_stage != 'bare'
 
 - name: update variables for the host
   copy:
@@ -131,8 +128,8 @@
       origin_ci_aws_hostname: '{{ origin_ci_aws_hostname }}'
       origin_ci_aws_instance_name: '{{ origin_ci_aws_instance_name }}'
       origin_ci_aws_instance_id: '{{ ec2.instance_ids[0] }}'
-      origin_ci_aws_ami_os: '{{ origin_ci_aws_ami_os }}'
-      origin_ci_aws_ami_stage: '{{ origin_ci_aws_ami_stage }}'
+      origin_ci_aws_ami_id: '{{ origin_ci_aws_ami_id }}'
+      origin_ci_aws_ami_tags: '{{ origin_ci_aws_ami_tags }}'
       ansible_ssh_private_key_file: '{{ origin_ci_aws_private_key_path }}'
       ansible_ssh_user: '{{ origin_ci_aws_ssh_user }}'
       ansible_ssh_extra_args: '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes -o ConnectTimeout=0 -o ServerAliveInterval=30'

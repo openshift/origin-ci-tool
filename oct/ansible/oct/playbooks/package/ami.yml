@@ -34,8 +34,8 @@
 
     - name: determine AWS EC2 image metadata
       set_fact:
-        origin_ci_aws_ami_os: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_os'] }}"
-        origin_ci_aws_ami_stage: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_stage'] }}"
+        origin_ci_aws_ami_os: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_tags']['operating_system'] }}"
+        origin_ci_aws_ami_stage: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_tags']['image_stage'] }}"
         origin_ci_aws_instance_id: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_id'] }}"
         origin_ci_aws_instance_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
 
@@ -84,29 +84,42 @@
         content: '{{ origin_ci_aws_updated_host_vars.stdout }}'
         dest: '{{ origin_ci_aws_host_vars }}'
 
-    - name: determine AWS EC2 AMI name
-      set_fact:
-        origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
-      when: "origin_ci_aws_additional_tags | length > 0"
+    - name: Set AMI ID for AMI snapshotted from current instance
+      block:
+      - name: determine AWS EC2 AMI name
+        set_fact:
+          origin_ci_aws_ami_name: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_instance_name'] }}"
 
-    - name: search for an AMI to update
-      ec2_ami_find:
-        region: '{{ origin_ci_aws_region }}'
-        ami_tags:
-          Name: '{{ origin_ci_aws_ami_name }}'
-        sort: 'creationDate'
-        sort_order: descending
-        sort_end: 1
-        no_result_action: fail
-      register: ami_facts
-      when: "origin_ci_aws_additional_tags | length > 0"
-      retries: 100
-      delay: 30
+      - name: search for an AMI to update
+        ec2_ami_find:
+          region: '{{ origin_ci_aws_region }}'
+          ami_tags:
+            Name: '{{ origin_ci_aws_ami_name }}'
+          sort: 'creationDate'
+          sort_order: descending
+          sort_end: 1
+          no_result_action: fail
+        register: ami_facts
+        retries: 5
+        delay: 10
 
-    - name: determine which AMI to update
-      set_fact:
-        origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
-      when: "origin_ci_aws_additional_tags | length > 0"
+      - name: determine which AMI to update
+        set_fact:
+          origin_ci_aws_ami_id: '{{ ami_facts.results[0].ami_id }}'
+      when: origin_ci_aws_source_ami is not defined or not origin_ci_aws_source_ami
+
+    - name: Verify AMI ID for source AMI of current instance
+      block:
+        - name: determine AWS EC2 source AMI ID
+          set_fact:
+            origin_ci_aws_ami_id: "{{ hostvars[origin_ci_aws_hostname]['origin_ci_aws_ami_id'] }}"
+        - name: ensure AMI ID variable is set
+          fail:
+            msg: '{{ item }} must be set when updating source AMI.'
+          when: item not in vars and item not in hostvars[inventory_hostname]
+          with_items:
+            - origin_ci_aws_ami_id
+      when: origin_ci_aws_source_ami is defined and origin_ci_aws_source_ami
 
     - name: add any additional tags
       ec2_tag:
