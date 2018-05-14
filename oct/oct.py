@@ -8,7 +8,7 @@ from .cli.build.build import build
 from .cli.config.group import configure
 from .cli.deprovision import deprovision
 from .cli.download.group import download
-from .cli.image_ready import image_ready
+from .cli.image_not_ready import image_not_ready
 from .cli.install.install import install
 from .cli.make.make import make
 from .cli.package.group import package
@@ -41,7 +41,7 @@ oct_command.add_command(build)
 oct_command.add_command(configure)
 oct_command.add_command(deprovision)
 oct_command.add_command(download)
-oct_command.add_command(image_ready)
+oct_command.add_command(image_not_ready)
 oct_command.add_command(install)
 oct_command.add_command(make)
 oct_command.add_command(prepare)
