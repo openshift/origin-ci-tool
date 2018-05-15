@@ -25,6 +25,7 @@
     - 'origin'
     - 'origin-web-console'
     - 'origin-web-console-server'
+    - 'console'
     - 'source-to-image'
     - 'origin-metrics'
     - 'origin-aggregated-logging'
