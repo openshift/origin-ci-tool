@@ -34,6 +34,7 @@ class Repository(object):
     image_inspector = 'image-inspector'
     online_registration = 'online-registration'
     service_catalog = 'service-catalog'
+    ansible_service_broker = 'ansible-service-broker'
 
 
 def repository_argument(func):
@@ -70,5 +71,6 @@ def repository_argument(func):
             Repository.image_inspector,
             Repository.online_registration,
             Repository.service_catalog,
+            Repository.ansible_service_broker,
         ])
     )(func)
