@@ -34,6 +34,7 @@ class Repository(object):
     image_inspector = 'image-inspector'
     online_registration = 'online-registration'
     service_catalog = 'service-catalog'
+    enterprise_images = 'enterprise-images'
 
 
 def repository_argument(func):
@@ -70,5 +71,6 @@ def repository_argument(func):
             Repository.image_inspector,
             Repository.online_registration,
             Repository.service_catalog,
+            Repository.enterprise_images,
         ])
     )(func)

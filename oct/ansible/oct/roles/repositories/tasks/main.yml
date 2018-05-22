@@ -44,6 +44,7 @@
     - 'online-console-extensions'
     - 'image-inspector'
     - 'service-catalog'
+    - 'enterprise-images'
 
 - name: initialize git directories for each private repository
   include: initialize_repository_placeholder.yml
