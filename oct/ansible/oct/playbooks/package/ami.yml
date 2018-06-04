@@ -100,8 +100,8 @@
           sort_end: 1
           no_result_action: fail
         register: ami_facts
-        retries: 5
-        delay: 10
+        retries: 10
+        delay: 60
         until: ami_facts.results is defined
 
       - name: determine which AMI to update
