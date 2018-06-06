@@ -24,7 +24,6 @@ class Provider(object):
     An enumeration of supported virtualization providers
     for provisioning of local VMs.
     """
-    libvirt = 'libvirt'
     virtualbox = 'virtualbox'
     vmware = 'vmware_fusion'
 
@@ -56,7 +55,7 @@ most useful for short-term development work-flows.
 
 \b
 Examples:
-  Provision a VM with default parameters (fedora, libvirt, install)
+  Provision a VM with default parameters (fedora, install)
   $ oct provision local all-in-one
 \b
   Provision a VM with custom parameters
@@ -83,11 +82,10 @@ Examples:
     '--provider',
     '-p',
     type=Choice([
-        Provider.libvirt,
         Provider.virtualbox,
         Provider.vmware,
     ]),
-    default=Provider.libvirt,
+    default=Provider.virtualbox,
     show_default=True,
     metavar='NAME',
     help='Virtualization provider.',
@@ -131,7 +129,7 @@ def all_in_one_command(context, operating_system, provider, stage, ip, discrete_
     """
     configuration = context.obj
     validate(provider, stage)
-    if provider in [Provider.virtualbox, Provider.libvirt, Provider.vmware]:
+    if provider in [Provider.virtualbox, Provider.vmware]:
         provision_with_vagrant(configuration, operating_system, provider, stage, ip, discrete_ssh_config)
 
 
