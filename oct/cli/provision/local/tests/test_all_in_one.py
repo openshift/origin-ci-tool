@@ -62,7 +62,7 @@ class ProvisionVagrantTestCase(PlaybookRunnerTestCase):
                         playbook_relative_path='provision/vagrant-up',
                         playbook_variables={
                             'origin_ci_vagrant_os': OperatingSystem.fedora,
-                            'origin_ci_vagrant_provider': Provider.libvirt,
+                            'origin_ci_vagrant_provider': Provider.virtualbox,
                             'origin_ci_vagrant_stage': Stage.install,
                             'origin_ci_ssh_config_strategy': 'update',
                         },
