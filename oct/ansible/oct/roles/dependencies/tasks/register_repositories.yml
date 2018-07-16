@@ -34,12 +34,13 @@
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: present
 
-- name: Add RHEL 7 Server Ansible 2.4 Repository
+- name: Add RHEL 7 Server Ansible Repositories
   yum_repository:
-    name: 'rhel-7-server-ansible-2.4-rpms'
+    name: "rhel-7-server-ansible-{{ item }}-rpms"
     state: present
-    description: 'RHEL 7 Server Ansible Repository'
-    baseurl: 'https://mirror.openshift.com/enterprise/rhel/rhel-7-server-ansible-2.4-rpms/'
+    description: "RHEL 7 Server Ansible {{ item }} Repository"
+    baseurl: "https://mirror.openshift.com/enterprise/rhel/rhel-7-server-ansible-{{ item }}-rpms/"
+    enabled: "{{ 'yes' if item == '2.4' else 'no' }}"
     gpgcheck: no
     gpgkey: >
       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,
@@ -49,3 +50,6 @@
     sslclientcert: /var/lib/yum/client-cert.pem
     sslclientkey: /var/lib/yum/client-key.pem
   when: ansible_distribution == 'RedHat'
+  with_items:
+    - '2.4'
+    - '2.6'
