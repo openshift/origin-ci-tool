@@ -43,6 +43,7 @@
    - libassuan                # Image Signature verification dep (containers/image)
    - libassuan-devel          #
    - libnetfilter_queue-devel #
+   - libseccomp-devel         # Origin build/package (buildah)
    - libselinux-devel         #
    - libsemanage-python       # OpenShift-Ansible (upstream this)
    - lsof                     # developer UX
