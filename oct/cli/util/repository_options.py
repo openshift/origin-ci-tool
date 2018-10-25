@@ -35,6 +35,8 @@ class Repository(object):
     online_registration = 'online-registration'
     service_catalog = 'service-catalog'
     ansible_service_broker = 'ansible-service-broker'
+    cluster_logging_operator = 'cluster-logging-operator'
+    elasticsearch_operator = 'elasticsearch-operator'
 
 
 def repository_argument(func):
@@ -72,5 +74,7 @@ def repository_argument(func):
             Repository.online_registration,
             Repository.service_catalog,
             Repository.ansible_service_broker,
+            Repository.cluster_logging_operator,
+            Repository.elasticsearch_operator,
         ])
     )(func)
