@@ -3,7 +3,7 @@
   hosts: 'localhost'
   connection: 'local'
   become: no
-  gather_facts: no
+  gather_facts: yes
 
   pre_tasks:
     - name: ensure all required variables are set
