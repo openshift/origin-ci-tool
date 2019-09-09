@@ -1,0 +1,20 @@
+---
+# Install dependencies necessary for Ansible to be
+# able to interact with this target host. Fedora
+# provides a nice grouping of RPMs for this purpose.
+- name: install bootstrap dependencies for Ansible target host
+  when: ansible_distribution != 'RedHat' or ansible_lsb.major_release|int < 8
+  raw: >
+    if which dnf >/dev/null 2>&1; then
+        dnf group install -y ansible-node && dnf install -y libselinux-python
+    else
+        yum install -y python2 python2-dnf libselinux-python
+    fi
+
+# RHEL 8 has a different installation work flow according to:
+# https://www.ansible.com/blog/integrating-ansible-and-red-hat-enterprise-linux-8-beta
+- name: install bootstrap dependencies for Ansible target host on RHEL 8
+  when: ansible_distribution == 'RedHat' and ansible_lsb.major_release|int >= 8
+  raw: >
+      yum -y module install python36
+      pip3 install --install-option="--prefix=/usr" ansible
