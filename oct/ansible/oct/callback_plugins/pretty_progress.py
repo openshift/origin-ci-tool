@@ -1,7 +1,10 @@
 # coding=utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from Queue import Empty
+try:
+    from Queue import Empty ## for python 2
+except ImportError:
+    from queue import Empty ## for python 3
 from multiprocessing import Process, Queue
 from os import environ
 from os.path import join
@@ -67,11 +70,11 @@ def display_workload(queue):
 
         # navigate to the top to over-write the last output
         for i in range(last_num_lines):
-            stdout.write(MOVE_UP_ONE_LINE)
+            stdout.buffer.write(MOVE_UP_ONE_LINE)
             if i < last_num_lines - len(workload):
                 # if there are lines in the old output which
                 # we may not overwrite, just clear them
-                stdout.write(CLEAR_LINE)
+                stdout.buffer.write(CLEAR_LINE)
 
         # re-render and print the new output
         last_num_lines = 0
