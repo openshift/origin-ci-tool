@@ -17,6 +17,6 @@
 - name: install bootstrap dependencies for Ansible target host on RHEL 8
   when: ansible_distribution == 'RedHat' and ansible_distribution_major_version|int >= 8
   raw: >
-      yum -y module install python36
-      ln -fs $(which python3) /bin/python
-      pip3 install --install-option="--prefix=/usr" ansible
+      yum -y module install python3 python3-dnf
+      ln -fs /bin/python3 /bin/python;
+      pip3 install --install-option="--prefix=/usr" ansible;
