@@ -29,6 +29,7 @@
   connection: 'local'
   become: yes
   become_user: root
+  gather_facts: yes
 
   tasks:
     - name: install requisite dependencies to enable functionality
@@ -40,6 +41,15 @@
         - pyOpenSSL
         - python-boto
         - python-boto3
+      when: ansible_distribution != 'RedHat' or  ansible_distribution_major_version|int < 8
+
+    # haircommander: while hacky, I ran into lots of trouble trying to use the ansible package
+    - name: install requisite dependencies to enable functionality for RHEL 8
+      when: ansible_distribution == 'RedHat' and ansible_distribution_major_version|int >= 8
+      raw: >
+        yum install -y python3-libselinux python3-pyOpenSSL;
+        pip3 install --install-option="--prefix=/usr" boto3 boto;
+
 
     - name: install requisite dependencies to enable image building functionality
       package:

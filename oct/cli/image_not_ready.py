@@ -84,7 +84,7 @@ def _aws_image_not_ready(operating_system, stage, ami_id, quiet, region):
     else:
         res = client.describe_images(Filters=filter)
     # Sort the matching images from newest to oldest:
-    images = sorted(res['Images'], key=lambda (x): datetime.strptime(x['CreationDate'], '%Y-%m-%dT%H:%M:%S.%fZ'), reverse=True)
+    images = sorted(res['Images'], key=lambda x: datetime.strptime(x['CreationDate'], '%Y-%m-%dT%H:%M:%S.%fZ'), reverse=True)
     if not res['Images']:
         raise ClickException("No image was found matching the provided tags")
     else:
