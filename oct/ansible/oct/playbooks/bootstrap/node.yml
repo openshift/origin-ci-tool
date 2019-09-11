@@ -19,9 +19,8 @@
   connection: '{{ origin_ci_connection }}'
   become: yes
   become_user: root
+  gather_facts: yes
 
   tasks:
-    - name: install Ansible
-      package:
-        name: ansible
-        state: present
+    - name: install ansible for platform
+      include: ansible.yml

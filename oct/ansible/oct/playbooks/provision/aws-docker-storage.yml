@@ -23,12 +23,11 @@
   connection: '{{ origin_ci_connection }}'
   become: yes
   become_user: root
+  gather_facts: yes
 
   tasks:
     - name: ensure we have the tools to work with logical volumes
-      package:
-        name: lvm2
-        state: present
+      include: lvm2.yml
 
     - name: ensure the new space is empty
       command: '/usr/bin/dd if=/dev/zero of=/dev/xvdb bs=1M'

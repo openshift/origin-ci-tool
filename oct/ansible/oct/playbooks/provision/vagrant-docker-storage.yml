@@ -74,9 +74,7 @@
       when: "hostvars[origin_ci_vagrant_hostname]['origin_ci_skip_rest']"
 
     - name: ensure we have the tools to work with logical volumes
-      package:
-        name: lvm2
-        state: present
+      include: lvm2
 
     - name: determine the correct device to partition # TODO: determine how to select the right device
       set_fact:
