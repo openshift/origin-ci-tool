@@ -8,7 +8,7 @@ deployment_rhel7_ent_base:
   region: "{{ lookup('oo_option', 'ec2_region') | default('us-east-1', True) }}"
   ssh_user: ec2-user
   become: yes
-  keypair: "{{ lookup('oo_option', 'ec2_keypair') | default('libra', True) }}"
+  keypair: "{{ lookup('oo_option', 'ec2_keypair') | default('openshift-dev', True) }}"
   type: "{{ lookup('oo_option', 'ec2_instance_type') | default('m4.large', True) }}"
   security_groups: "{{ lookup('oo_option', 'ec2_security_groups') | default([ 'public' ], True) }}"
   vpc_subnet: "{{ lookup('oo_option', 'ec2_vpc_subnet') | default(omit, True) }}"
@@ -22,7 +22,7 @@ deployment_vars:
     region: "{{ lookup('oo_option', 'ec2_region') | default('us-east-1', True) }}"
     ssh_user: centos
     become: yes
-    keypair: "{{ lookup('oo_option', 'ec2_keypair') | default('libra', True) }}"
+    keypair: "{{ lookup('oo_option', 'ec2_keypair') | default('openshift-dev', True) }}"
     type: "{{ lookup('oo_option', 'ec2_instance_type') | default('m4.large', True) }}"
     security_groups: "{{ lookup('oo_option', 'ec2_security_groups') | default([ 'public' ], True) }}"
     vpc_subnet: "{{ lookup('oo_option', 'ec2_vpc_subnet') | default(omit, True) }}"

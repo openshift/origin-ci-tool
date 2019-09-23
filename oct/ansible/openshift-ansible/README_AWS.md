@@ -75,7 +75,7 @@ By default, a cluster is launched with the following configuration:
 - Instance type: m4.large
 - AMI: ami-7a9e9812 (for online deployments, ami-61bbf104 for origin deployments and ami-10663b78 for enterprise deployments)
 - Region: us-east-1
-- Keypair name: libra
+- Keypair name: openshift-dev
 - Security group: public
 
 #### Master specific defaults:
@@ -118,7 +118,7 @@ If needed, these values can be changed by setting environment variables on your 
 
 - export ec2_image='ami-307b3658'
 - export ec2_region='us-east-1'
-- export ec2_keypair='libra'
+- export ec2_keypair='openshift-dev'
 - export ec2_security_groups="['public']"
 - export ec2_assign_public_ip='true'
 - export os_etcd_root_vol_size='20'
