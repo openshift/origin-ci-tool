@@ -102,11 +102,11 @@ ci-pep8:
 	@echo "#############################################"
 	@echo "# Running PEP8 Compliance Tests in virtualenv"
 	@echo "#############################################"
-	. $(NAME)env/bin/activate && pep8 --ignore=$(PEPEXCLUDES) src/$(SHORTNAME)/
-	. $(NAME)env/bin/activate && pep8 --ignore=$(PEPEXCLUDES) ../callback_plugins/openshift_quick_installer.py
+	. $(NAME)env/bin/activate && pycodestyle --ignore=$(PEPEXCLUDES) src/$(SHORTNAME)/
+	. $(NAME)env/bin/activate && pycodestyle --ignore=$(PEPEXCLUDES) ../callback_plugins/openshift_quick_installer.py
 # This one excludes E402 because it is an ansible module and the
 # boilerplate import statement is expected to be at the bottom
-	. $(NAME)env/bin/activate && pep8 --ignore=$(PEPEXCLUDES),E402 ../roles/openshift_certificate_expiry/library/openshift_cert_expiry.py
+	. $(NAME)env/bin/activate && pycodestyle --ignore=$(PEPEXCLUDES),E402 ../roles/openshift_certificate_expiry/library/openshift_cert_expiry.py
 
 ci: clean virtualenv ci-list-deps ci-pep8 ci-pylint ci-pyflakes ci-unittests
 	:

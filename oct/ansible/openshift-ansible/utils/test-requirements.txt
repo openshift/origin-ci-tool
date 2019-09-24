@@ -1,7 +1,7 @@
 enum
 configparser
 pylint
-pep8
+pycodestyle
 nose
 coverage
 mock
