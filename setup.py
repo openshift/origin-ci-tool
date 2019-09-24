@@ -2,7 +2,7 @@
 from setuptools import find_packages, setup
 
 base_requires = [
-    'Click',
+    'Click<7.0',
     'ansible==3.0.0',
     'backports.shutil_get_terminal_size',
     'semver',
@@ -14,7 +14,7 @@ base_requires = [
 test_requires = base_requires + [
     'mock',
     'coverage',
-    'pep8',
+    'pep8<=1.7.0',
     'yapf==0.14.0'
 ]
 

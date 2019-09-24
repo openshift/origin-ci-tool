@@ -2,9 +2,9 @@
 from __future__ import absolute_import, division, print_function
 
 try:
-    from StringIO import StringIO ## for Python 2
+    from StringIO import StringIO  # for Python 2
 except ImportError:
-    from io import StringIO ## for Python 3
+    from io import StringIO  # for Python 3
 from copy import deepcopy
 from shutil import rmtree
 from subprocess import check_output

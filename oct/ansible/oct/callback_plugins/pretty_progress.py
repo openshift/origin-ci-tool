@@ -2,9 +2,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 try:
-    from Queue import Empty ## for python 2
+    from Queue import Empty  # for python 2
 except ImportError:
-    from queue import Empty ## for python 3
+    from queue import Empty  # for python 3
 from multiprocessing import Process, Queue
 from os import environ
 from os.path import join

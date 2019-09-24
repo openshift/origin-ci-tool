@@ -2,6 +2,7 @@ language: python
 python:
   - 2.7
 install:
+  - pip install 'pip<19.0'
   - make install-development
 script:
   - make verify
