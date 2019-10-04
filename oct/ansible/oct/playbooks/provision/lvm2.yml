@@ -1,10 +1,14 @@
 ---
+- name:
+  include_vars:
+    file: python3.yml
+
 - name: download lvm2 for non-RHEL8 hosts
-  when: ansible_distribution != 'RedHat' or ansible_distribution_major_version|int < 8
+  when: not supports_python3
   package:
     name: lvm2
     state: present
 
 - name: download lvm2 for RHEL8 hosts
-  when: ansible_distribution == 'RedHat' and ansible_distribution_major_version|int >= 8
+  when: supports_python3
   command: yum install -y lvm2
