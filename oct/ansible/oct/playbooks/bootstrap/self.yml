@@ -37,7 +37,7 @@
         file: python3.yml
 
     - name: install requisite dependencies to enable functionality
-      when: not supports_python3
+      when: not supports_python3|bool
       package:
         name: '{{ item }}'
         state: present
@@ -49,7 +49,7 @@
 
     # haircommander: while hacky, I ran into lots of trouble trying to use the ansible package
     - name: install requisite dependencies to enable functionality for RHEL 8
-      when: supports_python3
+      when: supports_python3|bool
       raw: >
         yum install -y python3-libselinux python3-pyOpenSSL;
         pip install --install-option="--prefix=/usr" boto3 boto;
