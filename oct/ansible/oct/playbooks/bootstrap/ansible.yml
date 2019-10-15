@@ -7,7 +7,7 @@
 # able to interact with this target host. Fedora
 # provides a nice grouping of RPMs for this purpose.
 - name: install bootstrap dependencies for Ansible target host
-  when: not supports_python3
+  when: not supports_python3|bool
   raw: >
     if which dnf >/dev/null 2>&1; then
         dnf group install -y ansible-node && dnf install -y libselinux-python ansible
@@ -19,7 +19,7 @@
 # https://www.ansible.com/blog/integrating-ansible-and-red-hat-enterprise-linux-8-beta
 # oct also expects the binary python to be on the host, so add a symlink
 - name: install bootstrap dependencies for Ansible target host on RHEL 8
-  when: supports_python3
+  when: supports_python3|bool
   raw: >
       yum install -y python3 python3-dnf gcc redhat-rpm-config python3-devel;
       alternatives --set python /usr/bin/python3;
