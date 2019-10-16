@@ -1,14 +1,16 @@
 ---
-- name:
-  include_vars:
-    file: python3.yml
+- name: include variable to check if python2-dnf can be installed
+  include: python3.yml
+
+- debug:
+    var: supports_python3
 
 - name: download lvm2 for non-RHEL8 hosts
-  when: not supports_python3|bool
+  when: supports_python3 is not defined or not supports_python3
   package:
     name: lvm2
     state: present
 
 - name: download lvm2 for RHEL8 hosts
-  when: supports_python3|bool
+  when: supports_python3 is defined and supports_python3
   command: yum install -y lvm2

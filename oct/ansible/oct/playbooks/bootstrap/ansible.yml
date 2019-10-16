@@ -1,13 +1,12 @@
 ---
-- name:
-  include_vars:
-    file: python3.yml
+- name: include variable to check if python2-dnf can be installed
+  include: python3.yml
 
 # Install dependencies necessary for Ansible to be
 # able to interact with this target host. Fedora
 # provides a nice grouping of RPMs for this purpose.
 - name: install bootstrap dependencies for Ansible target host
-  when: not supports_python3|bool
+  when: supports_python3 is not defined or not supports_python3
   raw: >
     if which dnf >/dev/null 2>&1; then
         dnf group install -y ansible-node && dnf install -y libselinux-python ansible
@@ -19,7 +18,7 @@
 # https://www.ansible.com/blog/integrating-ansible-and-red-hat-enterprise-linux-8-beta
 # oct also expects the binary python to be on the host, so add a symlink
 - name: install bootstrap dependencies for Ansible target host on RHEL 8
-  when: supports_python3|bool
+  when: supports_python3 is defined and supports_python3
   raw: >
       yum install -y python3 python3-dnf gcc redhat-rpm-config python3-devel;
       alternatives --set python /usr/bin/python3;
