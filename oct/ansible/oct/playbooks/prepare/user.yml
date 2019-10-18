@@ -35,6 +35,23 @@
         line: '{{ origin_ci_user }}  ALL=(ALL)  NOPASSWD: ALL'
         state: present
 
+    - name: ensure cloud-init is configured for the new user
+      lineinfile:
+        dest: /etc/cloud/cloud.cfg.d/00_ec2-user.cfg
+        regexp: '^    name:'
+        line: '    name: {{origin_ci_user}}'
+        state: present
+
+    - name: remove cloud-init instance data cache
+      file:
+        path: /var/lib/cloud/instances
+        state: absent
+
+    - name: remove cloud-init current instance symlink
+      file:
+        path: /var/lib/cloud/instance
+        state: absent
+
     - name: ensure the user has home directories
       file:
         path: '{{ item }}'

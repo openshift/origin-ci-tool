@@ -30,7 +30,7 @@
       include: lvm2.yml
 
     - name: ensure the new space is empty
-      command: '/usr/bin/dd if=/dev/zero of=/dev/xvdb bs=1M'
+      command: '/sbin/wipefs -a /dev/xvdb'
       ignore_errors: true
 
     - name: ensure changes are synced to disk
