@@ -10,6 +10,7 @@ class OperatingSystem(object):
     Vagrant provisioning of VMs.
     """
     fedora = 'fedora'
+    fedora_cgroup2 = 'fedora-cgroupv2'
     centos = 'centos'
     rhel = 'rhel'
 
@@ -45,6 +46,7 @@ def operating_system_option(func):
         'operating_system',
         type=Choice([
             OperatingSystem.fedora,
+            OperatingSystem.fedora_cgroup2,
             OperatingSystem.centos,
             OperatingSystem.rhel,
         ]),
