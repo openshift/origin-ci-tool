@@ -241,7 +241,7 @@ support the VM, then run:
                                      --provider NAME \ #<2>
                                      --stage STAGE     #<3>
 
-1. Select the operating system you would like to use with ``--os``. Fedora and CentOS are supported.
+1. Select the operating system you would like to use with ``--os``. Fedora, Fedora-cgroupv2 and CentOS are supported.
 2. Choose the virtualization provider to use. LibVirt, VirtualBox and VMWare Fusion are supported.
 3. Determine the image stage to base the virtual machine on. Valid image stages are ``bare``, ``base`` and ``install``. Only the
    bare OS stage is supported for VMWare Fusion.
