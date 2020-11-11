@@ -4,78 +4,79 @@
 
 - name: install distribution-independent dependencies
   package:
-    name: '{{ item }}'
+    name: '{{ pkg_list | join(',') }}'
     state: latest
-  with_items:
-   - ansible
-   - augeas                   # developer UX
-   - bc                       # for Bash math
-   - bind                     #
-   - bind-utils               #
-   - bridge-utils             #
-   - bsdtar                   # Origin build/package
-   - btrfs-progs-devel        #
-   - bzip2                    #
-   - bzr                      #
-   - createrepo               # Origin build/package
-   - ctags                    #
-   - deltarpm                 # vagrant-openshift, should remove
-   - device-mapper-devel      #
-   - e2fsprogs                #
-   - ethtool                  #
-   - firefox                  # Origin Web Console tests
-   - fontconfig               #
-   - gcc                      #
-   - gcc-c++                  #
-   - git                      # Interacting with repos
-   - glibc-static             #
-   - gnuplot                  # Origin test logger
-   - gpgme                    # Image Signature verification dep (containers/image)
-   - gpgme-devel              #
-   - hg                       #
-   - http-parser              # Origin Web Console tests
-   - httpie                   # developer UX
-   - iscsi-initiator-utils    #
-   - java-1.?.0-openjdk-devel       #
-   - jq                       # Origin e2e test, but should use jsonpath instead
-   - kernel-devel             #
-   - krb5-devel               # Origin build/package | Origin GSSAPI tests
-   - libassuan                # Image Signature verification dep (containers/image)
-   - libassuan-devel          #
-   - libnetfilter_queue-devel #
-   - libseccomp-devel         # Origin build/package (buildah)
-   - libselinux-devel         #
-   - libsemanage-python       # OpenShift-Ansible (upstream this)
-   - lsof                     # developer UX
-   - make                     # Interacting with repos
-   - maven                  # for building java apps
-   - mlocate                  # vagrant-openshift, should remove
-   - npm                      # Origin Web Console tests
-   - ntp                      #
-   - openldap-clients         # Origin LDAP tests
-   - openssl                  # Origin `test-cmd` tests
-   - openvswitch              #
-   - python-pip               # used for ansible plugin deps
-   - python-dbus              # OpenShift-Ansible (upstream this)
-   - rubygems                 #
-   - screen                   # developer UX
-   - socat                    # Origin `oc cluster up`
-   - sqlite-devel             #
-   - strace                   # developer UX
-   - sysstat                  # developer UX
-   - tcpdump                  # developer UX
-   - tig                      # developer UX
-   - tito                     # Origin build/package
-   - tmux                     # developer UX
-   - tree                     # developer UX
-   - unzip                    # Origin build/package
-   - vim                      # developer UX
-   - wget                     # developer UX
-   - xfsprogs                 #
-   - xorg-x11-utils           # Origin Web Console tests
-   - Xvfb                     # Origin Web Console tests
-   - yum-utils                #
-   - zip                      # Origin build/package
+  vars:
+    pkg_list:
+     - ansible
+     - augeas                   # developer UX
+     - bc                       # for Bash math
+     - bind                     #
+     - bind-utils               #
+     - bridge-utils             #
+     - bsdtar                   # Origin build/package
+     - btrfs-progs-devel        #
+     - bzip2                    #
+     - bzr                      #
+     - createrepo               # Origin build/package
+     - ctags                    #
+     - deltarpm                 # vagrant-openshift, should remove
+     - device-mapper-devel      #
+     - e2fsprogs                #
+     - ethtool                  #
+     - firefox                  # Origin Web Console tests
+     - fontconfig               #
+     - gcc                      #
+     - gcc-c++                  #
+     - git                      # Interacting with repos
+     - glibc-static             #
+     - gnuplot                  # Origin test logger
+     - gpgme                    # Image Signature verification dep (containers/image)
+     - gpgme-devel              #
+     - hg                       #
+     - http-parser              # Origin Web Console tests
+     - httpie                   # developer UX
+     - iscsi-initiator-utils    #
+     - java-1.?.0-openjdk-devel       #
+     - jq                       # Origin e2e test, but should use jsonpath instead
+     - kernel-devel             #
+     - krb5-devel               # Origin build/package | Origin GSSAPI tests
+     - libassuan                # Image Signature verification dep (containers/image)
+     - libassuan-devel          #
+     - libnetfilter_queue-devel #
+     - libseccomp-devel         # Origin build/package (buildah)
+     - libselinux-devel         #
+     - libsemanage-python       # OpenShift-Ansible (upstream this)
+     - lsof                     # developer UX
+     - make                     # Interacting with repos
+     - maven                  # for building java apps
+     - mlocate                  # vagrant-openshift, should remove
+     - npm                      # Origin Web Console tests
+     - ntp                      #
+     - openldap-clients         # Origin LDAP tests
+     - openssl                  # Origin `test-cmd` tests
+     - openvswitch              #
+     - python-pip               # used for ansible plugin deps
+     - python-dbus              # OpenShift-Ansible (upstream this)
+     - rubygems                 #
+     - screen                   # developer UX
+     - socat                    # Origin `oc cluster up`
+     - sqlite-devel             #
+     - strace                   # developer UX
+     - sysstat                  # developer UX
+     - tcpdump                  # developer UX
+     - tig                      # developer UX
+     - tito                     # Origin build/package
+     - tmux                     # developer UX
+     - tree                     # developer UX
+     - unzip                    # Origin build/package
+     - vim                      # developer UX
+     - wget                     # developer UX
+     - xfsprogs                 #
+     - xorg-x11-utils           # Origin Web Console tests
+     - Xvfb                     # Origin Web Console tests
+     - yum-utils                #
+     - zip                      # Origin build/package
 
 - name: install distribution-dependent dependencies
   package:
