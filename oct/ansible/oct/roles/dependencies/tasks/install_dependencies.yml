@@ -4,7 +4,7 @@
 
 - name: install distribution-independent dependencies
   package:
-    name: '{{ pkg_list | join(',') }}'
+    name: "{{ pkg_list | join(',') }}"
     state: latest
   vars:
     pkg_list:
