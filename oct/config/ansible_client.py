@@ -11,10 +11,10 @@ from ansible import constants
 from ansible.cli.playbook import PlaybookCLI
 from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.executor.task_queue_manager import TaskQueueManager
-from ansible.inventory import Inventory
+from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
-from ansible.plugins import callback_loader
-from ansible.vars import VariableManager
+from ansible.plugins.loader import callback_loader
+from ansible.vars.manager import VariableManager
 from click import ClickException
 
 DEFAULT_VERBOSITY = 1
@@ -136,9 +136,9 @@ class AnsibleCoreClient(object):
         data_loader = DataLoader()
         inventory = Inventory(
             loader=data_loader,
-            variable_manager=variable_manager,
-            host_list=self.host_list,
+            sources=self.host_list,
         )
+        variable_manager = VariableManager(loader=data_loader, inventory=inventory)
         variable_manager.set_inventory(inventory)
         variable_manager.extra_vars = playbook_variables
 

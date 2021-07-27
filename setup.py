@@ -14,6 +14,7 @@ base_requires = [
 test_requires = base_requires + [
     'mock',
     'coverage',
+    'paramiko',
     'pep8<=1.7.0',
     'yapf==0.14.0'
 ]
