@@ -51,7 +51,7 @@
       when: supports_python3 is defined and supports_python3
       raw: >
         yum install -y python3-libselinux python3-pyOpenSSL;
-        pip install --install-option="--prefix=/usr" boto3 boto;
+        pip install boto3 boto;
 
 
     - name: install requisite dependencies to enable image building functionality
