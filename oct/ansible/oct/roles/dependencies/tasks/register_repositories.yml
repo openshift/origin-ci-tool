@@ -47,8 +47,8 @@
       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,
       https://mirror.ops.rhcloud.com/libra/keys/RPM-GPG-KEY-redhat-openshifthosted
     sslverify: no
-    sslclientcert: /var/lib/yum/client-cert.pem
-    sslclientkey: /var/lib/yum/client-key.pem
+    username: <something>
+    password: <something>
   when: ansible_distribution == 'RedHat'
   with_items:
     - '2.4'
