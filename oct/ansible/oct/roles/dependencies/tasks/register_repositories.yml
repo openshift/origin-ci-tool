@@ -17,8 +17,8 @@
       https://mirror.ops.rhcloud.com/libra/keys/RPM-GPG-KEY-redhat-openshifthosted
     failovermethod: priority
     sslverify: no
-    sslclientcert: /var/lib/yum/client-cert.pem
-    sslclientkey: /var/lib/yum/client-key.pem
+    username: "{{ lookup('env', ''MIRROR_OS_USER) }}"
+    password: "{{ lookup('env', ''MIRROR_OS_PASS) }}"
   with_items:
     - '3.6'
     - '3.7'
