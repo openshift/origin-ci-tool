@@ -5,10 +5,7 @@
     state: present
     description: 'A repository of dependencies for Atomic OpenShift {{ item }}'
     baseurl: >
-      https://mirror.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os
-      https://use-mirror1.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os/,
-      https://use-mirror2.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os/,
-      https://euw-mirror1.ops.rhcloud.com/enterprise/all/{{ item }}/latest/x86_64/os/,
+      https://mirror.openshift.com/enterprise/all/{{ item }}/latest/x86_64/os
     enabled: no
     gpgcheck: no
     gpgkey: >
